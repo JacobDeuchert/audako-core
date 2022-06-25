@@ -1,0 +1,11 @@
+import { Observable } from 'rxjs';
+import { HttpConfig } from '../models/http-config.model';
+export declare abstract class BaseHttpService {
+    protected httpConfig: HttpConfig;
+    protected accessToken: string;
+    constructor(httpConfig: HttpConfig, accessToken: string | Observable<string>);
+    protected getAuthorizationHeader(): {
+        [p: string]: string;
+    };
+    protected getStructureUrl(): string;
+}
