@@ -7,3 +7,6 @@ export { DataSource } from './models/entities/data-source.model';
 export { DataSourceType } from './models/entities/data-source.model';
 export { DataConnection } from './models/entities/data-connection.model';
 export { DataConnectionSettings } from './models/entities/data-connection.model';
+export { EntityHttpService } from './services/entity-http.service';
+export { TenantHttpService } from './services/tenant-http.service';
+export { EntityNameService } from './services/entity-name.service';
