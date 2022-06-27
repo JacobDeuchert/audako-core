@@ -1,11 +1,17 @@
 "use strict";
 // Model exports
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EntityNameService = exports.TenantHttpService = exports.EntityHttpService = exports.DataConnectionSettings = exports.DataConnection = exports.DataSourceType = exports.DataSource = exports.EventDefinition = exports.Dashboard = exports.Group = exports.ConfigurationEntity = exports.Field = void 0;
+exports.EntityNameService = exports.TenantHttpService = exports.EntityHttpService = exports.DataConnectionSettings = exports.DataConnection = exports.DataSourceType = exports.DataSource = exports.EventDefinition = exports.Dashboard = exports.Group = exports.EntityType = exports.EntityHttpEndpoints = exports.EntityIcons = exports.ConfigurationEntity = exports.Field = void 0;
 var configuration_entity_model_1 = require("./models/entities/configuration-entity.model");
 Object.defineProperty(exports, "Field", { enumerable: true, get: function () { return configuration_entity_model_1.Field; } });
 var configuration_entity_model_2 = require("./models/entities/configuration-entity.model");
 Object.defineProperty(exports, "ConfigurationEntity", { enumerable: true, get: function () { return configuration_entity_model_2.ConfigurationEntity; } });
+var configuration_entity_model_3 = require("./models/entities/configuration-entity.model");
+Object.defineProperty(exports, "EntityIcons", { enumerable: true, get: function () { return configuration_entity_model_3.EntityIcons; } });
+var configuration_entity_model_4 = require("./models/entities/configuration-entity.model");
+Object.defineProperty(exports, "EntityHttpEndpoints", { enumerable: true, get: function () { return configuration_entity_model_4.EntityHttpEndpoints; } });
+var configuration_entity_model_5 = require("./models/entities/configuration-entity.model");
+Object.defineProperty(exports, "EntityType", { enumerable: true, get: function () { return configuration_entity_model_5.EntityType; } });
 var group_model_1 = require("./models/entities/group.model");
 Object.defineProperty(exports, "Group", { enumerable: true, get: function () { return group_model_1.Group; } });
 var dashboard_model_1 = require("./models/entities/dashboard.model");

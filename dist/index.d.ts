@@ -1,5 +1,8 @@
 export { Field } from './models/entities/configuration-entity.model';
 export { ConfigurationEntity } from './models/entities/configuration-entity.model';
+export { EntityIcons } from './models/entities/configuration-entity.model';
+export { EntityHttpEndpoints } from './models/entities/configuration-entity.model';
+export { EntityType } from './models/entities/configuration-entity.model';
 export { Group } from './models/entities/group.model';
 export { Dashboard } from './models/entities/dashboard.model';
 export { EventDefinition } from './models/entities/event-definition.model';
