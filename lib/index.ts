@@ -18,5 +18,7 @@ export { UserProfile } from './models/userprofile.model';
 // Service exports
 
 export { EntityHttpService } from './services/entity-http.service';
+export { PaginationResponse } from './services/entity-http.service';
+
 export { TenantHttpService } from './services/tenant-http.service';
 export { EntityNameService } from './services/entity-name.service';
