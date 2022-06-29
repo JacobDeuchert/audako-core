@@ -12,6 +12,8 @@ export { DataSource } from './models/entities/data-source.model';
 export { DataSourceType } from './models/entities/data-source.model';
 export { DataConnection } from './models/entities/data-connection.model';
 export { DataConnectionSettings } from './models/entities/data-connection.model';
+export { TenantView } from './models/tenant-view.model';
+export { UserProfile } from './models/userprofile.model';
 
 // Service exports
 

@@ -1,7 +1,7 @@
 "use strict";
 // Model exports
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EntityNameService = exports.TenantHttpService = exports.EntityHttpService = exports.DataConnectionSettings = exports.DataConnection = exports.DataSourceType = exports.DataSource = exports.EventDefinition = exports.Dashboard = exports.Group = exports.EntityType = exports.EntityHttpEndpoints = exports.EntityIcons = exports.ConfigurationEntity = exports.Field = void 0;
+exports.EntityNameService = exports.TenantHttpService = exports.EntityHttpService = exports.UserProfile = exports.TenantView = exports.DataConnectionSettings = exports.DataConnection = exports.DataSourceType = exports.DataSource = exports.EventDefinition = exports.Dashboard = exports.Group = exports.EntityType = exports.EntityHttpEndpoints = exports.EntityIcons = exports.ConfigurationEntity = exports.Field = void 0;
 var configuration_entity_model_1 = require("./models/entities/configuration-entity.model");
 Object.defineProperty(exports, "Field", { enumerable: true, get: function () { return configuration_entity_model_1.Field; } });
 var configuration_entity_model_2 = require("./models/entities/configuration-entity.model");
@@ -26,6 +26,10 @@ var data_connection_model_1 = require("./models/entities/data-connection.model")
 Object.defineProperty(exports, "DataConnection", { enumerable: true, get: function () { return data_connection_model_1.DataConnection; } });
 var data_connection_model_2 = require("./models/entities/data-connection.model");
 Object.defineProperty(exports, "DataConnectionSettings", { enumerable: true, get: function () { return data_connection_model_2.DataConnectionSettings; } });
+var tenant_view_model_1 = require("./models/tenant-view.model");
+Object.defineProperty(exports, "TenantView", { enumerable: true, get: function () { return tenant_view_model_1.TenantView; } });
+var userprofile_model_1 = require("./models/userprofile.model");
+Object.defineProperty(exports, "UserProfile", { enumerable: true, get: function () { return userprofile_model_1.UserProfile; } });
 // Service exports
 var entity_http_service_1 = require("./services/entity-http.service");
 Object.defineProperty(exports, "EntityHttpService", { enumerable: true, get: function () { return entity_http_service_1.EntityHttpService; } });
