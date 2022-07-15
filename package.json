@@ -14,7 +14,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prettier": "npx prettier --write .",
-    "build": "rm -r dist || tsc -p ./lib/tsconfig.json && tsc -p ./lib/tsconfig-cjs.json"
+    "build": "rm -rf dist && tsc -p ./lib/tsconfig.json && tsc -p ./lib/tsconfig-cjs.json"
   },
   "author": "Jacob Deuchert",
   "license": "MIT",
