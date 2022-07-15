@@ -1,15 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DataConnectionSettings = exports.DataConnection = exports.DataSourceType = void 0;
-const configuration_entity_model_1 = require("./configuration-entity.model");
-var DataSourceType;
+import { ConfigurationEntity } from './configuration-entity.model';
+export var DataSourceType;
 (function (DataSourceType) {
     DataSourceType["S7"] = "S7";
     DataSourceType["ModBus"] = "ModBus";
-})(DataSourceType = exports.DataSourceType || (exports.DataSourceType = {}));
-class DataConnection extends configuration_entity_model_1.ConfigurationEntity {
+})(DataSourceType || (DataSourceType = {}));
+export class DataConnection extends ConfigurationEntity {
 }
-exports.DataConnection = DataConnection;
-class DataConnectionSettings {
+export class DataConnectionSettings {
 }
-exports.DataConnectionSettings = DataConnectionSettings;

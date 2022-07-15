@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,21 +7,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserProfileHttpService = void 0;
-const axios_1 = __importDefault(require("axios"));
-const base_http_service_1 = require("./base-http.service");
-class UserProfileHttpService extends base_http_service_1.BaseHttpService {
+import axios from 'axios';
+import { BaseHttpService } from './base-http.service';
+export class UserProfileHttpService extends BaseHttpService {
     constructor(httpConfig, token) {
         super(httpConfig, token);
     }
     getUserProfile() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const userProfileResponse = yield axios_1.default.get(`${this.getStructureUrl()}/userprofile`, {
+                const userProfileResponse = yield axios.get(`${this.getStructureUrl()}/userprofile`, {
                     headers: this.getAuthorizationHeader()
                 });
                 if (userProfileResponse.status == 200) {
@@ -35,4 +29,3 @@ class UserProfileHttpService extends base_http_service_1.BaseHttpService {
         });
     }
 }
-exports.UserProfileHttpService = UserProfileHttpService;

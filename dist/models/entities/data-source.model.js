@@ -1,12 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DataSource = exports.DataSourceType = void 0;
-const configuration_entity_model_1 = require("./configuration-entity.model");
-var DataSourceType;
+import { ConfigurationEntity } from './configuration-entity.model';
+export var DataSourceType;
 (function (DataSourceType) {
     DataSourceType["EdgeGateway"] = "EdgeGateway";
     DataSourceType["DataAdapter"] = "DataAdapter";
-})(DataSourceType = exports.DataSourceType || (exports.DataSourceType = {}));
-class DataSource extends configuration_entity_model_1.ConfigurationEntity {
+})(DataSourceType || (DataSourceType = {}));
+export class DataSource extends ConfigurationEntity {
 }
-exports.DataSource = DataSource;

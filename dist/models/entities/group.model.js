@@ -1,7 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Group = void 0;
-const configuration_entity_model_1 = require("./configuration-entity.model");
-class Group extends configuration_entity_model_1.ConfigurationEntity {
+import { ConfigurationEntity } from './configuration-entity.model';
+export class Group extends ConfigurationEntity {
 }
-exports.Group = Group;
