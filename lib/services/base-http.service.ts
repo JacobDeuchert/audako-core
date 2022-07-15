@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Observable } from 'rxjs';
 import { HttpConfig } from '../models/http-config.model';
 
@@ -20,5 +21,11 @@ export abstract class BaseHttpService {
 
   protected getStructureUrl(): string {
     return `${this.httpConfig.Services.BaseUri}${this.httpConfig.Services.Structure}`;
+  }
+
+  public static requestHttpConfig(systemUrl: string): Promise<HttpConfig> {
+    return axios
+      .get<HttpConfig>(`${systemUrl}/assets/conf/application.config`)
+      .then((response) => response.data); 
   }
 }

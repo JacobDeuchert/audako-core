@@ -16,7 +16,7 @@ export { TenantView } from './models/tenant-view.model';
 export { UserProfile } from './models/user-profile.model';
 
 // Service exports
-
+export { BaseHttpService } from './services/base-http.service';
 export { EntityHttpService } from './services/entity-http.service';
 export { PaginationResponse } from './services/entity-http.service';
 

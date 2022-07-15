@@ -1,6 +1,9 @@
-import { ConfigurationEntity, Field } from 'audako-core';
+import {ConfigurationEntity, Field, BaseHttpService} from 'audako-core';
 
 const entity: ConfigurationEntity = new ConfigurationEntity();
 entity.Name = new Field<string>('test');
 
-console.log(entity);
+BaseHttpService.requestHttpConfig('https://water.audako.net').then(config => {
+  console.log(config);
+});
+

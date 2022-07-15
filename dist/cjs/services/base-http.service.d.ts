@@ -8,4 +8,5 @@ export declare abstract class BaseHttpService {
         [p: string]: string;
     };
     protected getStructureUrl(): string;
+    static requestHttpConfig(systemUrl: string): Promise<HttpConfig>;
 }

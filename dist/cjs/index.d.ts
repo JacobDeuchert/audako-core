@@ -1,4 +1,3 @@
-// Model exports
 export { Field } from './models/entities/configuration-entity.model';
 export { ConfigurationEntity } from './models/entities/configuration-entity.model';
 export { EntityIcons } from './models/entities/configuration-entity.model';
@@ -13,8 +12,9 @@ export { DataConnection } from './models/entities/data-connection.model';
 export { DataConnectionSettings } from './models/entities/data-connection.model';
 export { TenantView } from './models/tenant-view.model';
 export { UserProfile } from './models/user-profile.model';
-// Service exports
+export { BaseHttpService } from './services/base-http.service';
 export { EntityHttpService } from './services/entity-http.service';
+export { PaginationResponse } from './services/entity-http.service';
 export { TenantHttpService } from './services/tenant-http.service';
 export { EntityNameService } from './services/entity-name.service';
 export { UserProfileHttpService } from './services/user-profile-http.service';
