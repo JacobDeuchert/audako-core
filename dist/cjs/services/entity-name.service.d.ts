@@ -1,5 +1,5 @@
-import { EntityType } from '../models/entities/configuration-entity.model';
-import { EntityHttpService } from './entity-http.service';
+import { EntityType } from '../models/entities/configuration-entity.model.js';
+import { EntityHttpService } from './entity-http.service.js';
 export declare class EntityNameService {
     private httpService;
     private _nameCache;

@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserProfileHttpService = void 0;
 const axios_1 = __importDefault(require("axios"));
-const base_http_service_1 = require("./base-http.service");
-class UserProfileHttpService extends base_http_service_1.BaseHttpService {
+const base_http_service_js_1 = require("./base-http.service.js");
+class UserProfileHttpService extends base_http_service_js_1.BaseHttpService {
     constructor(httpConfig, token) {
         super(httpConfig, token);
     }

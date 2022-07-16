@@ -14,9 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntityHttpService = void 0;
 const axios_1 = __importDefault(require("axios"));
-const configuration_entity_model_1 = require("../models/entities/configuration-entity.model");
-const base_http_service_1 = require("./base-http.service");
-class EntityHttpService extends base_http_service_1.BaseHttpService {
+const configuration_entity_model_js_1 = require("../models/entities/configuration-entity.model.js");
+const base_http_service_js_1 = require("./base-http.service.js");
+class EntityHttpService extends base_http_service_js_1.BaseHttpService {
     constructor(httpConfig, accessToken) {
         super(httpConfig, accessToken);
     }
@@ -63,13 +63,13 @@ class EntityHttpService extends base_http_service_1.BaseHttpService {
     }
     resolvePathName(idPath) {
         return __awaiter(this, void 0, void 0, function* () {
-            const pathGroups = yield this.queryConfiguration(configuration_entity_model_1.EntityType.Group, { Id: { $in: idPath } });
+            const pathGroups = yield this.queryConfiguration(configuration_entity_model_js_1.EntityType.Group, { Id: { $in: idPath } });
             return idPath.map((id) => { var _a, _b; return (_b = (_a = pathGroups.data.find((x) => x.Id === id)) === null || _a === void 0 ? void 0 : _a.Name) !== null && _b !== void 0 ? _b : id; }).join('/');
         });
     }
     uploadProcessImage(id, svg, name = 'process-image.svg') {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = `${this._createBaseUrlByType(configuration_entity_model_1.EntityType.ProcessImage)}/${id}/file/image`;
+            const url = `${this._createBaseUrlByType(configuration_entity_model_js_1.EntityType.ProcessImage)}/${id}/file/image`;
             const headers = this.getAuthorizationHeader();
             const blob = new Blob([svg], { type: 'image/svg+xml' });
             const formData = new FormData();
@@ -78,7 +78,7 @@ class EntityHttpService extends base_http_service_1.BaseHttpService {
         });
     }
     _createBaseUrlByType(entityType) {
-        return `${this.getStructureUrl}/${configuration_entity_model_1.EntityHttpEndpoints[entityType]}`;
+        return `${this.getStructureUrl}/${configuration_entity_model_js_1.EntityHttpEndpoints[entityType]}`;
     }
 }
 exports.EntityHttpService = EntityHttpService;

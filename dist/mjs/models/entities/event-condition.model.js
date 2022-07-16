@@ -1,4 +1,4 @@
-import { ConfigurationEntity } from './configuration-entity.model';
+import { ConfigurationEntity } from './configuration-entity.model.js';
 export class EventCondition extends ConfigurationEntity {
 }
 export var EventConditionSettingsType;

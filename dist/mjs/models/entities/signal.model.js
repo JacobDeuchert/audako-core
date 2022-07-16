@@ -1,4 +1,4 @@
-import { ConfigurationEntity } from './configuration-entity.model';
+import { ConfigurationEntity } from './configuration-entity.model.js';
 export var SignalType;
 (function (SignalType) {
     SignalType["AnalogInput"] = "AnalogInput";

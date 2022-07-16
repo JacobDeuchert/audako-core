@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { catchError, combineLatest, firstValueFrom, from, map, of, shareReplay } from 'rxjs';
-import { EntityType } from '../models/entities/configuration-entity.model';
+import { EntityType } from '../models/entities/configuration-entity.model.js';
 export class EntityNameService {
     constructor(httpService) {
         this.httpService = httpService;

@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { HttpConfig } from '../models/http-config.model';
+import { HttpConfig } from '../models/http-config.model.js';
 export declare abstract class BaseHttpService {
     protected httpConfig: HttpConfig;
     protected accessToken: string;

@@ -1,4 +1,4 @@
-import { ConfigurationEntity, Field } from './configuration-entity.model';
+import { ConfigurationEntity, Field } from './configuration-entity.model.js';
 export declare enum SignalType {
     AnalogInput = "AnalogInput",
     AnalogInOut = "AnalogInOut",

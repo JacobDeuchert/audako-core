@@ -8,8 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import axios from 'axios';
-import { EntityHttpEndpoints, EntityType } from '../models/entities/configuration-entity.model';
-import { BaseHttpService } from './base-http.service';
+import { EntityHttpEndpoints, EntityType } from '../models/entities/configuration-entity.model.js';
+import { BaseHttpService } from './base-http.service.js';
 export class EntityHttpService extends BaseHttpService {
     constructor(httpConfig, accessToken) {
         super(httpConfig, accessToken);

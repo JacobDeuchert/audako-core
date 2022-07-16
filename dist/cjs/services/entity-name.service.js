@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntityNameService = void 0;
 const rxjs_1 = require("rxjs");
-const configuration_entity_model_1 = require("../models/entities/configuration-entity.model");
+const configuration_entity_model_js_1 = require("../models/entities/configuration-entity.model.js");
 class EntityNameService {
     constructor(httpService) {
         this.httpService = httpService;
@@ -32,7 +32,7 @@ class EntityNameService {
             if (idPath.length === 0) {
                 return '';
             }
-            return (0, rxjs_1.firstValueFrom)((0, rxjs_1.combineLatest)(idPath.map((id) => this.resolveName(configuration_entity_model_1.EntityType.Group, id))).pipe((0, rxjs_1.map)((names) => names.join(' / '))));
+            return (0, rxjs_1.firstValueFrom)((0, rxjs_1.combineLatest)(idPath.map((id) => this.resolveName(configuration_entity_model_js_1.EntityType.Group, id))).pipe((0, rxjs_1.map)((names) => names.join(' / '))));
         });
     }
     resolveName(entityType, id) {

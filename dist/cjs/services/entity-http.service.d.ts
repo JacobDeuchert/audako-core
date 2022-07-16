@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
-import { ConfigurationEntity, EntityType } from '../models/entities/configuration-entity.model';
-import { HttpConfig } from '../models/http-config.model';
-import { BaseHttpService } from './base-http.service';
+import { ConfigurationEntity, EntityType } from '../models/entities/configuration-entity.model.js';
+import { HttpConfig } from '../models/http-config.model.js';
+import { BaseHttpService } from './base-http.service.js';
 export declare type PaginationResponse<T> = {
     data: T[];
     total: number;
