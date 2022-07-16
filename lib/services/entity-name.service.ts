@@ -1,6 +1,6 @@
 import { catchError, combineLatest, firstValueFrom, from, map, Observable, of, shareReplay } from 'rxjs';
-import { EntityType } from '../models/entities/configuration-entity.model';
-import { EntityHttpService } from './entity-http.service';
+import { EntityType } from '../models/entities/configuration-entity.model.js';
+import { EntityHttpService } from './entity-http.service.js';
 
 export class EntityNameService {
   private _nameCache: { [p: string]: Observable<string> };

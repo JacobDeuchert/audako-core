@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { HttpConfig } from '../models/http-config.model';
-import { UserProfile } from '../models/user-profile.model';
-import { BaseHttpService } from './base-http.service';
+import { HttpConfig } from '../models/http-config.model.js';
+import { UserProfile } from '../models/user-profile.model.js';
+import { BaseHttpService } from './base-http.service.js';
 
 export class UserProfileHttpService extends BaseHttpService {
 

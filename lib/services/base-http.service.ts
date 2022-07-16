@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Observable } from 'rxjs';
-import { HttpConfig } from '../models/http-config.model';
+import { HttpConfig } from '../models/http-config.model.js';
 
 export abstract class BaseHttpService {
   protected accessToken: string;

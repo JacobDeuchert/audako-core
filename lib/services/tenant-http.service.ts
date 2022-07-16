@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { Observable } from 'rxjs';
-import { HttpConfig } from '../models/http-config.model';
-import { TenantView } from '../models/tenant-view.model';
-import { BaseHttpService } from './base-http.service';
+import { HttpConfig } from '../models/http-config.model.js';
+import { TenantView } from '../models/tenant-view.model.js';
+import { BaseHttpService } from './base-http.service.js';
 
 export class TenantHttpService extends BaseHttpService {
   constructor(httpConfig: HttpConfig, accessToken: string | Observable<string>) {
