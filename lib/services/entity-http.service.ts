@@ -87,6 +87,6 @@ export class EntityHttpService extends BaseHttpService {
   }
 
   private _createBaseUrlByType(entityType: EntityType): string {
-    return `${this.getStructureUrl}/${EntityHttpEndpoints[entityType]}`;
+    return `${this.getStructureUrl()}${EntityHttpEndpoints[entityType]}`;
   }
 }
