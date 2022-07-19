@@ -1,6 +1,6 @@
 {
   "name": "audako-core",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Core Services, Models and Functions for the audako platform",
   "main": "./dist/cjs/index.js",
   "module": "./dist/mjs/index.js",
