@@ -1,7 +1,7 @@
 "use strict";
 // Model exports
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserProfileHttpService = exports.EntityNameService = exports.TenantHttpService = exports.EntityHttpService = exports.BaseHttpService = exports.UserProfile = exports.TenantView = exports.DataConnectionSettings = exports.DataConnection = exports.DataSourceType = exports.DataSource = exports.EventDefinition = exports.Dashboard = exports.Group = exports.EntityType = exports.EntityHttpEndpoints = exports.EntityIcons = exports.ConfigurationEntity = exports.Field = void 0;
+exports.LiveValueService = exports.DataSourceHttpService = exports.UserProfileHttpService = exports.EntityNameService = exports.TenantHttpService = exports.EntityHttpService = exports.BaseHttpService = exports.UserProfile = exports.TenantView = exports.DataConnectionSettings = exports.DataConnection = exports.DataSourceType = exports.DataSource = exports.EventDefinition = exports.Dashboard = exports.Group = exports.EntityType = exports.EntityHttpEndpoints = exports.EntityIcons = exports.ConfigurationEntity = exports.Field = void 0;
 var configuration_entity_model_js_1 = require("./models/entities/configuration-entity.model.js");
 Object.defineProperty(exports, "Field", { enumerable: true, get: function () { return configuration_entity_model_js_1.Field; } });
 var configuration_entity_model_js_2 = require("./models/entities/configuration-entity.model.js");
@@ -41,3 +41,7 @@ var entity_name_service_js_1 = require("./services/entity-name.service.js");
 Object.defineProperty(exports, "EntityNameService", { enumerable: true, get: function () { return entity_name_service_js_1.EntityNameService; } });
 var user_profile_http_service_js_1 = require("./services/user-profile-http.service.js");
 Object.defineProperty(exports, "UserProfileHttpService", { enumerable: true, get: function () { return user_profile_http_service_js_1.UserProfileHttpService; } });
+var data_source_http_service_js_1 = require("./services/data-source-http.service.js");
+Object.defineProperty(exports, "DataSourceHttpService", { enumerable: true, get: function () { return data_source_http_service_js_1.DataSourceHttpService; } });
+var live_value_service_js_1 = require("./services/live-value.service.js");
+Object.defineProperty(exports, "LiveValueService", { enumerable: true, get: function () { return live_value_service_js_1.LiveValueService; } });
