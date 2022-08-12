@@ -17,11 +17,11 @@ export { UserProfile } from './models/user-profile.model.js';
 
 // Service exports
 export { BaseHttpService } from './services/base-http.service.js';
-export { EntityHttpService } from './services/entity-http.service.js';
-export { PaginationResponse } from './services/entity-http.service.js';
+export { EntityHttpService, PaginationResponse } from './services/entity-http.service.js';
 
 export { TenantHttpService } from './services/tenant-http.service.js';
 export { EntityNameService } from './services/entity-name.service.js';
 export { UserProfileHttpService } from './services/user-profile-http.service.js';
 export { DataSourceHttpService } from './services/data-source-http.service.js';
-export { LiveValueService } from './services/live-value.service.js';
+export { LiveValueService, LiveHubEvent, LiveHubMethod, LivePackage, SignalLiveValue, SignalOffsetValue, SubscriptionPrefix, TimestampPackage} from './services/live-value.service.js';
+
