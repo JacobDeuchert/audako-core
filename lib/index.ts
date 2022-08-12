@@ -14,6 +14,7 @@ export { DataConnection } from './models/entities/data-connection.model.js';
 export { DataConnectionSettings } from './models/entities/data-connection.model.js';
 export { TenantView } from './models/tenant-view.model.js';
 export { UserProfile } from './models/user-profile.model.js';
+export { Signal } from './models/entities/signal.model.js';
 
 // Service exports
 export { BaseHttpService } from './services/base-http.service.js';
