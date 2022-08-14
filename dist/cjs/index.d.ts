@@ -13,6 +13,7 @@ export { DataConnectionSettings } from './models/entities/data-connection.model.
 export { TenantView } from './models/tenant-view.model.js';
 export { UserProfile } from './models/user-profile.model.js';
 export { Signal, SignalType } from './models/entities/signal.model.js';
+export { HttpConfig } from './models/http-config.model.js';
 export { BaseHttpService } from './services/base-http.service.js';
 export { EntityHttpService, PaginationResponse } from './services/entity-http.service.js';
 export { TenantHttpService } from './services/tenant-http.service.js';
