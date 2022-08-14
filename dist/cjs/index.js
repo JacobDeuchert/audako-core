@@ -1,7 +1,7 @@
 "use strict";
 // Model exports
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SubscriptionPrefix = exports.LiveHubMethod = exports.LiveHubEvent = exports.LiveValueService = exports.DataSourceHttpService = exports.UserProfileHttpService = exports.EntityNameService = exports.TenantHttpService = exports.EntityHttpService = exports.BaseHttpService = exports.SignalType = exports.Signal = exports.UserProfile = exports.TenantView = exports.DataConnectionSettings = exports.DataConnection = exports.DataSourceType = exports.DataSource = exports.EventCondition = exports.EventDefinition = exports.Dashboard = exports.Group = exports.EntityType = exports.EntityHttpEndpoints = exports.EntityIcons = exports.ConfigurationEntity = exports.Field = void 0;
+exports.SubscriptionPrefix = exports.LiveHubMethod = exports.LiveHubEvent = exports.LiveValueService = exports.DataSourceHttpService = exports.UserProfileHttpService = exports.EntityNameService = exports.TenantHttpService = exports.EntityHttpService = exports.BaseHttpService = exports.SignalSettings = exports.SignalDigitalSettings = exports.SignalCounterSettings = exports.SignalAnalogSettings = exports.SignalType = exports.Signal = exports.UserProfile = exports.TenantView = exports.DataConnectionSettings = exports.DataConnection = exports.DataSourceType = exports.DataSource = exports.EventCondition = exports.EventDefinition = exports.Dashboard = exports.Group = exports.EntityType = exports.EntityHttpEndpoints = exports.EntityIcons = exports.ConfigurationEntity = exports.Field = void 0;
 var configuration_entity_model_js_1 = require("./models/entities/configuration-entity.model.js");
 Object.defineProperty(exports, "Field", { enumerable: true, get: function () { return configuration_entity_model_js_1.Field; } });
 var configuration_entity_model_js_2 = require("./models/entities/configuration-entity.model.js");
@@ -35,6 +35,10 @@ Object.defineProperty(exports, "UserProfile", { enumerable: true, get: function 
 var signal_model_js_1 = require("./models/entities/signal.model.js");
 Object.defineProperty(exports, "Signal", { enumerable: true, get: function () { return signal_model_js_1.Signal; } });
 Object.defineProperty(exports, "SignalType", { enumerable: true, get: function () { return signal_model_js_1.SignalType; } });
+Object.defineProperty(exports, "SignalAnalogSettings", { enumerable: true, get: function () { return signal_model_js_1.SignalAnalogSettings; } });
+Object.defineProperty(exports, "SignalCounterSettings", { enumerable: true, get: function () { return signal_model_js_1.SignalCounterSettings; } });
+Object.defineProperty(exports, "SignalDigitalSettings", { enumerable: true, get: function () { return signal_model_js_1.SignalDigitalSettings; } });
+Object.defineProperty(exports, "SignalSettings", { enumerable: true, get: function () { return signal_model_js_1.SignalSettings; } });
 // Service exports
 var base_http_service_js_1 = require("./services/base-http.service.js");
 Object.defineProperty(exports, "BaseHttpService", { enumerable: true, get: function () { return base_http_service_js_1.BaseHttpService; } });
