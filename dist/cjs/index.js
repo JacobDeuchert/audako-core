@@ -1,7 +1,7 @@
 "use strict";
 // Model exports
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SubscriptionPrefix = exports.LiveHubMethod = exports.LiveHubEvent = exports.LiveValueService = exports.DataSourceHttpService = exports.UserProfileHttpService = exports.EntityNameService = exports.TenantHttpService = exports.EntityHttpService = exports.BaseHttpService = exports.SignalSettings = exports.SignalDigitalSettings = exports.SignalCounterSettings = exports.SignalAnalogSettings = exports.SignalType = exports.Signal = exports.UserProfile = exports.TenantView = exports.DataConnectionSettings = exports.DataConnection = exports.DataSourceType = exports.DataSource = exports.EventCondition = exports.EventDefinition = exports.Dashboard = exports.Group = exports.EntityType = exports.EntityHttpEndpoints = exports.EntityIcons = exports.ConfigurationEntity = exports.Field = void 0;
+exports.SubscriptionPrefix = exports.LiveHubMethod = exports.LiveHubEvent = exports.LiveValueService = exports.DataSourceHttpService = exports.UserProfileHttpService = exports.EntityNameService = exports.TenantHttpService = exports.EntityHttpService = exports.BaseHttpService = exports.SignalSettings = exports.SignalDigitalSettings = exports.SignalCounterSettings = exports.SignalAnalogSettings = exports.SignalType = exports.Signal = exports.UserProfile = exports.TenantView = exports.DataConnectionSettings = exports.DataConnection = exports.DataSourceType = exports.DataSource = exports.ConditionSettings = exports.SignalConditionSettings = exports.EventConditionSettingsType = exports.DataConnectionFailureConditionSettings = exports.EventCondition = exports.EventDefinition = exports.Dashboard = exports.Group = exports.EntityType = exports.EntityHttpEndpoints = exports.EntityIcons = exports.ConfigurationEntity = exports.Field = void 0;
 var configuration_entity_model_js_1 = require("./models/entities/configuration-entity.model.js");
 Object.defineProperty(exports, "Field", { enumerable: true, get: function () { return configuration_entity_model_js_1.Field; } });
 var configuration_entity_model_js_2 = require("./models/entities/configuration-entity.model.js");
@@ -20,6 +20,10 @@ var event_definition_model_js_1 = require("./models/entities/event-definition.mo
 Object.defineProperty(exports, "EventDefinition", { enumerable: true, get: function () { return event_definition_model_js_1.EventDefinition; } });
 var event_condition_model_js_1 = require("./models/entities/event-condition.model.js");
 Object.defineProperty(exports, "EventCondition", { enumerable: true, get: function () { return event_condition_model_js_1.EventCondition; } });
+Object.defineProperty(exports, "DataConnectionFailureConditionSettings", { enumerable: true, get: function () { return event_condition_model_js_1.DataConnectionFailureConditionSettings; } });
+Object.defineProperty(exports, "EventConditionSettingsType", { enumerable: true, get: function () { return event_condition_model_js_1.EventConditionSettingsType; } });
+Object.defineProperty(exports, "SignalConditionSettings", { enumerable: true, get: function () { return event_condition_model_js_1.SignalConditionSettings; } });
+Object.defineProperty(exports, "ConditionSettings", { enumerable: true, get: function () { return event_condition_model_js_1.ConditionSettings; } });
 var data_source_model_js_1 = require("./models/entities/data-source.model.js");
 Object.defineProperty(exports, "DataSource", { enumerable: true, get: function () { return data_source_model_js_1.DataSource; } });
 var data_source_model_js_2 = require("./models/entities/data-source.model.js");

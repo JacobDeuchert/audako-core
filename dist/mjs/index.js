@@ -7,7 +7,7 @@ export { EntityType } from './models/entities/configuration-entity.model.js';
 export { Group } from './models/entities/group.model.js';
 export { Dashboard } from './models/entities/dashboard.model.js';
 export { EventDefinition } from './models/entities/event-definition.model.js';
-export { EventCondition } from './models/entities/event-condition.model.js';
+export { EventCondition, DataConnectionFailureConditionSettings, EventConditionSettingsType, SignalConditionSettings, ConditionSettings } from './models/entities/event-condition.model.js';
 export { DataSource } from './models/entities/data-source.model.js';
 export { DataSourceType } from './models/entities/data-source.model.js';
 export { DataConnection } from './models/entities/data-connection.model.js';
