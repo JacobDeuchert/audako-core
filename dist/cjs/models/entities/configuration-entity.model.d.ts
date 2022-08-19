@@ -1,6 +1,7 @@
 export declare enum EntityType {
     Group = "Group",
     Signal = "Signal",
+    Formula = "Formula",
     Dashboard = "Dashboard",
     DashboardTab = "DashboardTab",
     DataConnection = "DataConnection",

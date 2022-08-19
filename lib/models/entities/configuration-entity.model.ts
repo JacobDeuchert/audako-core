@@ -1,6 +1,7 @@
 export enum EntityType {
   Group = 'Group',
   Signal = 'Signal',
+  Formula = 'Formula',
   Dashboard = 'Dashboard',
   DashboardTab = 'DashboardTab',
   DataConnection = 'DataConnection',
@@ -8,7 +9,7 @@ export enum EntityType {
   EventCondition = 'EventCondition',
   EventDefinition = 'EventDefinition',
   EventCategory = 'EventCategory',
-  ProcessImage = 'ProcessImage',
+  ProcessImage = 'ProcessImage'
 }
 
 export const EntityIcons: { [p in EntityType]?: string } = {

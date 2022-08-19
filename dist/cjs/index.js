@@ -1,7 +1,7 @@
 "use strict";
 // Model exports
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SubscriptionPrefix = exports.LiveHubMethod = exports.LiveHubEvent = exports.LiveValueService = exports.DataSourceHttpService = exports.UserProfileHttpService = exports.EntityNameService = exports.TenantHttpService = exports.EntityHttpService = exports.BaseHttpService = exports.SignalSettings = exports.SignalDigitalSettings = exports.SignalCounterSettings = exports.SignalAnalogSettings = exports.SignalType = exports.Signal = exports.UserProfile = exports.TenantView = exports.DataConnectionSettings = exports.DataConnection = exports.DataSourceType = exports.DataSource = exports.ConditionSettings = exports.SignalConditionSettings = exports.EventConditionSettingsType = exports.DataConnectionFailureConditionSettings = exports.EventCondition = exports.EventDefinition = exports.Dashboard = exports.Group = exports.EntityType = exports.EntityHttpEndpoints = exports.EntityIcons = exports.ConfigurationEntity = exports.Field = void 0;
+exports.HistoricalValueService = exports.SubscriptionPrefix = exports.LiveHubMethod = exports.LiveHubEvent = exports.LiveValueService = exports.DataSourceHttpService = exports.UserProfileHttpService = exports.EntityNameService = exports.TenantHttpService = exports.EntityHttpService = exports.BaseHttpService = exports.CompressionInterval = exports.SignalSettings = exports.SignalDigitalSettings = exports.SignalCounterSettings = exports.SignalAnalogSettings = exports.SignalType = exports.Signal = exports.UserProfile = exports.TenantView = exports.DataConnectionSettings = exports.DataConnection = exports.DataSourceType = exports.DataSource = exports.ConditionSettings = exports.SignalConditionSettings = exports.EventConditionSettingsType = exports.DataConnectionFailureConditionSettings = exports.EventCondition = exports.EventDefinition = exports.Dashboard = exports.Group = exports.EntityType = exports.EntityHttpEndpoints = exports.EntityIcons = exports.ConfigurationEntity = exports.Field = void 0;
 var configuration_entity_model_js_1 = require("./models/entities/configuration-entity.model.js");
 Object.defineProperty(exports, "Field", { enumerable: true, get: function () { return configuration_entity_model_js_1.Field; } });
 var configuration_entity_model_js_2 = require("./models/entities/configuration-entity.model.js");
@@ -43,6 +43,8 @@ Object.defineProperty(exports, "SignalAnalogSettings", { enumerable: true, get: 
 Object.defineProperty(exports, "SignalCounterSettings", { enumerable: true, get: function () { return signal_model_js_1.SignalCounterSettings; } });
 Object.defineProperty(exports, "SignalDigitalSettings", { enumerable: true, get: function () { return signal_model_js_1.SignalDigitalSettings; } });
 Object.defineProperty(exports, "SignalSettings", { enumerable: true, get: function () { return signal_model_js_1.SignalSettings; } });
+var historical_value_model_js_1 = require("./models/historical-value.model.js");
+Object.defineProperty(exports, "CompressionInterval", { enumerable: true, get: function () { return historical_value_model_js_1.CompressionInterval; } });
 // Service exports
 var base_http_service_js_1 = require("./services/base-http.service.js");
 Object.defineProperty(exports, "BaseHttpService", { enumerable: true, get: function () { return base_http_service_js_1.BaseHttpService; } });
@@ -61,3 +63,5 @@ Object.defineProperty(exports, "LiveValueService", { enumerable: true, get: func
 Object.defineProperty(exports, "LiveHubEvent", { enumerable: true, get: function () { return live_value_service_js_1.LiveHubEvent; } });
 Object.defineProperty(exports, "LiveHubMethod", { enumerable: true, get: function () { return live_value_service_js_1.LiveHubMethod; } });
 Object.defineProperty(exports, "SubscriptionPrefix", { enumerable: true, get: function () { return live_value_service_js_1.SubscriptionPrefix; } });
+var historical_value_service_js_1 = require("./services/historical-value.service.js");
+Object.defineProperty(exports, "HistoricalValueService", { enumerable: true, get: function () { return historical_value_service_js_1.HistoricalValueService; } });

@@ -2,6 +2,7 @@ export var EntityType;
 (function (EntityType) {
     EntityType["Group"] = "Group";
     EntityType["Signal"] = "Signal";
+    EntityType["Formula"] = "Formula";
     EntityType["Dashboard"] = "Dashboard";
     EntityType["DashboardTab"] = "DashboardTab";
     EntityType["DataConnection"] = "DataConnection";
