@@ -5,12 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaseHttpService = void 0;
 const axios_1 = __importDefault(require("axios"));
-const rxjs_1 = require("rxjs");
+const promise_utils_js_1 = require("../utils/promise-utils.js");
 class BaseHttpService {
     constructor(httpConfig, accessToken) {
         this.httpConfig = httpConfig;
-        if (accessToken instanceof rxjs_1.Observable) {
-            accessToken.subscribe((token) => (this.accessToken = token));
+        if (promise_utils_js_1.PromiseUtils.isPromise(accessToken)) {
+            accessToken.then((token) => (this.accessToken = token));
         }
         else {
             this.accessToken = accessToken;

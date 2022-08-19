@@ -37,7 +37,7 @@ export declare class LiveValueService implements Disposable {
     private _subscribeRequested;
     private _connectionEstablished;
     private _unsub;
-    constructor(httpConfig: HttpConfig, accessToken: string | Observable<string>);
+    constructor(httpConfig: HttpConfig, accessToken: string | Promise<string>);
     connect(): Observable<void>;
     connectWithUrl(hubUrl: string): Observable<void>;
     dispose(): void;

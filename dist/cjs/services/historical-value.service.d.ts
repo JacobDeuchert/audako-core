@@ -1,4 +1,3 @@
-import { Observable } from 'rxjs';
 import { EntityType } from '../models/entities/configuration-entity.model';
 import { CompressionInterval, HistoricalValueMap } from '../models/historical-value.model';
 import { HttpConfig } from '../models/http-config.model';
@@ -16,6 +15,6 @@ export declare type HistoricalValueRequest = {
     WithoutOffset?: boolean;
 };
 export declare class HistoricalValueService extends BaseHttpService {
-    constructor(httpConfig: HttpConfig, accessToken: string | Observable<string>);
+    constructor(httpConfig: HttpConfig, accessToken: string | Promise<string>);
     requestHistoricalValues(requests: HistoricalValueRequest[]): Promise<HistoricalValueMap[]>;
 }

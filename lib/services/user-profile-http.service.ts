@@ -5,7 +5,7 @@ import { BaseHttpService } from './base-http.service.js';
 
 export class UserProfileHttpService extends BaseHttpService {
 
-  constructor(httpConfig: HttpConfig, token: string) {
+  constructor(httpConfig: HttpConfig, token: string | Promise<string>) {
     super(httpConfig, token);
   }
   public async getUserProfile(): Promise<UserProfile> {

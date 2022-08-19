@@ -15,6 +15,7 @@ import {
 import * as signalR from '@microsoft/signalr';
 import { HttpConfig } from '../models/http-config.model';
 import { Disposable } from '../interfaces/disposable';
+import { PromiseUtils } from '../utils/promise-utils';
 export type LivePackage = {
   identifier: string;
   timestamp: Date;
@@ -63,7 +64,7 @@ export class LiveValueService implements Disposable {
 
   private _unsub: Subject<void>;
 
-  public constructor(private httpConfig: HttpConfig, private accessToken: string | Observable<string>) {
+  public constructor(private httpConfig: HttpConfig, private accessToken: string | Promise<string>) {
     this._unsub = new Subject<void>();
 
     this._connectionEstablished = new BehaviorSubject<boolean>(false);
@@ -199,7 +200,7 @@ export class LiveValueService implements Disposable {
 
   private _buildHubConnection(hubUrl: string): signalR.HubConnection {
     return new signalR.HubConnectionBuilder().withUrl(hubUrl, {
-      accessTokenFactory: () => isObservable(this.accessToken) ? firstValueFrom<string>(this.accessToken) : this.accessToken,
+      accessTokenFactory: () => this.accessToken,
     }).build();
   }
 }

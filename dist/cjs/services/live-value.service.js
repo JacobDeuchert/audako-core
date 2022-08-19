@@ -152,7 +152,7 @@ class LiveValueService {
     }
     _buildHubConnection(hubUrl) {
         return new signalR.HubConnectionBuilder().withUrl(hubUrl, {
-            accessTokenFactory: () => (0, rxjs_1.isObservable)(this.accessToken) ? (0, rxjs_1.firstValueFrom)(this.accessToken) : this.accessToken,
+            accessTokenFactory: () => this.accessToken,
         }).build();
     }
 }

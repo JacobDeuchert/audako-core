@@ -1,4 +1,4 @@
-import { auditTime, BehaviorSubject, concat, filter, firstValueFrom, isObservable, map, mapTo, of, Subject, takeUntil } from 'rxjs';
+import { auditTime, BehaviorSubject, concat, filter, map, mapTo, of, Subject, takeUntil } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
 export var LiveHubMethod;
 (function (LiveHubMethod) {
@@ -126,7 +126,7 @@ export class LiveValueService {
     }
     _buildHubConnection(hubUrl) {
         return new signalR.HubConnectionBuilder().withUrl(hubUrl, {
-            accessTokenFactory: () => isObservable(this.accessToken) ? firstValueFrom(this.accessToken) : this.accessToken,
+            accessTokenFactory: () => this.accessToken,
         }).build();
     }
 }

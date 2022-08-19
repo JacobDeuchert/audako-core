@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { Observable } from 'rxjs';
+import { PromiseUtils } from '../utils/promise-utils.js';
 export class BaseHttpService {
     constructor(httpConfig, accessToken) {
         this.httpConfig = httpConfig;
-        if (accessToken instanceof Observable) {
-            accessToken.subscribe((token) => (this.accessToken = token));
+        if (PromiseUtils.isPromise(accessToken)) {
+            accessToken.then((token) => (this.accessToken = token));
         }
         else {
             this.accessToken = accessToken;

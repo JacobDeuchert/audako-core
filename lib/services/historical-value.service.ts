@@ -23,7 +23,7 @@ export type HistoricalValueRequest = {
 }
 
 export class HistoricalValueService extends BaseHttpService {
-  constructor(httpConfig: HttpConfig, accessToken: string | Observable<string>) {
+  constructor(httpConfig: HttpConfig, accessToken: string | Promise<string>) {
     super(httpConfig, accessToken);
   }
 
