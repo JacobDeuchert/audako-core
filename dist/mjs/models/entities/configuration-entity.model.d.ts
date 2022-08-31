@@ -15,7 +15,7 @@ export declare const EntityIcons: {
     [p in EntityType]?: string;
 };
 export declare const EntityHttpEndpoints: {
-    [p in EntityType]?: string;
+    [p in EntityType]: string;
 };
 export declare class Field<T> {
     Value: T;

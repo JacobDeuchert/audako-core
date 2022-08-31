@@ -20,9 +20,10 @@ export const EntityIcons: { [p in EntityType]?: string } = {
   [EntityType.DataSource]: 'fas fa-server',
 };
 
-export const EntityHttpEndpoints: { [p in EntityType]?: string } = {
+export const EntityHttpEndpoints: { [p in EntityType]: string } = {
   Group: '/base/Group',
   Signal: '/daq/Signal',
+  Formula: '/daq/Formula',
   Dashboard: '/base/Dashboard',
   DashboardTab: '/base/DashboardTab',
   DataConnection: '/daq/DataConnection',

@@ -25,6 +25,7 @@ exports.EntityIcons = {
 exports.EntityHttpEndpoints = {
     Group: '/base/Group',
     Signal: '/daq/Signal',
+    Formula: '/daq/Formula',
     Dashboard: '/base/Dashboard',
     DashboardTab: '/base/DashboardTab',
     DataConnection: '/daq/DataConnection',
