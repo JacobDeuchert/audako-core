@@ -1,8 +1,6 @@
-import {ConfigurationEntity, Field, BaseHttpService, Group} from 'audako-core';
+import {ConfigurationEntity, Field, BaseHttpService, Group, EntityUtils, EntityType} from 'audako-core';
 
-const group: ConfigurationEntity = new Group();
-
-console.log(Object.keys(group));
+console.log(EntityUtils.getEntityPropertiesByType(EntityType.Signal));
 
 
 
