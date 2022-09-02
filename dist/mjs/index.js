@@ -16,6 +16,11 @@ export { TenantView } from './models/tenant-view.model.js';
 export { UserProfile } from './models/user-profile.model.js';
 export { Signal, SignalType, SignalAnalogSettings, SignalCounterSettings, SignalDigitalSettings, SignalSettings, } from './models/entities/signal.model.js';
 export { CompressionInterval } from './models/historical-value.model.js';
+export { DashboardTab } from './models/entities/dashboard-tab.model.js';
+export { EventCategory } from './models/entities/event-category.model.js';
+export { Formula } from './models/entities/formula.model.js';
+export { ProcessImage } from './models/entities/process-image.model.js';
+export { EntityTypeClassMapping } from './models/entity-type-class-mapping.js';
 // Service exports
 export { BaseHttpService } from './services/base-http.service.js';
 export { EntityHttpService } from './services/entity-http.service.js';

@@ -1,9 +1,9 @@
-import {ConfigurationEntity, Field, BaseHttpService} from 'audako-core';
+import {ConfigurationEntity, Field, BaseHttpService, Group} from 'audako-core';
 
-const entity: ConfigurationEntity = new ConfigurationEntity();
-entity.Name = new Field<string>('test');
+const group: ConfigurationEntity = new Group();
 
-BaseHttpService.requestHttpConfig('https://water.audako.net').then(config => {
-  console.log(config);
-});
+console.log(Object.keys(group));
+
+
+
 

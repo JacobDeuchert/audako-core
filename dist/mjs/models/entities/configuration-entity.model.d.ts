@@ -22,7 +22,7 @@ export declare class Field<T> {
     OOAttributes: string[];
     constructor(value?: T, ooAttributes?: string[]);
 }
-export declare class ConfigurationEntity {
+export declare abstract class ConfigurationEntity {
     Id: string;
     Path: string[];
     Name: Field<string>;
@@ -35,7 +35,7 @@ export declare class ConfigurationEntity {
     CreatedOn: Date;
     ChangedBy?: string;
     ChangedOn?: Date;
-    IsInstanceOf?: boolean;
+    IsInstanceOf?: string;
     IsTemplate: boolean;
     constructor(options?: Partial<ConfigurationEntity>);
 }

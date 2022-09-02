@@ -47,6 +47,15 @@ class ConfigurationEntity {
         this.Name = new Field();
         this.Description = new Field();
         this.AdditionalFields = {};
+        this.Id = null;
+        this.Path = [];
+        this.GroupId = null;
+        this.CreatedBy = null;
+        this.CreatedOn = new Date();
+        this.ChangedBy = null;
+        this.ChangedOn = null;
+        this.IsInstanceOf = null;
+        this.IsTemplate = false;
         Object.assign(this, options);
     }
 }

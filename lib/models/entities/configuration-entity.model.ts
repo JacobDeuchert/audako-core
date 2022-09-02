@@ -1,3 +1,5 @@
+import { Type } from '../../interfaces/type';
+
 export enum EntityType {
   Group = 'Group',
   Signal = 'Signal',
@@ -45,7 +47,7 @@ export class Field<T> {
   }
 }
 
-export class ConfigurationEntity {
+export abstract class ConfigurationEntity {
   public Id: string;
 
   public Path: string[];
@@ -63,13 +65,29 @@ export class ConfigurationEntity {
   public ChangedBy?: string;
   public ChangedOn?: Date;
 
-  public IsInstanceOf?: boolean;
+  public IsInstanceOf?: string;
   public IsTemplate: boolean;
 
   constructor(options?: Partial<ConfigurationEntity>) {
     this.Name = new Field<string>();
     this.Description = new Field<string>();
     this.AdditionalFields = {};
+
+    this.Id = null;
+    this.Path = [];
+    this.GroupId = null;
+
+    this.CreatedBy = null;
+    this.CreatedOn = new Date();
+    
+    this.ChangedBy = null;
+    this.ChangedOn = null;
+
+
+    this.IsInstanceOf = null;
+    this.IsTemplate = false;
+    
+
     Object.assign(this, options);
 
   }

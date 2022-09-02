@@ -1,7 +1,7 @@
 "use strict";
 // Model exports
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HistoricalValueService = exports.SubscriptionPrefix = exports.LiveHubMethod = exports.LiveHubEvent = exports.LiveValueService = exports.DataSourceHttpService = exports.UserProfileHttpService = exports.EntityNameService = exports.TenantHttpService = exports.EntityHttpService = exports.BaseHttpService = exports.CompressionInterval = exports.SignalSettings = exports.SignalDigitalSettings = exports.SignalCounterSettings = exports.SignalAnalogSettings = exports.SignalType = exports.Signal = exports.UserProfile = exports.TenantView = exports.DataConnectionSettings = exports.DataConnection = exports.DataSourceType = exports.DataSource = exports.ConditionSettings = exports.SignalConditionSettings = exports.EventConditionSettingsType = exports.DataConnectionFailureConditionSettings = exports.EventCondition = exports.EventDefinition = exports.Dashboard = exports.Group = exports.EntityType = exports.EntityHttpEndpoints = exports.EntityIcons = exports.ConfigurationEntity = exports.Field = void 0;
+exports.HistoricalValueService = exports.SubscriptionPrefix = exports.LiveHubMethod = exports.LiveHubEvent = exports.LiveValueService = exports.DataSourceHttpService = exports.UserProfileHttpService = exports.EntityNameService = exports.TenantHttpService = exports.EntityHttpService = exports.BaseHttpService = exports.EntityTypeClassMapping = exports.ProcessImage = exports.Formula = exports.EventCategory = exports.DashboardTab = exports.CompressionInterval = exports.SignalSettings = exports.SignalDigitalSettings = exports.SignalCounterSettings = exports.SignalAnalogSettings = exports.SignalType = exports.Signal = exports.UserProfile = exports.TenantView = exports.DataConnectionSettings = exports.DataConnection = exports.DataSourceType = exports.DataSource = exports.ConditionSettings = exports.SignalConditionSettings = exports.EventConditionSettingsType = exports.DataConnectionFailureConditionSettings = exports.EventCondition = exports.EventDefinition = exports.Dashboard = exports.Group = exports.EntityType = exports.EntityHttpEndpoints = exports.EntityIcons = exports.ConfigurationEntity = exports.Field = void 0;
 var configuration_entity_model_js_1 = require("./models/entities/configuration-entity.model.js");
 Object.defineProperty(exports, "Field", { enumerable: true, get: function () { return configuration_entity_model_js_1.Field; } });
 var configuration_entity_model_js_2 = require("./models/entities/configuration-entity.model.js");
@@ -45,6 +45,16 @@ Object.defineProperty(exports, "SignalDigitalSettings", { enumerable: true, get:
 Object.defineProperty(exports, "SignalSettings", { enumerable: true, get: function () { return signal_model_js_1.SignalSettings; } });
 var historical_value_model_js_1 = require("./models/historical-value.model.js");
 Object.defineProperty(exports, "CompressionInterval", { enumerable: true, get: function () { return historical_value_model_js_1.CompressionInterval; } });
+var dashboard_tab_model_js_1 = require("./models/entities/dashboard-tab.model.js");
+Object.defineProperty(exports, "DashboardTab", { enumerable: true, get: function () { return dashboard_tab_model_js_1.DashboardTab; } });
+var event_category_model_js_1 = require("./models/entities/event-category.model.js");
+Object.defineProperty(exports, "EventCategory", { enumerable: true, get: function () { return event_category_model_js_1.EventCategory; } });
+var formula_model_js_1 = require("./models/entities/formula.model.js");
+Object.defineProperty(exports, "Formula", { enumerable: true, get: function () { return formula_model_js_1.Formula; } });
+var process_image_model_js_1 = require("./models/entities/process-image.model.js");
+Object.defineProperty(exports, "ProcessImage", { enumerable: true, get: function () { return process_image_model_js_1.ProcessImage; } });
+var entity_type_class_mapping_js_1 = require("./models/entity-type-class-mapping.js");
+Object.defineProperty(exports, "EntityTypeClassMapping", { enumerable: true, get: function () { return entity_type_class_mapping_js_1.EntityTypeClassMapping; } });
 // Service exports
 var base_http_service_js_1 = require("./services/base-http.service.js");
 Object.defineProperty(exports, "BaseHttpService", { enumerable: true, get: function () { return base_http_service_js_1.BaseHttpService; } });

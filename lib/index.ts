@@ -31,6 +31,11 @@ export {
 } from './models/entities/signal.model.js';
 export { HttpConfig } from './models/http-config.model.js';
 export { HistoricalValueMap, CompressionInterval } from './models/historical-value.model.js';
+export { DashboardTab } from './models/entities/dashboard-tab.model.js';
+export { EventCategory } from './models/entities/event-category.model.js';
+export { Formula } from './models/entities/formula.model.js';
+export { ProcessImage } from './models/entities/process-image.model.js';
+export { EntityTypeClassMapping } from './models/entity-type-class-mapping.js';
 
 // Service exports
 export { BaseHttpService } from './services/base-http.service.js';
