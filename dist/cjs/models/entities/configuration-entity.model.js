@@ -40,6 +40,9 @@ class Field {
         this.Value = value;
         this.OOAttributes = ooAttributes;
     }
+    static isField(value) {
+        return value && value.Value !== undefined;
+    }
 }
 exports.Field = Field;
 class ConfigurationEntity {

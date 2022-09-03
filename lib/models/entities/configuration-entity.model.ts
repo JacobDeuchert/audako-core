@@ -45,6 +45,10 @@ export class Field<T> {
     this.Value = value;
     this.OOAttributes = ooAttributes;
   }
+
+  public static isField(value: any): value is Field<any> {
+    return value && value.Value !== undefined;
+  }
 }
 
 export abstract class ConfigurationEntity {

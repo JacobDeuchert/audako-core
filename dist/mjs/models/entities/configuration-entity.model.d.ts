@@ -21,6 +21,7 @@ export declare class Field<T> {
     Value: T;
     OOAttributes: string[];
     constructor(value?: T, ooAttributes?: string[]);
+    static isField(value: any): value is Field<any>;
 }
 export declare abstract class ConfigurationEntity {
     Id: string;
