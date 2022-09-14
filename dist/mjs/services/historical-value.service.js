@@ -8,7 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import axios from 'axios';
-import { BaseHttpService } from './base-http.service';
+import { BaseHttpService } from './base-http.service.js';
+export class HistoricalValue {
+}
+export class CounterOffset {
+}
+export class HistoricalValueObject {
+}
 export class HistoricalValueService extends BaseHttpService {
     constructor(httpConfig, accessToken) {
         super(httpConfig, accessToken);
@@ -24,5 +30,25 @@ export class HistoricalValueService extends BaseHttpService {
             }
             return response.data;
         });
+    }
+    getHistoricalValueObjects(historicalValueRequest) {
+        const url = this.getUrl();
+        const authHeaders = this.getAuthorizationHeader();
+        return axios.post(url + '/value/many', historicalValueRequest, { headers: authHeaders }).then(response => response.data);
+    }
+    getNearestValue(historicalValueRequest) {
+        const url = this.getUrl();
+        const authHeaders = this.getAuthorizationHeader();
+        return axios.post(url + '/value/nearest', historicalValueRequest, { headers: authHeaders }).then(response => response.data);
+    }
+    getNthHistoricalValue(request) {
+        const url = this.getUrl();
+        const authHeaders = this.getAuthorizationHeader();
+        return axios.post(url + '/value/nth', request, {
+            headers: authHeaders
+        }).then(response => response.data);
+    }
+    getUrl() {
+        return `${this.httpConfig.Services.BaseUri}${this.httpConfig.Services.Historian}`;
     }
 }

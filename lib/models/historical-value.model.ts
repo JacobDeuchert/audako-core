@@ -1,3 +1,5 @@
+import { EntityType } from './entities/configuration-entity.model.js';
+
 export enum CompressionInterval {
   ProcessInterval = 'ProcessInterval',
   SubInterval = 'SubInterval',
@@ -9,5 +11,8 @@ export enum CompressionInterval {
   QuarterInterval = 'QuarterInterval',
   YearInterval = 'YearInterval'
 }
+
+export type ValueObjectType = EntityType.Signal | EntityType.Formula;
+
 
 export type HistoricalValueMap = {IntervalStart: string}  & {[signalId: string]: number | string | boolean};

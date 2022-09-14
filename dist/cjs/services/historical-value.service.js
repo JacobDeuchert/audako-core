@@ -12,10 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HistoricalValueService = void 0;
+exports.HistoricalValueService = exports.HistoricalValueObject = exports.CounterOffset = exports.HistoricalValue = void 0;
 const axios_1 = __importDefault(require("axios"));
-const base_http_service_1 = require("./base-http.service");
-class HistoricalValueService extends base_http_service_1.BaseHttpService {
+const base_http_service_js_1 = require("./base-http.service.js");
+class HistoricalValue {
+}
+exports.HistoricalValue = HistoricalValue;
+class CounterOffset {
+}
+exports.CounterOffset = CounterOffset;
+class HistoricalValueObject {
+}
+exports.HistoricalValueObject = HistoricalValueObject;
+class HistoricalValueService extends base_http_service_js_1.BaseHttpService {
     constructor(httpConfig, accessToken) {
         super(httpConfig, accessToken);
     }
@@ -30,6 +39,26 @@ class HistoricalValueService extends base_http_service_1.BaseHttpService {
             }
             return response.data;
         });
+    }
+    getHistoricalValueObjects(historicalValueRequest) {
+        const url = this.getUrl();
+        const authHeaders = this.getAuthorizationHeader();
+        return axios_1.default.post(url + '/value/many', historicalValueRequest, { headers: authHeaders }).then(response => response.data);
+    }
+    getNearestValue(historicalValueRequest) {
+        const url = this.getUrl();
+        const authHeaders = this.getAuthorizationHeader();
+        return axios_1.default.post(url + '/value/nearest', historicalValueRequest, { headers: authHeaders }).then(response => response.data);
+    }
+    getNthHistoricalValue(request) {
+        const url = this.getUrl();
+        const authHeaders = this.getAuthorizationHeader();
+        return axios_1.default.post(url + '/value/nth', request, {
+            headers: authHeaders
+        }).then(response => response.data);
+    }
+    getUrl() {
+        return `${this.httpConfig.Services.BaseUri}${this.httpConfig.Services.Historian}`;
     }
 }
 exports.HistoricalValueService = HistoricalValueService;
