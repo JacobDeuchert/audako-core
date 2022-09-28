@@ -10,7 +10,7 @@ export class DataSourceHttpService extends BaseHttpService {
 
   public async sendDatSrcConfiguration(dataSourceId: string): Promise<void> {
     const url = `${this._getDriverUrl()}/command/source/${dataSourceId}/configure`;
-    const headers = this.getAuthorizationHeader();
+    const headers = await this.getAuthorizationHeader();
     const response = await axios.get(url, { headers: headers });
     return response.data;
   }

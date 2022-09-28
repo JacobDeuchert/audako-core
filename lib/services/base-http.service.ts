@@ -1,12 +1,12 @@
 import axios from 'axios';
-import { Observable } from 'rxjs';
+import { firstValueFrom, isObservable, Observable } from 'rxjs';
 import { HttpConfig } from '../models/http-config.model.js';
 import { PromiseUtils } from '../utils/promise-utils.js';
 
 export abstract class BaseHttpService {
-  protected accessToken: string;
+  
 
-  constructor(protected httpConfig: HttpConfig, accessToken: string | Promise<string>) {
+  constructor(protected httpConfig: HttpConfig, private accessToken: string | Promise<string> | Observable<string>) {
     if (PromiseUtils.isPromise(accessToken)) {
       accessToken.then((token) => (this.accessToken = token));
     } else {
@@ -14,7 +14,17 @@ export abstract class BaseHttpService {
     }
   }
 
-  protected getAuthorizationHeader(): { [p: string]: string } {
+  protected async getAuthorizationHeader(): Promise<{ [p: string]: string }> {
+    let token: string = '';
+
+    if (isObservable(this.accessToken)) {
+      token = await firstValueFrom(this.accessToken);
+    } else if (PromiseUtils.isPromise(this.accessToken)) {
+      token = await this.accessToken;
+    } else {
+      token = this.accessToken;
+    }
+
     return {
       Authorization: `Bearer ${this.accessToken}`,
     };

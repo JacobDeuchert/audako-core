@@ -71,9 +71,10 @@ export class HistoricalValueService extends BaseHttpService {
   public async requestHistoricalValues(requests: HistoricalValueRequest[]): Promise<HistoricalValueMap[]> {   
     
     const url = `${this.httpConfig.Services.BaseUri}${this.httpConfig.Services.Historian}/value/manyflat`;
+    const headers = await this.getAuthorizationHeader()
 
     const response = await axios.post<HistoricalValueMap[]>(url, requests, {
-      headers: this.getAuthorizationHeader()
+      headers: headers
     });
 
     if (response.status !== 200) {
@@ -83,22 +84,22 @@ export class HistoricalValueService extends BaseHttpService {
     return response.data;
   }
 
-  public getHistoricalValueObjects(historicalValueRequest: HistoricalValueRequest[]): Promise<HistoricalValueObject[]> {
+  public async getHistoricalValueObjects(historicalValueRequest: HistoricalValueRequest[]): Promise<HistoricalValueObject[]> {
     const url = this.getUrl();
-    const authHeaders = this.getAuthorizationHeader();
+    const authHeaders = await this.getAuthorizationHeader();
     return axios.post<HistoricalValueObject[]>(url + '/value/many', historicalValueRequest, {headers: authHeaders}).then(response => response.data);
   }
 
-  public getNearestValue(historicalValueRequest: HistoricalValueRequest): Promise<HistoricalValue & {Value: number}> {
+  public async getNearestValue(historicalValueRequest: HistoricalValueRequest): Promise<HistoricalValue & {Value: number}> {
     const url = this.getUrl();
-    const authHeaders = this.getAuthorizationHeader();
+    const authHeaders = await this.getAuthorizationHeader();
     return axios.post<HistoricalValue & {Value: number}>(url + '/value/nearest', historicalValueRequest, {headers: authHeaders}).then(response => response.data);
   }
 
 
-  public getNthHistoricalValue(request: NthHistoricalRequest): Promise<HistoricalValueObject> {
+  public async getNthHistoricalValue(request: NthHistoricalRequest): Promise<HistoricalValueObject> {
     const url = this.getUrl();
-    const authHeaders = this.getAuthorizationHeader();
+    const authHeaders = await this.getAuthorizationHeader();
     return axios.post<HistoricalValueObject>(url + '/value/nth', request, {
       headers: authHeaders
     }).then(response => response.data);

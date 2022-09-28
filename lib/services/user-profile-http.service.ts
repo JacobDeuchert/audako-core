@@ -10,10 +10,11 @@ export class UserProfileHttpService extends BaseHttpService {
   }
   public async getUserProfile(): Promise<UserProfile> {
     try {
+      const authHeaders = await this.getAuthorizationHeader()
       const userProfileResponse = await axios.get<UserProfile>(
         `${this.getStructureUrl()}/userprofile`,
         {
-          headers: this.getAuthorizationHeader()
+          headers: authHeaders
         }
       );
 

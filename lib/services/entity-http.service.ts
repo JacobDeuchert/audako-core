@@ -31,7 +31,7 @@ export class EntityHttpService extends BaseHttpService {
       url += `?$projection=${JSON.stringify(projection)}`;
     }
 
-    const headers = this.getAuthorizationHeader();
+    const headers = await this.getAuthorizationHeader();
     const response = await axios.get<T>(url, { headers: headers });
     return response.data;
   }
@@ -50,7 +50,7 @@ export class EntityHttpService extends BaseHttpService {
       $projection: projection ? JSON.stringify(projection) : null,
     };
 
-    const headers = this.getAuthorizationHeader();
+    const headers = await this.getAuthorizationHeader();
 
     const response = await axios.post<
       { $filter: string; $paging: string; $projection: string },
@@ -79,7 +79,7 @@ export class EntityHttpService extends BaseHttpService {
 
   public async uploadProcessImage(id: string, svg: string, name: string = 'process-image.svg'): Promise<void> {
     const url = `${this._createBaseUrlByType(EntityType.ProcessImage)}/${id}/file/image`;
-    const headers = this.getAuthorizationHeader();
+    const headers = await this.getAuthorizationHeader();
     const blob = new Blob([svg], { type: 'image/svg+xml' });
     const formData = new FormData();
     formData.append('file', blob, 'process-image.svg');
