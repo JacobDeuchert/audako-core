@@ -12,7 +12,7 @@ export type PaginationResponse<T> = {
 
 export type Projection<T> = { [P in keyof T]?: 1 | -1 } | null;
 export class EntityHttpService extends BaseHttpService {
-  constructor(httpConfig: HttpConfig, accessToken: string | Promise<string>) {
+  constructor(httpConfig: HttpConfig, accessToken: string | Promise<string> | Observable<string>) {
     super(httpConfig, accessToken);
   }
 

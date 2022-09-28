@@ -64,7 +64,7 @@ export class LiveValueService implements Disposable {
 
   private _unsub: Subject<void>;
 
-  public constructor(private httpConfig: HttpConfig, private accessToken: string | Promise<string>) {
+  public constructor(private httpConfig: HttpConfig, private accessToken: string | Promise<string> | Observable<string>) {
     this._unsub = new Subject<void>();
 
     this._connectionEstablished = new BehaviorSubject<boolean>(false);
@@ -200,7 +200,19 @@ export class LiveValueService implements Disposable {
 
   private _buildHubConnection(hubUrl: string): signalR.HubConnection {
     return new signalR.HubConnectionBuilder().withUrl(hubUrl, {
-      accessTokenFactory: () => this.accessToken,
+      accessTokenFactory: () => this.getAccessTokenAsPromise()
     }).build();
+  }
+
+
+  protected getAccessTokenAsPromise(): Promise<string> {
+    if (isObservable(this.accessToken)) {
+      return firstValueFrom(this.accessToken);
+    } else if (PromiseUtils.isPromise(this.accessToken)) {
+      return this.accessToken;
+    } else {
+      return Promise.resolve(this.accessToken);
+    }
+
   }
 }

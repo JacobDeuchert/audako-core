@@ -30,6 +30,17 @@ export abstract class BaseHttpService {
     };
   }
 
+  protected getAccessTokenAsPromise(): Promise<string> {
+    if (isObservable(this.accessToken)) {
+      return firstValueFrom(this.accessToken);
+    } else if (PromiseUtils.isPromise(this.accessToken)) {
+      return this.accessToken;
+    } else {
+      return Promise.resolve(this.accessToken);
+    }
+
+  }
+
   protected getStructureUrl(): string {
     return `${this.httpConfig.Services.BaseUri}${this.httpConfig.Services.Structure}`;
   }
@@ -39,4 +50,6 @@ export abstract class BaseHttpService {
       .get<HttpConfig>(`${systemUrl}/assets/conf/application.config`)
       .then((response) => response.data); 
   }
+
+  
 }

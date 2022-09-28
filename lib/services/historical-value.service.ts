@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Observable } from 'rxjs';
 import { CompressionInterval, HistoricalValueMap, ValueObjectType } from '../models/historical-value.model.js';
 import { HttpConfig } from '../models/http-config.model.js';
 import { BaseHttpService } from './base-http.service.js';
@@ -64,7 +65,7 @@ export class HistoricalValueObject {
 
 
 export class HistoricalValueService extends BaseHttpService {
-  constructor(httpConfig: HttpConfig, accessToken: string | Promise<string>) {
+  constructor(httpConfig: HttpConfig, accessToken: string | Promise<string> | Observable<string>) {
     super(httpConfig, accessToken);
   }
 

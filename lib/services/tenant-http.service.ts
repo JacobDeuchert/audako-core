@@ -5,7 +5,7 @@ import { TenantView } from '../models/tenant-view.model.js';
 import { BaseHttpService } from './base-http.service.js';
 
 export class TenantHttpService extends BaseHttpService {
-  constructor(httpConfig: HttpConfig, accessToken: string | Promise<string>) {
+  constructor(httpConfig: HttpConfig, accessToken: string | Promise<string> | Observable<string>) {
     super(httpConfig, accessToken);
   }
 

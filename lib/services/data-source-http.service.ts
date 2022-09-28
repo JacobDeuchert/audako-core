@@ -4,7 +4,7 @@ import { HttpConfig } from '../models/http-config.model';
 import { BaseHttpService } from './base-http.service';
 
 export class DataSourceHttpService extends BaseHttpService {
-  constructor(httpConfig: HttpConfig, accessToken: string | Promise<string>) {
+  constructor(httpConfig: HttpConfig, accessToken: string | Promise<string> | Observable<string>) {
     super(httpConfig, accessToken);
   }
 
