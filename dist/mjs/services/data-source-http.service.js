@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import axios from 'axios';
+import { getAsyncValueAsPromise } from '../utils/async-value-utils.js';
 import { BaseHttpService } from './base-http.service';
 export class DataSourceHttpService extends BaseHttpService {
     constructor(httpConfig, accessToken) {
@@ -22,6 +23,9 @@ export class DataSourceHttpService extends BaseHttpService {
         });
     }
     _getDriverUrl() {
-        return `${this.httpConfig.Services.BaseUri}${this.httpConfig.Services.Driver}`;
+        return __awaiter(this, void 0, void 0, function* () {
+            const httpConfig = yield getAsyncValueAsPromise(this.httpConfig);
+            return `${httpConfig.Services.BaseUri}${httpConfig.Services.Driver}`;
+        });
     }
 }

@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 import { HttpConfig } from '../models/http-config.model';
 import { Disposable } from '../interfaces/disposable';
+import { AsyncValue } from '../utils/async-value-utils.js';
 export declare type LivePackage = {
     identifier: string;
     timestamp: Date;
@@ -37,9 +38,9 @@ export declare class LiveValueService implements Disposable {
     private _subscribeRequested;
     private _connectionEstablished;
     private _unsub;
-    constructor(httpConfig: HttpConfig, accessToken: string | Promise<string> | Observable<string>);
-    connect(): Observable<void>;
-    connectWithUrl(hubUrl: string): Observable<void>;
+    constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
+    connect(): Promise<void>;
+    connectWithUrl(hubUrl: string): Promise<void>;
     dispose(): void;
     subscribeToSignalValues(signalIds: string[]): Observable<SignalLiveValue[]>;
     subscribeToSignalOffsets(signalIds: string[]): Observable<SignalLiveValue[]>;

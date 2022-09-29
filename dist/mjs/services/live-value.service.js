@@ -1,6 +1,16 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import { auditTime, BehaviorSubject, concat, filter, firstValueFrom, isObservable, map, mapTo, of, Subject, takeUntil } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
 import { PromiseUtils } from '../utils/promise-utils';
+import { getAsyncValueAsPromise } from '../utils/async-value-utils.js';
 export var LiveHubMethod;
 (function (LiveHubMethod) {
     LiveHubMethod["ChangeModeAsync"] = "ChangeModeAsync";
@@ -32,14 +42,17 @@ export class LiveValueService {
         this._handleSubscriptionQueue();
     }
     connect() {
-        return this.connectWithUrl(`${this.httpConfig.Services.BaseUri}${this.httpConfig.Services.Live}/hub`);
+        return __awaiter(this, void 0, void 0, function* () {
+            const httpConfig = yield getAsyncValueAsPromise(this.httpConfig);
+            return this.connectWithUrl(`${httpConfig.Services.BaseUri}${httpConfig.Services.Live}/hub`);
+        });
     }
     connectWithUrl(hubUrl) {
         if (!this.hubConnection) {
             this.hubConnection = this._buildHubConnection(hubUrl);
             this._establishConnectionAndHandleEvents(this.hubConnection);
         }
-        return this._connectionEstablished.pipe(filter((x) => x), mapTo(null));
+        return firstValueFrom(this._connectionEstablished.pipe(filter((x) => x), mapTo(null)));
     }
     dispose() {
         var _a;

@@ -16,6 +16,7 @@ import * as signalR from '@microsoft/signalr';
 import { HttpConfig } from '../models/http-config.model';
 import { Disposable } from '../interfaces/disposable';
 import { PromiseUtils } from '../utils/promise-utils';
+import { AsyncValue, getAsyncValueAsPromise } from '../utils/async-value-utils.js';
 export type LivePackage = {
   identifier: string;
   timestamp: Date;
@@ -64,7 +65,7 @@ export class LiveValueService implements Disposable {
 
   private _unsub: Subject<void>;
 
-  public constructor(private httpConfig: HttpConfig, private accessToken: string | Promise<string> | Observable<string>) {
+  public constructor(private httpConfig: AsyncValue<HttpConfig>, private accessToken: AsyncValue<string>) {
     this._unsub = new Subject<void>();
 
     this._connectionEstablished = new BehaviorSubject<boolean>(false);
@@ -77,19 +78,20 @@ export class LiveValueService implements Disposable {
     this._handleSubscriptionQueue();
   }
 
-  public connect(): Observable<void> {
-    return this.connectWithUrl(`${this.httpConfig.Services.BaseUri}${this.httpConfig.Services.Live}/hub`);
+  public async connect(): Promise<void> {
+    const httpConfig = await getAsyncValueAsPromise(this.httpConfig);
+    return this.connectWithUrl(`${httpConfig.Services.BaseUri}${httpConfig.Services.Live}/hub`);
   }
 
-  public connectWithUrl(hubUrl: string): Observable<void> {
+  public connectWithUrl(hubUrl: string): Promise<void> {
     if (!this.hubConnection) {
       this.hubConnection = this._buildHubConnection(hubUrl);
       this._establishConnectionAndHandleEvents(this.hubConnection);
     }
 
-    return this._connectionEstablished.pipe(
+    return firstValueFrom(this._connectionEstablished.pipe(
       filter((x) => x),
-      mapTo(null));
+      mapTo(null)));
   }
 
   public dispose(): void {

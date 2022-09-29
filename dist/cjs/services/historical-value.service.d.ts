@@ -1,6 +1,6 @@
-import { Observable } from 'rxjs';
 import { CompressionInterval, HistoricalValueMap, ValueObjectType } from '../models/historical-value.model.js';
 import { HttpConfig } from '../models/http-config.model.js';
+import { AsyncValue } from '../utils/async-value-utils.js';
 import { BaseHttpService } from './base-http.service.js';
 export declare type HistoricalValueRequest = {
     ObjectType: ValueObjectType;
@@ -49,12 +49,12 @@ export declare class HistoricalValueObject {
     Values: HistoricalValue[];
 }
 export declare class HistoricalValueService extends BaseHttpService {
-    constructor(httpConfig: HttpConfig, accessToken: string | Promise<string> | Observable<string>);
+    constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
     requestHistoricalValues(requests: HistoricalValueRequest[]): Promise<HistoricalValueMap[]>;
     getHistoricalValueObjects(historicalValueRequest: HistoricalValueRequest[]): Promise<HistoricalValueObject[]>;
     getNearestValue(historicalValueRequest: HistoricalValueRequest): Promise<HistoricalValue & {
         Value: number;
     }>;
     getNthHistoricalValue(request: NthHistoricalRequest): Promise<HistoricalValueObject>;
-    private getUrl;
+    private getHistorianUrl;
 }

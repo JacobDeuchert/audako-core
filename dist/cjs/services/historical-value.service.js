@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HistoricalValueService = exports.HistoricalValueObject = exports.CounterOffset = exports.HistoricalValue = void 0;
 const axios_1 = __importDefault(require("axios"));
+const async_value_utils_js_1 = require("../utils/async-value-utils.js");
 const base_http_service_js_1 = require("./base-http.service.js");
 class HistoricalValue {
 }
@@ -30,9 +31,10 @@ class HistoricalValueService extends base_http_service_js_1.BaseHttpService {
     }
     requestHistoricalValues(requests) {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = `${this.httpConfig.Services.BaseUri}${this.httpConfig.Services.Historian}/value/manyflat`;
+            const url = yield this.getHistorianUrl();
+            ;
             const headers = yield this.getAuthorizationHeader();
-            const response = yield axios_1.default.post(url, requests, {
+            const response = yield axios_1.default.post(`${url}value/manyflat`, requests, {
                 headers: headers
             });
             if (response.status !== 200) {
@@ -43,29 +45,32 @@ class HistoricalValueService extends base_http_service_js_1.BaseHttpService {
     }
     getHistoricalValueObjects(historicalValueRequest) {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = this.getUrl();
+            const url = yield this.getHistorianUrl();
             const authHeaders = yield this.getAuthorizationHeader();
             return axios_1.default.post(url + '/value/many', historicalValueRequest, { headers: authHeaders }).then(response => response.data);
         });
     }
     getNearestValue(historicalValueRequest) {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = this.getUrl();
+            const url = yield this.getHistorianUrl();
             const authHeaders = yield this.getAuthorizationHeader();
             return axios_1.default.post(url + '/value/nearest', historicalValueRequest, { headers: authHeaders }).then(response => response.data);
         });
     }
     getNthHistoricalValue(request) {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = this.getUrl();
+            const url = yield this.getHistorianUrl();
             const authHeaders = yield this.getAuthorizationHeader();
             return axios_1.default.post(url + '/value/nth', request, {
                 headers: authHeaders
             }).then(response => response.data);
         });
     }
-    getUrl() {
-        return `${this.httpConfig.Services.BaseUri}${this.httpConfig.Services.Historian}`;
+    getHistorianUrl() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const httpConfig = yield (0, async_value_utils_js_1.getAsyncValueAsPromise)(this.httpConfig);
+            return `${httpConfig.Services.BaseUri}${httpConfig.Services.Historian}`;
+        });
     }
 }
 exports.HistoricalValueService = HistoricalValueService;

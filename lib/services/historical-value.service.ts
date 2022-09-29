@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Observable } from 'rxjs';
 import { CompressionInterval, HistoricalValueMap, ValueObjectType } from '../models/historical-value.model.js';
 import { HttpConfig } from '../models/http-config.model.js';
+import { AsyncValue, getAsyncValueAsPromise } from '../utils/async-value-utils.js';
 import { BaseHttpService } from './base-http.service.js';
 
 
@@ -65,16 +66,17 @@ export class HistoricalValueObject {
 
 
 export class HistoricalValueService extends BaseHttpService {
-  constructor(httpConfig: HttpConfig, accessToken: string | Promise<string> | Observable<string>) {
+  constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>) {
     super(httpConfig, accessToken);
   }
 
   public async requestHistoricalValues(requests: HistoricalValueRequest[]): Promise<HistoricalValueMap[]> {   
     
-    const url = `${this.httpConfig.Services.BaseUri}${this.httpConfig.Services.Historian}/value/manyflat`;
+    const url = await this.getHistorianUrl();
+    ;
     const headers = await this.getAuthorizationHeader()
 
-    const response = await axios.post<HistoricalValueMap[]>(url, requests, {
+    const response = await axios.post<HistoricalValueMap[]>(`${url}value/manyflat`, requests, {
       headers: headers
     });
 
@@ -86,28 +88,30 @@ export class HistoricalValueService extends BaseHttpService {
   }
 
   public async getHistoricalValueObjects(historicalValueRequest: HistoricalValueRequest[]): Promise<HistoricalValueObject[]> {
-    const url = this.getUrl();
+    const url = await this.getHistorianUrl();
     const authHeaders = await this.getAuthorizationHeader();
     return axios.post<HistoricalValueObject[]>(url + '/value/many', historicalValueRequest, {headers: authHeaders}).then(response => response.data);
   }
 
   public async getNearestValue(historicalValueRequest: HistoricalValueRequest): Promise<HistoricalValue & {Value: number}> {
-    const url = this.getUrl();
+    const url = await this.getHistorianUrl();
     const authHeaders = await this.getAuthorizationHeader();
     return axios.post<HistoricalValue & {Value: number}>(url + '/value/nearest', historicalValueRequest, {headers: authHeaders}).then(response => response.data);
   }
 
 
   public async getNthHistoricalValue(request: NthHistoricalRequest): Promise<HistoricalValueObject> {
-    const url = this.getUrl();
+    const url = await this.getHistorianUrl();
     const authHeaders = await this.getAuthorizationHeader();
     return axios.post<HistoricalValueObject>(url + '/value/nth', request, {
       headers: authHeaders
     }).then(response => response.data);
   }
 
-  private getUrl(): string {
-   return `${this.httpConfig.Services.BaseUri}${this.httpConfig.Services.Historian}`;
+  private async getHistorianUrl(): Promise<string> {
+
+    const httpConfig = await getAsyncValueAsPromise(this.httpConfig)
+   return `${httpConfig.Services.BaseUri}${httpConfig.Services.Historian}`;
   }
 
 

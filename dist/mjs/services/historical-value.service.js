@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import axios from 'axios';
+import { getAsyncValueAsPromise } from '../utils/async-value-utils.js';
 import { BaseHttpService } from './base-http.service.js';
 export class HistoricalValue {
 }
@@ -21,9 +22,10 @@ export class HistoricalValueService extends BaseHttpService {
     }
     requestHistoricalValues(requests) {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = `${this.httpConfig.Services.BaseUri}${this.httpConfig.Services.Historian}/value/manyflat`;
+            const url = yield this.getHistorianUrl();
+            ;
             const headers = yield this.getAuthorizationHeader();
-            const response = yield axios.post(url, requests, {
+            const response = yield axios.post(`${url}value/manyflat`, requests, {
                 headers: headers
             });
             if (response.status !== 200) {
@@ -34,28 +36,31 @@ export class HistoricalValueService extends BaseHttpService {
     }
     getHistoricalValueObjects(historicalValueRequest) {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = this.getUrl();
+            const url = yield this.getHistorianUrl();
             const authHeaders = yield this.getAuthorizationHeader();
             return axios.post(url + '/value/many', historicalValueRequest, { headers: authHeaders }).then(response => response.data);
         });
     }
     getNearestValue(historicalValueRequest) {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = this.getUrl();
+            const url = yield this.getHistorianUrl();
             const authHeaders = yield this.getAuthorizationHeader();
             return axios.post(url + '/value/nearest', historicalValueRequest, { headers: authHeaders }).then(response => response.data);
         });
     }
     getNthHistoricalValue(request) {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = this.getUrl();
+            const url = yield this.getHistorianUrl();
             const authHeaders = yield this.getAuthorizationHeader();
             return axios.post(url + '/value/nth', request, {
                 headers: authHeaders
             }).then(response => response.data);
         });
     }
-    getUrl() {
-        return `${this.httpConfig.Services.BaseUri}${this.httpConfig.Services.Historian}`;
+    getHistorianUrl() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const httpConfig = yield getAsyncValueAsPromise(this.httpConfig);
+            return `${httpConfig.Services.BaseUri}${httpConfig.Services.Historian}`;
+        });
     }
 }

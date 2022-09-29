@@ -1,12 +1,13 @@
 import axios from 'axios';
 import { firstValueFrom, isObservable, Observable } from 'rxjs';
 import { HttpConfig } from '../models/http-config.model.js';
+import { AsyncValue, getAsyncValueAsPromise } from '../utils/async-value-utils.js';
 import { PromiseUtils } from '../utils/promise-utils.js';
 
 export abstract class BaseHttpService {
   
 
-  constructor(protected httpConfig: HttpConfig, private accessToken: string | Promise<string> | Observable<string>) {
+  constructor(protected httpConfig: AsyncValue<HttpConfig>, private accessToken: AsyncValue<string>) {
     if (PromiseUtils.isPromise(accessToken)) {
       accessToken.then((token) => (this.accessToken = token));
     } else {
@@ -15,18 +16,9 @@ export abstract class BaseHttpService {
   }
 
   protected async getAuthorizationHeader(): Promise<{ [p: string]: string }> {
-    let token: string = '';
-
-    if (isObservable(this.accessToken)) {
-      token = await firstValueFrom(this.accessToken);
-    } else if (PromiseUtils.isPromise(this.accessToken)) {
-      token = await this.accessToken;
-    } else {
-      token = this.accessToken;
-    }
-
+    let token: string = await getAsyncValueAsPromise(this.accessToken);
     return {
-      Authorization: `Bearer ${this.accessToken}`,
+      Authorization: `Bearer ${token}`,
     };
   }
 
@@ -41,8 +33,9 @@ export abstract class BaseHttpService {
 
   }
 
-  protected getStructureUrl(): string {
-    return `${this.httpConfig.Services.BaseUri}${this.httpConfig.Services.Structure}`;
+  protected async getStructureUrl(): Promise<string> {
+    const httpConfig = await getAsyncValueAsPromise(this.httpConfig);
+    return `${httpConfig.Services.BaseUri}${httpConfig.Services.Structure}`;
   }
 
   public static requestHttpConfig(systemUrl: string): Promise<HttpConfig> {

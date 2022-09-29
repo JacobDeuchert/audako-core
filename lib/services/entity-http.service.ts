@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { ConfigurationEntity, EntityHttpEndpoints, EntityType } from '../models/entities/configuration-entity.model.js';
 import { HttpConfig } from '../models/http-config.model.js';
 import { TenantView } from '../models/tenant-view.model.js';
+import { AsyncValue } from '../utils/async-value-utils.js';
 import { BaseHttpService } from './base-http.service.js';
 
 export type PaginationResponse<T> = {
@@ -12,7 +13,7 @@ export type PaginationResponse<T> = {
 
 export type Projection<T> = { [P in keyof T]?: 1 | -1 } | null;
 export class EntityHttpService extends BaseHttpService {
-  constructor(httpConfig: HttpConfig, accessToken: string | Promise<string> | Observable<string>) {
+  constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>) {
     super(httpConfig, accessToken);
   }
 

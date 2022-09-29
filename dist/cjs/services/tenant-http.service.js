@@ -21,7 +21,7 @@ class TenantHttpService extends base_http_service_js_1.BaseHttpService {
     }
     getTenantViewById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = `${this.getStructureUrl()}/tenant/${id}/view`;
+            const url = `${yield this.getStructureUrl()}/tenant/${id}/view`;
             const headers = yield this.getAuthorizationHeader();
             const response = yield axios_1.default.get(url, { headers: headers });
             return response.data;
@@ -29,7 +29,7 @@ class TenantHttpService extends base_http_service_js_1.BaseHttpService {
     }
     getTopTenants() {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = `${this.getStructureUrl()}/tenant/top`;
+            const url = `${yield this.getStructureUrl()}/tenant/top`;
             const headers = yield this.getAuthorizationHeader();
             const response = yield axios_1.default.get(url, { headers: headers });
             return response.data;
@@ -37,7 +37,7 @@ class TenantHttpService extends base_http_service_js_1.BaseHttpService {
     }
     getNextTenants(tenantId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = `${this.getStructureUrl()}/tenant/${tenantId}/next`;
+            const url = `${yield this.getStructureUrl()}/tenant/${tenantId}/next`;
             const headers = yield this.getAuthorizationHeader();
             const response = yield axios_1.default.get(url, { headers: headers });
             return response.data;

@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import axios from 'axios';
 import { firstValueFrom, isObservable } from 'rxjs';
+import { getAsyncValueAsPromise } from '../utils/async-value-utils.js';
 import { PromiseUtils } from '../utils/promise-utils.js';
 export class BaseHttpService {
     constructor(httpConfig, accessToken) {
@@ -23,18 +24,9 @@ export class BaseHttpService {
     }
     getAuthorizationHeader() {
         return __awaiter(this, void 0, void 0, function* () {
-            let token = '';
-            if (isObservable(this.accessToken)) {
-                token = yield firstValueFrom(this.accessToken);
-            }
-            else if (PromiseUtils.isPromise(this.accessToken)) {
-                token = yield this.accessToken;
-            }
-            else {
-                token = this.accessToken;
-            }
+            let token = yield getAsyncValueAsPromise(this.accessToken);
             return {
-                Authorization: `Bearer ${this.accessToken}`,
+                Authorization: `Bearer ${token}`,
             };
         });
     }
@@ -50,7 +42,10 @@ export class BaseHttpService {
         }
     }
     getStructureUrl() {
-        return `${this.httpConfig.Services.BaseUri}${this.httpConfig.Services.Structure}`;
+        return __awaiter(this, void 0, void 0, function* () {
+            const httpConfig = yield getAsyncValueAsPromise(this.httpConfig);
+            return `${httpConfig.Services.BaseUri}${httpConfig.Services.Structure}`;
+        });
     }
     static requestHttpConfig(systemUrl) {
         return axios

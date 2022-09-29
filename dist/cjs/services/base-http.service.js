@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaseHttpService = void 0;
 const axios_1 = __importDefault(require("axios"));
 const rxjs_1 = require("rxjs");
+const async_value_utils_js_1 = require("../utils/async-value-utils.js");
 const promise_utils_js_1 = require("../utils/promise-utils.js");
 class BaseHttpService {
     constructor(httpConfig, accessToken) {
@@ -29,18 +30,9 @@ class BaseHttpService {
     }
     getAuthorizationHeader() {
         return __awaiter(this, void 0, void 0, function* () {
-            let token = '';
-            if ((0, rxjs_1.isObservable)(this.accessToken)) {
-                token = yield (0, rxjs_1.firstValueFrom)(this.accessToken);
-            }
-            else if (promise_utils_js_1.PromiseUtils.isPromise(this.accessToken)) {
-                token = yield this.accessToken;
-            }
-            else {
-                token = this.accessToken;
-            }
+            let token = yield (0, async_value_utils_js_1.getAsyncValueAsPromise)(this.accessToken);
             return {
-                Authorization: `Bearer ${this.accessToken}`,
+                Authorization: `Bearer ${token}`,
             };
         });
     }
@@ -56,7 +48,10 @@ class BaseHttpService {
         }
     }
     getStructureUrl() {
-        return `${this.httpConfig.Services.BaseUri}${this.httpConfig.Services.Structure}`;
+        return __awaiter(this, void 0, void 0, function* () {
+            const httpConfig = yield (0, async_value_utils_js_1.getAsyncValueAsPromise)(this.httpConfig);
+            return `${httpConfig.Services.BaseUri}${httpConfig.Services.Structure}`;
+        });
     }
     static requestHttpConfig(systemUrl) {
         return axios_1.default

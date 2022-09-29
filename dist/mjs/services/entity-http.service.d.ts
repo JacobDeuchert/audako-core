@@ -1,6 +1,6 @@
-import { Observable } from 'rxjs';
 import { ConfigurationEntity, EntityType } from '../models/entities/configuration-entity.model.js';
 import { HttpConfig } from '../models/http-config.model.js';
+import { AsyncValue } from '../utils/async-value-utils.js';
 import { BaseHttpService } from './base-http.service.js';
 export declare type PaginationResponse<T> = {
     data: T[];
@@ -10,7 +10,7 @@ export declare type Projection<T> = {
     [P in keyof T]?: 1 | -1;
 } | null;
 export declare class EntityHttpService extends BaseHttpService {
-    constructor(httpConfig: HttpConfig, accessToken: string | Promise<string> | Observable<string>);
+    constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
     getEntityById<T extends ConfigurationEntity>(entityType: EntityType, id: string): Promise<T>;
     getPartialEntityById<T extends ConfigurationEntity>(entityType: EntityType, id: string, projection: Projection<T>): Promise<Partial<T>>;
     queryConfiguration<T extends ConfigurationEntity>(entityType: EntityType, query: {

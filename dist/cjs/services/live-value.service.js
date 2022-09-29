@@ -22,11 +22,21 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LiveValueService = exports.SubscriptionPrefix = exports.LiveHubEvent = exports.LiveHubMethod = void 0;
 const rxjs_1 = require("rxjs");
 const signalR = __importStar(require("@microsoft/signalr"));
 const promise_utils_1 = require("../utils/promise-utils");
+const async_value_utils_js_1 = require("../utils/async-value-utils.js");
 var LiveHubMethod;
 (function (LiveHubMethod) {
     LiveHubMethod["ChangeModeAsync"] = "ChangeModeAsync";
@@ -58,14 +68,17 @@ class LiveValueService {
         this._handleSubscriptionQueue();
     }
     connect() {
-        return this.connectWithUrl(`${this.httpConfig.Services.BaseUri}${this.httpConfig.Services.Live}/hub`);
+        return __awaiter(this, void 0, void 0, function* () {
+            const httpConfig = yield (0, async_value_utils_js_1.getAsyncValueAsPromise)(this.httpConfig);
+            return this.connectWithUrl(`${httpConfig.Services.BaseUri}${httpConfig.Services.Live}/hub`);
+        });
     }
     connectWithUrl(hubUrl) {
         if (!this.hubConnection) {
             this.hubConnection = this._buildHubConnection(hubUrl);
             this._establishConnectionAndHandleEvents(this.hubConnection);
         }
-        return this._connectionEstablished.pipe((0, rxjs_1.filter)((x) => x), (0, rxjs_1.mapTo)(null));
+        return (0, rxjs_1.firstValueFrom)(this._connectionEstablished.pipe((0, rxjs_1.filter)((x) => x), (0, rxjs_1.mapTo)(null)));
     }
     dispose() {
         var _a;
