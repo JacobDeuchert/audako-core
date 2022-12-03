@@ -17,7 +17,7 @@ export class UserProfileHttpService extends BaseHttpService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const authHeaders = yield this.getAuthorizationHeader();
-                const userProfileResponse = yield axios.get(`${this.getStructureUrl()}/userprofile`, {
+                const userProfileResponse = yield axios.get(`${yield this.getStructureUrl()}/userprofile`, {
                     headers: authHeaders
                 });
                 if (userProfileResponse.status == 200) {
