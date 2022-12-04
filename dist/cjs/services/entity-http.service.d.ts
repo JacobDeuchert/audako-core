@@ -23,5 +23,7 @@ export declare class EntityHttpService extends BaseHttpService {
     }): Promise<PaginationResponse<Partial<T>>>;
     resolvePathName(idPath: string[]): Promise<string>;
     uploadProcessImage(id: string, svg: string, name?: string): Promise<void>;
+    addEntity<T extends ConfigurationEntity>(type: EntityType, entity: T): Promise<T>;
+    updateEntity<T extends ConfigurationEntity>(type: EntityType, entity: T): Promise<T>;
     private _createBaseUrlByType;
 }
