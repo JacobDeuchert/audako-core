@@ -109,7 +109,7 @@ export class EntityUtils {
 
     if (propertyPath.length === 0) {
 
-      if (Field.isField(objectKeys[currentKey])) {
+      if (Field.isField(object[currentKey])) {
         object[currentKey] = new Field(value);
       } else {
         object[currentKey] = value;

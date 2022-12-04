@@ -84,7 +84,7 @@ class EntityUtils {
         const objectKeys = Object.keys(object);
         const currentKey = propertyPath.shift();
         if (propertyPath.length === 0) {
-            if (configuration_entity_model_js_1.Field.isField(objectKeys[currentKey])) {
+            if (configuration_entity_model_js_1.Field.isField(object[currentKey])) {
                 object[currentKey] = new configuration_entity_model_js_1.Field(value);
             }
             else {

@@ -4,10 +4,10 @@ const signal = new Signal();
 
 const signalProperties = EntityUtils.getEntityPropertiesByType(EntityType.Signal, true);
 
-console.log(signal.RecordingSettings);
+console.log(signal.Name);
 
-EntityUtils.setPropertyValue(signal, 'RecordingSettings.Interval.Value', 400);
-console.log(signal.RecordingSettings);
+EntityUtils.setPropertyValue(signal, 'Name', 'abc');
+console.log(signal.Name);
 
 
 

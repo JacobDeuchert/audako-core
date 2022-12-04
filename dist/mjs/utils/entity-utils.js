@@ -81,7 +81,7 @@ export class EntityUtils {
         const objectKeys = Object.keys(object);
         const currentKey = propertyPath.shift();
         if (propertyPath.length === 0) {
-            if (Field.isField(objectKeys[currentKey])) {
+            if (Field.isField(object[currentKey])) {
                 object[currentKey] = new Field(value);
             }
             else {
