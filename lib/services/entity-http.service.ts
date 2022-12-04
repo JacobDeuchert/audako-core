@@ -87,6 +87,19 @@ export class EntityHttpService extends BaseHttpService {
     await axios.post<number>(url, formData, { headers: headers });
   }
 
+  public async addEntity<T extends ConfigurationEntity>(type: EntityType, entity: T): Promise<T> {
+    const url = await this._createBaseUrlByType(type);
+    const headers = await this.getAuthorizationHeader();
+    return axios.post<T>(url, entity, { headers: headers }).then((response) => response.data);
+  }
+
+  public async updateEntity<T extends ConfigurationEntity>(type: EntityType, entity: T): Promise<T> {
+    const url = `${await this._createBaseUrlByType(type)}/${entity.Id}`;
+    const headers = await this.getAuthorizationHeader();
+    return axios.put<T>(url, entity, { headers: headers }).then((response) => response.data);
+  }
+
+
   private async _createBaseUrlByType(entityType: EntityType): Promise<string> {
     return `${await this.getStructureUrl()}${EntityHttpEndpoints[entityType]}`;
   }
