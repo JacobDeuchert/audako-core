@@ -37,6 +37,7 @@ export { Formula } from './models/entities/formula.model.js';
 export { ProcessImage } from './models/entities/process-image.model.js';
 export { EntityTypeClassMapping } from './models/entity-type-class-mapping.js';
 export { EntityUtils, ObjectKey} from './utils/entity-utils.js';
+export { ObjectUtils } from './utils/object-utils.js';
 
 // Service exports
 export { BaseHttpService } from './services/base-http.service.js';
