@@ -99,6 +99,11 @@ export class EntityHttpService extends BaseHttpService {
     return axios.put<T>(url, entity, { headers: headers }).then((response) => response.data);
   }
 
+  public async deleteEntity(type: EntityType, id: string): Promise<void> {
+    const url = `${await this._createBaseUrlByType(type)}/${id}`;
+    const headers = await this.getAuthorizationHeader();
+    return axios.delete<void>(url, { headers: headers }).then();
+  }
 
   private async _createBaseUrlByType(entityType: EntityType): Promise<string> {
     return `${await this.getStructureUrl()}${EntityHttpEndpoints[entityType]}`;

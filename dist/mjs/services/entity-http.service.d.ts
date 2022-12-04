@@ -25,5 +25,6 @@ export declare class EntityHttpService extends BaseHttpService {
     uploadProcessImage(id: string, svg: string, name?: string): Promise<void>;
     addEntity<T extends ConfigurationEntity>(type: EntityType, entity: T): Promise<T>;
     updateEntity<T extends ConfigurationEntity>(type: EntityType, entity: T): Promise<T>;
+    deleteEntity(type: EntityType, id: string): Promise<void>;
     private _createBaseUrlByType;
 }

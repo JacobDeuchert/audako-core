@@ -91,6 +91,13 @@ class EntityHttpService extends base_http_service_js_1.BaseHttpService {
             return axios_1.default.put(url, entity, { headers: headers }).then((response) => response.data);
         });
     }
+    deleteEntity(type, id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const url = `${yield this._createBaseUrlByType(type)}/${id}`;
+            const headers = yield this.getAuthorizationHeader();
+            return axios_1.default.delete(url, { headers: headers }).then();
+        });
+    }
     _createBaseUrlByType(entityType) {
         return __awaiter(this, void 0, void 0, function* () {
             return `${yield this.getStructureUrl()}${configuration_entity_model_js_1.EntityHttpEndpoints[entityType]}`;
