@@ -27,7 +27,7 @@ class EntityHttpService extends base_http_service_js_1.BaseHttpService {
     }
     getPartialEntityById(entityType, id, projection) {
         return __awaiter(this, void 0, void 0, function* () {
-            let url = `${this._createBaseUrlByType(entityType)}/${id}`;
+            let url = `${yield this._createBaseUrlByType(entityType)}/${id}`;
             if (projection) {
                 url += `?$projection=${JSON.stringify(projection)}`;
             }
@@ -38,7 +38,7 @@ class EntityHttpService extends base_http_service_js_1.BaseHttpService {
     }
     queryConfiguration(entityType, query, paging, projection) {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = `${this._createBaseUrlByType(entityType)}/query`;
+            const url = `${yield this._createBaseUrlByType(entityType)}/query`;
             const queryBody = {
                 $filter: JSON.stringify(query),
                 $paging: paging ? JSON.stringify(paging) : null,
@@ -69,7 +69,7 @@ class EntityHttpService extends base_http_service_js_1.BaseHttpService {
     }
     uploadProcessImage(id, svg, name = 'process-image.svg') {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = `${this._createBaseUrlByType(configuration_entity_model_js_1.EntityType.ProcessImage)}/${id}/file/image`;
+            const url = `${yield this._createBaseUrlByType(configuration_entity_model_js_1.EntityType.ProcessImage)}/${id}/file/image`;
             const headers = yield this.getAuthorizationHeader();
             const blob = new Blob([svg], { type: 'image/svg+xml' });
             const formData = new FormData();
@@ -78,7 +78,9 @@ class EntityHttpService extends base_http_service_js_1.BaseHttpService {
         });
     }
     _createBaseUrlByType(entityType) {
-        return `${this.getStructureUrl()}${configuration_entity_model_js_1.EntityHttpEndpoints[entityType]}`;
+        return __awaiter(this, void 0, void 0, function* () {
+            return `${yield this.getStructureUrl()}${configuration_entity_model_js_1.EntityHttpEndpoints[entityType]}`;
+        });
     }
 }
 exports.EntityHttpService = EntityHttpService;

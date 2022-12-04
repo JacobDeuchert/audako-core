@@ -21,7 +21,7 @@ export class EntityHttpService extends BaseHttpService {
     }
     getPartialEntityById(entityType, id, projection) {
         return __awaiter(this, void 0, void 0, function* () {
-            let url = `${this._createBaseUrlByType(entityType)}/${id}`;
+            let url = `${yield this._createBaseUrlByType(entityType)}/${id}`;
             if (projection) {
                 url += `?$projection=${JSON.stringify(projection)}`;
             }
@@ -32,7 +32,7 @@ export class EntityHttpService extends BaseHttpService {
     }
     queryConfiguration(entityType, query, paging, projection) {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = `${this._createBaseUrlByType(entityType)}/query`;
+            const url = `${yield this._createBaseUrlByType(entityType)}/query`;
             const queryBody = {
                 $filter: JSON.stringify(query),
                 $paging: paging ? JSON.stringify(paging) : null,
@@ -63,7 +63,7 @@ export class EntityHttpService extends BaseHttpService {
     }
     uploadProcessImage(id, svg, name = 'process-image.svg') {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = `${this._createBaseUrlByType(EntityType.ProcessImage)}/${id}/file/image`;
+            const url = `${yield this._createBaseUrlByType(EntityType.ProcessImage)}/${id}/file/image`;
             const headers = yield this.getAuthorizationHeader();
             const blob = new Blob([svg], { type: 'image/svg+xml' });
             const formData = new FormData();
@@ -72,6 +72,8 @@ export class EntityHttpService extends BaseHttpService {
         });
     }
     _createBaseUrlByType(entityType) {
-        return `${this.getStructureUrl()}${EntityHttpEndpoints[entityType]}`;
+        return __awaiter(this, void 0, void 0, function* () {
+            return `${yield this.getStructureUrl()}${EntityHttpEndpoints[entityType]}`;
+        });
     }
 }

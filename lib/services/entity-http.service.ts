@@ -26,7 +26,7 @@ export class EntityHttpService extends BaseHttpService {
     id: string,
     projection: Projection<T>
   ): Promise<Partial<T>> {
-    let url = `${this._createBaseUrlByType(entityType)}/${id}`;
+    let url = `${await this._createBaseUrlByType(entityType)}/${id}`;
 
     if (projection) {
       url += `?$projection=${JSON.stringify(projection)}`;
@@ -43,7 +43,7 @@ export class EntityHttpService extends BaseHttpService {
     paging?: { skip: number; limit: number },
     projection?: { [p in keyof T]?: number }
   ): Promise<PaginationResponse<Partial<T>>> {
-    const url = `${this._createBaseUrlByType(entityType)}/query`;
+    const url = `${await this._createBaseUrlByType(entityType)}/query`;
 
     const queryBody = {
       $filter: JSON.stringify(query),
@@ -79,7 +79,7 @@ export class EntityHttpService extends BaseHttpService {
   }
 
   public async uploadProcessImage(id: string, svg: string, name: string = 'process-image.svg'): Promise<void> {
-    const url = `${this._createBaseUrlByType(EntityType.ProcessImage)}/${id}/file/image`;
+    const url = `${await this._createBaseUrlByType(EntityType.ProcessImage)}/${id}/file/image`;
     const headers = await this.getAuthorizationHeader();
     const blob = new Blob([svg], { type: 'image/svg+xml' });
     const formData = new FormData();
@@ -87,7 +87,7 @@ export class EntityHttpService extends BaseHttpService {
     await axios.post<number>(url, formData, { headers: headers });
   }
 
-  private _createBaseUrlByType(entityType: EntityType): string {
-    return `${this.getStructureUrl()}${EntityHttpEndpoints[entityType]}`;
+  private async _createBaseUrlByType(entityType: EntityType): Promise<string> {
+    return `${await this.getStructureUrl()}${EntityHttpEndpoints[entityType]}`;
   }
 }
