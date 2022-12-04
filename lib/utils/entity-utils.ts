@@ -9,6 +9,10 @@ export type ObjectKey = {
 
 export class EntityUtils {
 
+  public static isEntityType(type: string): type is EntityType {
+    return Object.keys(EntityType).includes(type);
+  }
+
   public static getEntityPropertiesByType(type: EntityType, deep: boolean): ObjectKey[] {
     const typeClass = EntityTypeClassMapping[type];
 

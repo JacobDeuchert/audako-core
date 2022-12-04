@@ -4,6 +4,9 @@ exports.EntityUtils = void 0;
 const configuration_entity_model_js_1 = require("../models/entities/configuration-entity.model.js");
 const entity_type_class_mapping_js_1 = require("../models/entity-type-class-mapping.js");
 class EntityUtils {
+    static isEntityType(type) {
+        return Object.keys(configuration_entity_model_js_1.EntityType).includes(type);
+    }
     static getEntityPropertiesByType(type, deep) {
         const typeClass = entity_type_class_mapping_js_1.EntityTypeClassMapping[type];
         if (!typeClass) {

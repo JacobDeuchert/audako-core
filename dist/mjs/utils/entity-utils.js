@@ -1,6 +1,9 @@
-import { Field } from '../models/entities/configuration-entity.model.js';
+import { EntityType, Field } from '../models/entities/configuration-entity.model.js';
 import { EntityTypeClassMapping } from '../models/entity-type-class-mapping.js';
 export class EntityUtils {
+    static isEntityType(type) {
+        return Object.keys(EntityType).includes(type);
+    }
     static getEntityPropertiesByType(type, deep) {
         const typeClass = EntityTypeClassMapping[type];
         if (!typeClass) {

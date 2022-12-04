@@ -5,6 +5,7 @@ export type ObjectKey = {
     type: string;
 };
 export declare class EntityUtils {
+    static isEntityType(type: string): type is EntityType;
     static getEntityPropertiesByType(type: EntityType, deep: boolean): ObjectKey[];
     static setPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string, value: U): void;
     static getPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string): U;
