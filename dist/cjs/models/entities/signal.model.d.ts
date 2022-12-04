@@ -13,6 +13,8 @@ export declare class Signal extends ConfigurationEntity {
     DataConnectionId: Field<string>;
     Address: Field<string>;
     Settings: SignalSettings;
+    RecordingSettings: SignalRecordingSettings;
+    constructor();
 }
 export declare class SignalSettings {
     _t: string;
@@ -43,4 +45,40 @@ export declare class SignalCounterSettings extends SignalSettings {
     Unit: Field<string>;
     Factor: Field<number>;
     Offset: Field<number>;
+}
+export declare enum RecordingSpecialProcessingType {
+    None = "None",
+    LiveFlowMeter = "LiveFlowMeter",
+    Watchdog = "Watchdog"
+}
+export declare enum RecordingType {
+    MeanValue = "MeanValue",
+    LastValue = "LastValue"
+}
+export declare class SignalRecordingSettings {
+    SpecialProcessingType: Field<RecordingSpecialProcessingType>;
+    Type: Field<RecordingType>;
+    Interval: Field<number>;
+    constructor();
+}
+export declare enum SignalCompressionType {
+    None = "None",
+    WeightedMean = "WeightedMean",
+    ArithmeticMean = "ArithmeticMean",
+    Difference = "Difference",
+    Sum = "Sum",
+    Time = "Time",
+    Text = "Text"
+}
+export declare class SignalCompressionSettings {
+    Timezones: Field<string[]>;
+    SubIntervalCompressionType: Field<SignalCompressionType>;
+    HourIntervalCompressionType: Field<SignalCompressionType>;
+    TwoHourIntervalCompressionType: Field<SignalCompressionType>;
+    DayIntervalCompressionType: Field<SignalCompressionType>;
+    WeekIntervalCompressionType: Field<SignalCompressionType>;
+    MonthIntervalCompressionType: Field<SignalCompressionType>;
+    QuarterIntervalCompressionType: Field<SignalCompressionType>;
+    YearIntervalCompressionType: Field<SignalCompressionType>;
+    constructor();
 }

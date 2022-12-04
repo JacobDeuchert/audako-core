@@ -2,7 +2,7 @@ import { CompressionInterval, HistoricalValueMap, ValueObjectType } from '../mod
 import { HttpConfig } from '../models/http-config.model.js';
 import { AsyncValue } from '../utils/async-value-utils.js';
 import { BaseHttpService } from './base-http.service.js';
-export declare type HistoricalValueRequest = {
+export type HistoricalValueRequest = {
     ObjectType: ValueObjectType;
     ObjectId: string;
     IntervalType: CompressionInterval;

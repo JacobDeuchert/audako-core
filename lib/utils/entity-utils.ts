@@ -20,6 +20,10 @@ export class EntityUtils {
     return this._getObjectKeys(entity, deep);
   }
 
+  public static setPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string, value: U) {
+    this._setObjectProperty(entity, propertyPath.split('.'), value);
+  }
+
   public static getPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string): U {
 
     const propertyPathParts = propertyPath.split('.');
@@ -91,5 +95,20 @@ export class EntityUtils {
     }
 
     return deepKeys;
+  }
+
+  private static _setObjectProperty<T>(object: object, propertyPath: string[], value: T): void {
+
+    const objectKeys = Object.keys(object);
+
+    const currentKey = propertyPath.shift();
+
+    if (propertyPath.length === 0) {
+      object[currentKey] = value;
+      return;
+    } else if (objectKeys.includes(currentKey) && typeof object[currentKey] === 'object') {
+      const nextObject = object[currentKey];
+      this._setObjectProperty(nextObject, propertyPath, value);
+    } 
   }
 }

@@ -16,6 +16,17 @@ export class Signal extends ConfigurationEntity {
   public Address: Field<string>;
 
   public Settings: SignalSettings;
+
+  public RecordingSettings: SignalRecordingSettings;
+
+  constructor() {
+    super();
+    this.Type = new Field<SignalType>();
+    this.DataConnectionId = new Field<string>();
+    this.Address = new Field<string>();
+    this.Settings = new SignalSettings();
+    this.RecordingSettings = new SignalRecordingSettings();
+  }
 }
 
 export class SignalSettings {
@@ -58,4 +69,61 @@ export class SignalCounterSettings extends SignalSettings {
 
   public Factor: Field<number>;
   public Offset: Field<number>;
+}
+
+export enum RecordingSpecialProcessingType {
+  None = 'None',
+  LiveFlowMeter = 'LiveFlowMeter',
+  Watchdog = 'Watchdog'
+}
+export enum RecordingType {
+  MeanValue = 'MeanValue',
+  LastValue = 'LastValue'
+}
+
+
+export class SignalRecordingSettings {
+  SpecialProcessingType: Field<RecordingSpecialProcessingType>;
+  Type: Field<RecordingType> = new Field<RecordingType>();
+  Interval: Field<number> = new Field<number>();
+
+  constructor() {
+    this.SpecialProcessingType = new Field<RecordingSpecialProcessingType>();
+    this.Type = new Field<RecordingType>();
+    this.Interval = new Field<number>();
+  }
+}
+
+export enum SignalCompressionType {
+  None = 'None',
+  WeightedMean = 'WeightedMean',
+  ArithmeticMean = 'ArithmeticMean',
+  Difference = 'Difference',
+  Sum = 'Sum',
+  Time = 'Time',
+  Text = 'Text'
+}
+
+export class SignalCompressionSettings {
+  Timezones: Field<string[]>  = new Field<string[]>();
+  SubIntervalCompressionType: Field<SignalCompressionType> = new Field<SignalCompressionType>();
+  HourIntervalCompressionType: Field<SignalCompressionType> = new Field<SignalCompressionType>();
+  TwoHourIntervalCompressionType: Field<SignalCompressionType> = new Field<SignalCompressionType>();
+  DayIntervalCompressionType: Field<SignalCompressionType> = new Field<SignalCompressionType>();
+  WeekIntervalCompressionType: Field<SignalCompressionType> = new Field<SignalCompressionType>();
+  MonthIntervalCompressionType: Field<SignalCompressionType> = new Field<SignalCompressionType>();
+  QuarterIntervalCompressionType: Field<SignalCompressionType> = new Field<SignalCompressionType>();
+  YearIntervalCompressionType: Field<SignalCompressionType> = new Field<SignalCompressionType>();
+
+  constructor() {
+    this.Timezones = new Field<string[]>([]);
+    this.SubIntervalCompressionType = new Field<SignalCompressionType>(SignalCompressionType.None);
+    this.HourIntervalCompressionType = new Field<SignalCompressionType>(SignalCompressionType.None);
+    this.TwoHourIntervalCompressionType = new Field<SignalCompressionType>(SignalCompressionType.None);
+    this.DayIntervalCompressionType = new Field<SignalCompressionType>(SignalCompressionType.None);
+    this.WeekIntervalCompressionType = new Field<SignalCompressionType>(SignalCompressionType.None);
+    this.MonthIntervalCompressionType = new Field<SignalCompressionType>(SignalCompressionType.None);
+    this.QuarterIntervalCompressionType = new Field<SignalCompressionType>(SignalCompressionType.None);
+    this.YearIntervalCompressionType = new Field<SignalCompressionType>(SignalCompressionType.None);
+  }
 }

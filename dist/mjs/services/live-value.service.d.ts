@@ -2,17 +2,17 @@ import { Observable } from 'rxjs';
 import { HttpConfig } from '../models/http-config.model';
 import { Disposable } from '../interfaces/disposable';
 import { AsyncValue } from '../utils/async-value-utils.js';
-export declare type LivePackage = {
+export type LivePackage = {
     identifier: string;
     timestamp: Date;
 };
-export declare type SignalLiveValue = {
+export type SignalLiveValue = {
     value: any;
 } & LivePackage;
-export declare type SignalOffsetValue = {
+export type SignalOffsetValue = {
     value: any;
 } & LivePackage;
-export declare type TimestampPackage = LivePackage;
+export type TimestampPackage = LivePackage;
 export declare enum LiveHubMethod {
     ChangeModeAsync = "ChangeModeAsync",
     ChangeIntervalAsync = "ChangeIntervalAsync",

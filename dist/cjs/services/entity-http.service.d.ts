@@ -2,11 +2,11 @@ import { ConfigurationEntity, EntityType } from '../models/entities/configuratio
 import { HttpConfig } from '../models/http-config.model.js';
 import { AsyncValue } from '../utils/async-value-utils.js';
 import { BaseHttpService } from './base-http.service.js';
-export declare type PaginationResponse<T> = {
+export type PaginationResponse<T> = {
     data: T[];
     total: number;
 };
-export declare type Projection<T> = {
+export type Projection<T> = {
     [P in keyof T]?: 1 | -1;
 } | null;
 export declare class EntityHttpService extends BaseHttpService {

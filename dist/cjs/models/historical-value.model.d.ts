@@ -10,8 +10,8 @@ export declare enum CompressionInterval {
     QuarterInterval = "QuarterInterval",
     YearInterval = "YearInterval"
 }
-export declare type ValueObjectType = EntityType.Signal | EntityType.Formula;
-export declare type HistoricalValueMap = {
+export type ValueObjectType = EntityType.Signal | EntityType.Formula;
+export type HistoricalValueMap = {
     IntervalStart: string;
 } & {
     [signalId: string]: number | string | boolean;
