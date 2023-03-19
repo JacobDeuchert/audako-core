@@ -10,4 +10,5 @@ export declare abstract class BaseHttpService {
     protected getAccessTokenAsPromise(): Promise<string>;
     protected getStructureUrl(): Promise<string>;
     static requestHttpConfig(systemUrl: string): Promise<HttpConfig>;
+    static isApiReachable(apiUrl: string): Promise<boolean>;
 }

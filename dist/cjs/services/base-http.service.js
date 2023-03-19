@@ -58,5 +58,11 @@ class BaseHttpService {
             .get(`${systemUrl}/assets/conf/application.config`)
             .then((response) => response.data);
     }
+    static isApiReachable(apiUrl) {
+        return axios_1.default
+            .get(`${apiUrl}/api/structure/about/version`)
+            .then((response) => response.status === 200 || response.status === 401)
+            .catch((error) => false);
+    }
 }
 exports.BaseHttpService = BaseHttpService;
