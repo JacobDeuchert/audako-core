@@ -62,7 +62,7 @@ class BaseHttpService {
         return axios_1.default
             .get(`${apiUrl}/api/structure/about/version`)
             .then((response) => response.status === 200 || response.status === 401)
-            .catch((error) => false);
+            .catch((error) => { var _a; return ((_a = error === null || error === void 0 ? void 0 : error.response) === null || _a === void 0 ? void 0 : _a.status) === 401; });
     }
 }
 exports.BaseHttpService = BaseHttpService;

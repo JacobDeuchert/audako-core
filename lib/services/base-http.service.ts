@@ -48,7 +48,7 @@ export abstract class BaseHttpService {
     return axios
       .get(`${apiUrl}/api/structure/about/version`)
       .then((response) => response.status === 200 || response.status === 401)
-      .catch((error) => false);
+      .catch((error) => error?.response?.status === 401);
   }
 
   
