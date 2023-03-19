@@ -10,7 +10,7 @@ export { EventDefinition } from './models/entities/event-definition.model.js';
 export { EventCondition, DataConnectionFailureConditionSettings, EventConditionSettingsType, SignalConditionSettings, ConditionSettings, } from './models/entities/event-condition.model.js';
 export { DataSource } from './models/entities/data-source.model.js';
 export { DataSourceType } from './models/entities/data-source.model.js';
-export { DataConnection } from './models/entities/data-connection.model.js';
+export { DataConnection, DataConnectionType } from './models/entities/data-connection.model.js';
 export { DataConnectionSettings } from './models/entities/data-connection.model.js';
 export { TenantView } from './models/tenant-view.model.js';
 export { UserProfile } from './models/user-profile.model.js';
