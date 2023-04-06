@@ -11,7 +11,8 @@ export enum EntityType {
   EventCondition = 'EventCondition',
   EventDefinition = 'EventDefinition',
   EventCategory = 'EventCategory',
-  ProcessImage = 'ProcessImage'
+  ProcessImage = 'ProcessImage',
+  BatchDefinition = 'BatchDefinition',
 }
 
 export const EntityIcons: { [p in EntityType]?: string } = {
@@ -34,6 +35,7 @@ export const EntityHttpEndpoints: { [p in EntityType]: string } = {
   ProcessImage: '/scada/ProcessImage',
   EventCategory: '/base/EventCategory',
   EventDefinition: '/base/EventDefinition',
+  BatchDefinition: '/scada/batchdefinition'
 };
 
 export class Field<T> {
