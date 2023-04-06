@@ -1,3 +1,4 @@
+import { BatchDefinition } from './entities/batch-definition.model.js';
 import { EntityType } from './entities/configuration-entity.model.js';
 import { DashboardTab } from './entities/dashboard-tab.model.js';
 import { Dashboard } from './entities/dashboard.model.js';
@@ -21,5 +22,6 @@ export const EntityTypeClassMapping = {
     [EntityType.EventCondition]: EventCondition,
     [EntityType.EventDefinition]: EventDefinition,
     [EntityType.Formula]: Formula,
-    [EntityType.ProcessImage]: ProcessImage
+    [EntityType.ProcessImage]: ProcessImage,
+    [EntityType.BatchDefinition]: BatchDefinition
 };

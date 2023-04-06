@@ -14,6 +14,7 @@ var EntityType;
     EntityType["EventDefinition"] = "EventDefinition";
     EntityType["EventCategory"] = "EventCategory";
     EntityType["ProcessImage"] = "ProcessImage";
+    EntityType["BatchDefinition"] = "BatchDefinition";
 })(EntityType = exports.EntityType || (exports.EntityType = {}));
 exports.EntityIcons = {
     [EntityType.Group]: 'fas fa-folder',
@@ -34,6 +35,7 @@ exports.EntityHttpEndpoints = {
     ProcessImage: '/scada/ProcessImage',
     EventCategory: '/base/EventCategory',
     EventDefinition: '/base/EventDefinition',
+    BatchDefinition: '/scada/batchdefinition'
 };
 class Field {
     constructor(value = null, ooAttributes = []) {

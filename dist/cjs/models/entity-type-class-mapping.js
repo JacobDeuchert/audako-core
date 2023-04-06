@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntityTypeClassMapping = void 0;
+const batch_definition_model_js_1 = require("./entities/batch-definition.model.js");
 const configuration_entity_model_js_1 = require("./entities/configuration-entity.model.js");
 const dashboard_tab_model_js_1 = require("./entities/dashboard-tab.model.js");
 const dashboard_model_js_1 = require("./entities/dashboard.model.js");
@@ -24,5 +25,6 @@ exports.EntityTypeClassMapping = {
     [configuration_entity_model_js_1.EntityType.EventCondition]: event_condition_model_js_1.EventCondition,
     [configuration_entity_model_js_1.EntityType.EventDefinition]: event_definition_model_js_1.EventDefinition,
     [configuration_entity_model_js_1.EntityType.Formula]: formula_model_js_1.Formula,
-    [configuration_entity_model_js_1.EntityType.ProcessImage]: process_image_model_js_1.ProcessImage
+    [configuration_entity_model_js_1.EntityType.ProcessImage]: process_image_model_js_1.ProcessImage,
+    [configuration_entity_model_js_1.EntityType.BatchDefinition]: batch_definition_model_js_1.BatchDefinition
 };
