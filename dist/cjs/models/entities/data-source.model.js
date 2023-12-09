@@ -6,7 +6,7 @@ var DataSourceType;
 (function (DataSourceType) {
     DataSourceType["EdgeGateway"] = "EdgeGateway";
     DataSourceType["DataAdapter"] = "DataAdapter";
-})(DataSourceType = exports.DataSourceType || (exports.DataSourceType = {}));
+})(DataSourceType || (exports.DataSourceType = DataSourceType = {}));
 class DataSource extends configuration_entity_model_js_1.ConfigurationEntity {
 }
 exports.DataSource = DataSource;

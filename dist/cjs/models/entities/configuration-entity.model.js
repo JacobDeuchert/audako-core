@@ -15,7 +15,7 @@ var EntityType;
     EntityType["EventCategory"] = "EventCategory";
     EntityType["ProcessImage"] = "ProcessImage";
     EntityType["BatchDefinition"] = "BatchDefinition";
-})(EntityType = exports.EntityType || (exports.EntityType = {}));
+})(EntityType || (exports.EntityType = EntityType = {}));
 exports.EntityIcons = {
     [EntityType.Group]: 'fas fa-folder',
     [EntityType.Dashboard]: 'adk adk-dashboard',

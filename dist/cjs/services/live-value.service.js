@@ -42,18 +42,18 @@ var LiveHubMethod;
     LiveHubMethod["ChangeModeAsync"] = "ChangeModeAsync";
     LiveHubMethod["ChangeIntervalAsync"] = "ChangeIntervalAsync";
     LiveHubMethod["SubscribeMany"] = "SubscribeMany";
-})(LiveHubMethod = exports.LiveHubMethod || (exports.LiveHubMethod = {}));
+})(LiveHubMethod || (exports.LiveHubMethod = LiveHubMethod = {}));
 var LiveHubEvent;
 (function (LiveHubEvent) {
     LiveHubEvent["Send"] = "Send";
-})(LiveHubEvent = exports.LiveHubEvent || (exports.LiveHubEvent = {}));
+})(LiveHubEvent || (exports.LiveHubEvent = LiveHubEvent = {}));
 var SubscriptionPrefix;
 (function (SubscriptionPrefix) {
     SubscriptionPrefix["S"] = "S";
     SubscriptionPrefix["SO"] = "SO";
     SubscriptionPrefix["T"] = "T";
     SubscriptionPrefix["TC"] = "TC";
-})(SubscriptionPrefix = exports.SubscriptionPrefix || (exports.SubscriptionPrefix = {}));
+})(SubscriptionPrefix || (exports.SubscriptionPrefix = SubscriptionPrefix = {}));
 class LiveValueService {
     constructor(httpConfig, accessToken) {
         this.httpConfig = httpConfig;

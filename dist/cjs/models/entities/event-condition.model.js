@@ -9,7 +9,7 @@ var EventConditionSettingsType;
 (function (EventConditionSettingsType) {
     EventConditionSettingsType["SignalConditionSettings"] = "SignalConditionSettings";
     EventConditionSettingsType["DataConnectionFailureConditionSettings"] = "DataConnectionFailureConditionSettings";
-})(EventConditionSettingsType = exports.EventConditionSettingsType || (exports.EventConditionSettingsType = {}));
+})(EventConditionSettingsType || (exports.EventConditionSettingsType = EventConditionSettingsType = {}));
 class ConditionSettings {
 }
 exports.ConditionSettings = ConditionSettings;

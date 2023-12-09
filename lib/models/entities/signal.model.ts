@@ -19,6 +19,8 @@ export class Signal extends ConfigurationEntity {
 
   public RecordingSettings: SignalRecordingSettings;
 
+  public CompressionSettings: SignalCompressionSettings;
+
   constructor() {
     super();
     this.Type = new Field<SignalType>();

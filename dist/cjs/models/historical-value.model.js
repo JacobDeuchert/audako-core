@@ -12,4 +12,4 @@ var CompressionInterval;
     CompressionInterval["MonthInterval"] = "MonthInterval";
     CompressionInterval["QuarterInterval"] = "QuarterInterval";
     CompressionInterval["YearInterval"] = "YearInterval";
-})(CompressionInterval = exports.CompressionInterval || (exports.CompressionInterval = {}));
+})(CompressionInterval || (exports.CompressionInterval = CompressionInterval = {}));

@@ -10,12 +10,12 @@ var BatchTriggerType;
     BatchTriggerType["EventDefinition"] = "EventDefinition";
     BatchTriggerType["Condition"] = "Condition";
     BatchTriggerType["Manual"] = "Manual";
-})(BatchTriggerType = exports.BatchTriggerType || (exports.BatchTriggerType = {}));
+})(BatchTriggerType || (exports.BatchTriggerType = BatchTriggerType = {}));
 var BatchTriggerState;
 (function (BatchTriggerState) {
     BatchTriggerState["Raised"] = "Raised";
     BatchTriggerState["Dropped"] = "Dropped";
-})(BatchTriggerState = exports.BatchTriggerState || (exports.BatchTriggerState = {}));
+})(BatchTriggerState || (exports.BatchTriggerState = BatchTriggerState = {}));
 class TriggerDefinition {
 }
 exports.TriggerDefinition = TriggerDefinition;

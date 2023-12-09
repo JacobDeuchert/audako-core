@@ -15,4 +15,4 @@ var CompressionType;
 (function (CompressionType) {
     CompressionType["ArithmeticMean"] = "ArithmeticMean";
     CompressionType["Sum"] = "Sum";
-})(CompressionType = exports.CompressionType || (exports.CompressionType = {}));
+})(CompressionType || (exports.CompressionType = CompressionType = {}));

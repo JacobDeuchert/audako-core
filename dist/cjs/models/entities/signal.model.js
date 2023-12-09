@@ -11,7 +11,7 @@ var SignalType;
     SignalType["Counter"] = "Counter";
     SignalType["UniversalInput"] = "UniservalInput";
     SignalType["UniversalInOut"] = "UniversalInOut";
-})(SignalType = exports.SignalType || (exports.SignalType = {}));
+})(SignalType || (exports.SignalType = SignalType = {}));
 class Signal extends configuration_entity_model_js_1.ConfigurationEntity {
     constructor() {
         super();
@@ -40,12 +40,12 @@ var RecordingSpecialProcessingType;
     RecordingSpecialProcessingType["None"] = "None";
     RecordingSpecialProcessingType["LiveFlowMeter"] = "LiveFlowMeter";
     RecordingSpecialProcessingType["Watchdog"] = "Watchdog";
-})(RecordingSpecialProcessingType = exports.RecordingSpecialProcessingType || (exports.RecordingSpecialProcessingType = {}));
+})(RecordingSpecialProcessingType || (exports.RecordingSpecialProcessingType = RecordingSpecialProcessingType = {}));
 var RecordingType;
 (function (RecordingType) {
     RecordingType["MeanValue"] = "MeanValue";
     RecordingType["LastValue"] = "LastValue";
-})(RecordingType = exports.RecordingType || (exports.RecordingType = {}));
+})(RecordingType || (exports.RecordingType = RecordingType = {}));
 class SignalRecordingSettings {
     constructor() {
         this.Type = new configuration_entity_model_js_1.Field();
@@ -65,7 +65,7 @@ var SignalCompressionType;
     SignalCompressionType["Sum"] = "Sum";
     SignalCompressionType["Time"] = "Time";
     SignalCompressionType["Text"] = "Text";
-})(SignalCompressionType = exports.SignalCompressionType || (exports.SignalCompressionType = {}));
+})(SignalCompressionType || (exports.SignalCompressionType = SignalCompressionType = {}));
 class SignalCompressionSettings {
     constructor() {
         this.Timezones = new configuration_entity_model_js_1.Field();

@@ -14,6 +14,7 @@ export declare class Signal extends ConfigurationEntity {
     Address: Field<string>;
     Settings: SignalSettings;
     RecordingSettings: SignalRecordingSettings;
+    CompressionSettings: SignalCompressionSettings;
     constructor();
 }
 export declare class SignalSettings {

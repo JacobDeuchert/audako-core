@@ -23,7 +23,7 @@ var DataConnectionType;
     DataConnectionType["EhWebserver"] = "EhWebserver";
     DataConnectionType["FtpParser"] = "FtpParser";
     DataConnectionType["Snmp"] = "Snmp";
-})(DataConnectionType = exports.DataConnectionType || (exports.DataConnectionType = {}));
+})(DataConnectionType || (exports.DataConnectionType = DataConnectionType = {}));
 class DataConnection extends configuration_entity_model_js_1.ConfigurationEntity {
 }
 exports.DataConnection = DataConnection;
