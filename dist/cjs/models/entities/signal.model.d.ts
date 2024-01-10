@@ -1,3 +1,4 @@
+import { Type } from '../../interfaces/type.js';
 import { ConfigurationEntity, Field } from './configuration-entity.model.js';
 export declare enum SignalType {
     AnalogInput = "AnalogInput",
@@ -5,7 +6,7 @@ export declare enum SignalType {
     DigitalInput = "DigitalInput",
     DigitalInOut = "DigitalInOut",
     Counter = "Counter",
-    UniversalInput = "UniservalInput",
+    UniversalInput = "UniversalInput",
     UniversalInOut = "UniversalInOut"
 }
 export declare class Signal extends ConfigurationEntity {
@@ -47,6 +48,7 @@ export declare class SignalCounterSettings extends SignalSettings {
     Factor: Field<number>;
     Offset: Field<number>;
 }
+export declare const SignalTypeSettingsMap: Record<SignalType, Type<SignalSettings> | null>;
 export declare enum RecordingSpecialProcessingType {
     None = "None",
     LiveFlowMeter = "LiveFlowMeter",

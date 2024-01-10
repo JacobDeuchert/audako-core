@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SignalCompressionSettings = exports.SignalCompressionType = exports.SignalRecordingSettings = exports.RecordingType = exports.RecordingSpecialProcessingType = exports.SignalCounterSettings = exports.SignalAnalogSettings = exports.SignalDigitalSettings = exports.SignalSettings = exports.Signal = exports.SignalType = void 0;
+exports.SignalCompressionSettings = exports.SignalCompressionType = exports.SignalRecordingSettings = exports.RecordingType = exports.RecordingSpecialProcessingType = exports.SignalTypeSettingsMap = exports.SignalCounterSettings = exports.SignalAnalogSettings = exports.SignalDigitalSettings = exports.SignalSettings = exports.Signal = exports.SignalType = void 0;
 const configuration_entity_model_js_1 = require("./configuration-entity.model.js");
 var SignalType;
 (function (SignalType) {
@@ -9,7 +9,7 @@ var SignalType;
     SignalType["DigitalInput"] = "DigitalInput";
     SignalType["DigitalInOut"] = "DigitalInOut";
     SignalType["Counter"] = "Counter";
-    SignalType["UniversalInput"] = "UniservalInput";
+    SignalType["UniversalInput"] = "UniversalInput";
     SignalType["UniversalInOut"] = "UniversalInOut";
 })(SignalType || (exports.SignalType = SignalType = {}));
 class Signal extends configuration_entity_model_js_1.ConfigurationEntity {
@@ -35,6 +35,15 @@ exports.SignalAnalogSettings = SignalAnalogSettings;
 class SignalCounterSettings extends SignalSettings {
 }
 exports.SignalCounterSettings = SignalCounterSettings;
+exports.SignalTypeSettingsMap = {
+    AnalogInput: SignalAnalogSettings,
+    AnalogInOut: SignalAnalogSettings,
+    DigitalInput: SignalDigitalSettings,
+    DigitalInOut: SignalDigitalSettings,
+    Counter: SignalCounterSettings,
+    UniversalInput: null,
+    UniversalInOut: null
+};
 var RecordingSpecialProcessingType;
 (function (RecordingSpecialProcessingType) {
     RecordingSpecialProcessingType["None"] = "None";

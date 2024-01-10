@@ -6,7 +6,7 @@ export var SignalType;
     SignalType["DigitalInput"] = "DigitalInput";
     SignalType["DigitalInOut"] = "DigitalInOut";
     SignalType["Counter"] = "Counter";
-    SignalType["UniversalInput"] = "UniservalInput";
+    SignalType["UniversalInput"] = "UniversalInput";
     SignalType["UniversalInOut"] = "UniversalInOut";
 })(SignalType || (SignalType = {}));
 export class Signal extends ConfigurationEntity {
@@ -27,6 +27,15 @@ export class SignalAnalogSettings extends SignalSettings {
 }
 export class SignalCounterSettings extends SignalSettings {
 }
+export const SignalTypeSettingsMap = {
+    AnalogInput: SignalAnalogSettings,
+    AnalogInOut: SignalAnalogSettings,
+    DigitalInput: SignalDigitalSettings,
+    DigitalInOut: SignalDigitalSettings,
+    Counter: SignalCounterSettings,
+    UniversalInput: null,
+    UniversalInOut: null
+};
 export var RecordingSpecialProcessingType;
 (function (RecordingSpecialProcessingType) {
     RecordingSpecialProcessingType["None"] = "None";
