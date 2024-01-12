@@ -27,13 +27,14 @@ export class Signal extends ConfigurationEntity {
     this.Type = new Field<SignalType>();
     this.DataConnectionId = new Field<string>();
     this.Address = new Field<string>();
-    this.Settings = new SignalSettings();
+    this.Settings = null;
     this.RecordingSettings = new SignalRecordingSettings();
   }
 }
 
 export class SignalSettings {
-  public _t: string;
+
+  constructor(public _t: string) {}
 }
 
 export class SignalDigitalSettings extends SignalSettings {
@@ -47,6 +48,10 @@ export class SignalDigitalSettings extends SignalSettings {
 
   public BitSelect: Field<number>;
   public BitSelectConversion: Field<string>;
+
+  constructor() {
+    super('SignalDigitalSettings')
+  }
 }
 
 export class SignalAnalogSettings extends SignalSettings {
@@ -59,6 +64,10 @@ export class SignalAnalogSettings extends SignalSettings {
 
   public Factor: Field<number>;
   public Offset: Field<number>;
+
+  constructor() {
+    super('SignalAnalogSettings')
+  }
 }
 
 export class SignalCounterSettings extends SignalSettings {
@@ -72,6 +81,11 @@ export class SignalCounterSettings extends SignalSettings {
 
   public Factor: Field<number>;
   public Offset: Field<number>;
+
+
+  constructor() {
+    super('SignalCounterSettings')
+  }
 }
 
 export const SignalTypeSettingsMap: Record<SignalType, Type<SignalSettings> | null> = {
