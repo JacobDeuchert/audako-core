@@ -25,7 +25,7 @@ export class HistoricalValueService extends BaseHttpService {
             const url = yield this.getHistorianUrl();
             ;
             const headers = yield this.getAuthorizationHeader();
-            const response = yield axios.post(`${url}value/manyflat`, requests, {
+            const response = yield axios.post(`${url}/value/manyflat`, requests, {
                 headers: headers
             });
             if (response.status !== 200) {

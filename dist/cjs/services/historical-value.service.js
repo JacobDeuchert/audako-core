@@ -34,7 +34,7 @@ class HistoricalValueService extends base_http_service_js_1.BaseHttpService {
             const url = yield this.getHistorianUrl();
             ;
             const headers = yield this.getAuthorizationHeader();
-            const response = yield axios_1.default.post(`${url}value/manyflat`, requests, {
+            const response = yield axios_1.default.post(`${url}/value/manyflat`, requests, {
                 headers: headers
             });
             if (response.status !== 200) {

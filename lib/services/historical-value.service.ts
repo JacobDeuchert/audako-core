@@ -76,7 +76,7 @@ export class HistoricalValueService extends BaseHttpService {
     ;
     const headers = await this.getAuthorizationHeader()
 
-    const response = await axios.post<HistoricalValueMap[]>(`${url}value/manyflat`, requests, {
+    const response = await axios.post<HistoricalValueMap[]>(`${url}/value/manyflat`, requests, {
       headers: headers
     });
 
