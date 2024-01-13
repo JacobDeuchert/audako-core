@@ -15,17 +15,29 @@ export class Signal extends ConfigurationEntity {
         this.Type = new Field();
         this.DataConnectionId = new Field();
         this.Address = new Field();
-        this.Settings = new SignalSettings();
+        this.Settings = null;
         this.RecordingSettings = new SignalRecordingSettings();
     }
 }
 export class SignalSettings {
+    constructor(_t) {
+        this._t = _t;
+    }
 }
 export class SignalDigitalSettings extends SignalSettings {
+    constructor() {
+        super('SignalDigitalSettings');
+    }
 }
 export class SignalAnalogSettings extends SignalSettings {
+    constructor() {
+        super('SignalAnalogSettings');
+    }
 }
 export class SignalCounterSettings extends SignalSettings {
+    constructor() {
+        super('SignalCounterSettings');
+    }
 }
 export const SignalTypeSettingsMap = {
     AnalogInput: SignalAnalogSettings,

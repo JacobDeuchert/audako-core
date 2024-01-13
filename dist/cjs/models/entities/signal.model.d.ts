@@ -20,6 +20,7 @@ export declare class Signal extends ConfigurationEntity {
 }
 export declare class SignalSettings {
     _t: string;
+    constructor(_t: string);
 }
 export declare class SignalDigitalSettings extends SignalSettings {
     DigitalTrueColor: Field<string>;
@@ -29,6 +30,7 @@ export declare class SignalDigitalSettings extends SignalSettings {
     Invert: Field<boolean>;
     BitSelect: Field<number>;
     BitSelectConversion: Field<string>;
+    constructor();
 }
 export declare class SignalAnalogSettings extends SignalSettings {
     MinValue: Field<number>;
@@ -38,6 +40,7 @@ export declare class SignalAnalogSettings extends SignalSettings {
     Unit: Field<string>;
     Factor: Field<number>;
     Offset: Field<number>;
+    constructor();
 }
 export declare class SignalCounterSettings extends SignalSettings {
     MaxValue: Field<number>;
@@ -47,6 +50,7 @@ export declare class SignalCounterSettings extends SignalSettings {
     Unit: Field<string>;
     Factor: Field<number>;
     Offset: Field<number>;
+    constructor();
 }
 export declare const SignalTypeSettingsMap: Record<SignalType, Type<SignalSettings> | null>;
 export declare enum RecordingSpecialProcessingType {

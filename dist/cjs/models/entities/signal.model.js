@@ -18,21 +18,33 @@ class Signal extends configuration_entity_model_js_1.ConfigurationEntity {
         this.Type = new configuration_entity_model_js_1.Field();
         this.DataConnectionId = new configuration_entity_model_js_1.Field();
         this.Address = new configuration_entity_model_js_1.Field();
-        this.Settings = new SignalSettings();
+        this.Settings = null;
         this.RecordingSettings = new SignalRecordingSettings();
     }
 }
 exports.Signal = Signal;
 class SignalSettings {
+    constructor(_t) {
+        this._t = _t;
+    }
 }
 exports.SignalSettings = SignalSettings;
 class SignalDigitalSettings extends SignalSettings {
+    constructor() {
+        super('SignalDigitalSettings');
+    }
 }
 exports.SignalDigitalSettings = SignalDigitalSettings;
 class SignalAnalogSettings extends SignalSettings {
+    constructor() {
+        super('SignalAnalogSettings');
+    }
 }
 exports.SignalAnalogSettings = SignalAnalogSettings;
 class SignalCounterSettings extends SignalSettings {
+    constructor() {
+        super('SignalCounterSettings');
+    }
 }
 exports.SignalCounterSettings = SignalCounterSettings;
 exports.SignalTypeSettingsMap = {
