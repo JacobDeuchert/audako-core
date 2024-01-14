@@ -28,7 +28,7 @@ class EntityUtils {
             propertyValue = propertyValue[propertyPathPart];
         }
         if (isField || configuration_entity_model_js_1.Field.isField(propertyValue)) {
-            return propertyValue.Value;
+            return propertyValue === null || propertyValue === void 0 ? void 0 : propertyValue.Value;
         }
         return propertyValue;
     }

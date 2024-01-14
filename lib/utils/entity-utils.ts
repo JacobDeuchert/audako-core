@@ -43,7 +43,7 @@ export class EntityUtils {
     }
 
     if (isField || Field.isField(propertyValue)) {
-      return propertyValue.Value as U;
+      return propertyValue?.Value as U;
     } 
     return propertyValue as U;
   }
