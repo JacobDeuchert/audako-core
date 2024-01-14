@@ -24,11 +24,11 @@ export class EntityUtils {
     return this._getObjectKeys(entity, deep);
   }
 
-  public static setPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string, value: U) {
-    this._setObjectProperty(entity, propertyPath.split('.'), value);
+  public static setPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string, value: U, isField?: boolean) {
+    this._setObjectProperty(entity, propertyPath.split('.'), value, isField);
   }
 
-  public static getPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string): U {
+  public static getPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string, isField?: boolean): U {
 
     const propertyPathParts = propertyPath.split('.');
 
@@ -42,7 +42,7 @@ export class EntityUtils {
       propertyValue = propertyValue[propertyPathPart]; 
     }
 
-    if (Field.isField(propertyValue)) {
+    if (isField || Field.isField(propertyValue)) {
       return propertyValue.Value as U;
     } 
     return propertyValue as U;
@@ -101,7 +101,7 @@ export class EntityUtils {
     return deepKeys;
   }
 
-  private static _setObjectProperty<T>(object: object, propertyPath: string[], value: T): void {
+  private static _setObjectProperty<T>(object: object, propertyPath: string[], value: T, isField?: boolean): void {
 
     const objectKeys = Object.keys(object);
 
@@ -109,7 +109,7 @@ export class EntityUtils {
 
     if (propertyPath.length === 0) {
 
-      if (Field.isField(object[currentKey])) {
+      if (isField || Field.isField(object[currentKey])) {
         object[currentKey] = new Field(value);
       } else {
         object[currentKey] = value;

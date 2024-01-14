@@ -12,10 +12,10 @@ export class EntityUtils {
         const entity = new typeClass();
         return this._getObjectKeys(entity, deep);
     }
-    static setPropertyValue(entity, propertyPath, value) {
-        this._setObjectProperty(entity, propertyPath.split('.'), value);
+    static setPropertyValue(entity, propertyPath, value, isField) {
+        this._setObjectProperty(entity, propertyPath.split('.'), value, isField);
     }
-    static getPropertyValue(entity, propertyPath) {
+    static getPropertyValue(entity, propertyPath, isField) {
         const propertyPathParts = propertyPath.split('.');
         let propertyValue = entity;
         for (const propertyPathPart of propertyPathParts) {
@@ -24,7 +24,7 @@ export class EntityUtils {
             }
             propertyValue = propertyValue[propertyPathPart];
         }
-        if (Field.isField(propertyValue)) {
+        if (isField || Field.isField(propertyValue)) {
             return propertyValue.Value;
         }
         return propertyValue;
@@ -77,11 +77,11 @@ export class EntityUtils {
         }
         return deepKeys;
     }
-    static _setObjectProperty(object, propertyPath, value) {
+    static _setObjectProperty(object, propertyPath, value, isField) {
         const objectKeys = Object.keys(object);
         const currentKey = propertyPath.shift();
         if (propertyPath.length === 0) {
-            if (Field.isField(object[currentKey])) {
+            if (isField || Field.isField(object[currentKey])) {
                 object[currentKey] = new Field(value);
             }
             else {
