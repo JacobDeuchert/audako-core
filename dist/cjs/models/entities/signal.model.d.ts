@@ -19,6 +19,12 @@ export declare class Signal extends ConfigurationEntity {
     CompressionSettings: SignalCompressionSettings;
     constructor();
 }
+export declare enum BitSelectConversionTypes {
+    None = "None",
+    SByte = "SByte",
+    Short = "Short",
+    Int = "Int"
+}
 export declare class SignalSettings {
     _t: string;
     constructor(_t: string);
@@ -30,7 +36,7 @@ export declare class SignalDigitalSettings extends SignalSettings {
     DigitalFalseCaption: Field<string>;
     Invert: Field<boolean>;
     BitSelect: Field<number>;
-    BitSelectConversion: Field<string>;
+    BitSelectConversion: Field<BitSelectConversionTypes>;
     constructor();
 }
 export declare class SignalAnalogSettings extends SignalSettings {

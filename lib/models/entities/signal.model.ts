@@ -35,6 +35,13 @@ export class Signal extends ConfigurationEntity {
   }
 }
 
+export enum BitSelectConversionTypes {
+  None = 'None',
+  SByte = 'SByte',
+  Short = 'Short',
+  Int = 'Int',
+}
+
 export class SignalSettings {
 
   constructor(public _t: string) {}
@@ -50,7 +57,7 @@ export class SignalDigitalSettings extends SignalSettings {
   public Invert: Field<boolean>;
 
   public BitSelect: Field<number>;
-  public BitSelectConversion: Field<string>;
+  public BitSelectConversion: Field<BitSelectConversionTypes>;
 
   constructor() {
     super('SignalDigitalSettings')
@@ -61,7 +68,7 @@ export class SignalDigitalSettings extends SignalSettings {
     this.DigitalFalseCaption = new Field<string>();
     this.Invert = new Field<boolean>();
     this.BitSelect = new Field<number>();
-    this.BitSelectConversion = new Field<string>();
+    this.BitSelectConversion = new Field<BitSelectConversionTypes>(BitSelectConversionTypes.None);
   }
 }
 

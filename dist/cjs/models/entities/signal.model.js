@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SignalCompressionSettings = exports.SignalCompressionType = exports.SignalRecordingSettings = exports.RecordingType = exports.RecordingSpecialProcessingType = exports.SignalTypeSettingsMap = exports.SignalCounterSettings = exports.SignalAnalogSettings = exports.SignalDigitalSettings = exports.SignalSettings = exports.Signal = exports.SignalType = void 0;
+exports.SignalCompressionSettings = exports.SignalCompressionType = exports.SignalRecordingSettings = exports.RecordingType = exports.RecordingSpecialProcessingType = exports.SignalTypeSettingsMap = exports.SignalCounterSettings = exports.SignalAnalogSettings = exports.SignalDigitalSettings = exports.SignalSettings = exports.BitSelectConversionTypes = exports.Signal = exports.SignalType = void 0;
 const configuration_entity_model_js_1 = require("./configuration-entity.model.js");
 var SignalType;
 (function (SignalType) {
@@ -24,6 +24,13 @@ class Signal extends configuration_entity_model_js_1.ConfigurationEntity {
     }
 }
 exports.Signal = Signal;
+var BitSelectConversionTypes;
+(function (BitSelectConversionTypes) {
+    BitSelectConversionTypes["None"] = "None";
+    BitSelectConversionTypes["SByte"] = "SByte";
+    BitSelectConversionTypes["Short"] = "Short";
+    BitSelectConversionTypes["Int"] = "Int";
+})(BitSelectConversionTypes || (exports.BitSelectConversionTypes = BitSelectConversionTypes = {}));
 class SignalSettings {
     constructor(_t) {
         this._t = _t;
@@ -39,7 +46,7 @@ class SignalDigitalSettings extends SignalSettings {
         this.DigitalFalseCaption = new configuration_entity_model_js_1.Field();
         this.Invert = new configuration_entity_model_js_1.Field();
         this.BitSelect = new configuration_entity_model_js_1.Field();
-        this.BitSelectConversion = new configuration_entity_model_js_1.Field();
+        this.BitSelectConversion = new configuration_entity_model_js_1.Field(BitSelectConversionTypes.None);
     }
 }
 exports.SignalDigitalSettings = SignalDigitalSettings;

@@ -20,6 +20,13 @@ export class Signal extends ConfigurationEntity {
         this.RecordingSettings = new SignalRecordingSettings();
     }
 }
+export var BitSelectConversionTypes;
+(function (BitSelectConversionTypes) {
+    BitSelectConversionTypes["None"] = "None";
+    BitSelectConversionTypes["SByte"] = "SByte";
+    BitSelectConversionTypes["Short"] = "Short";
+    BitSelectConversionTypes["Int"] = "Int";
+})(BitSelectConversionTypes || (BitSelectConversionTypes = {}));
 export class SignalSettings {
     constructor(_t) {
         this._t = _t;
@@ -34,7 +41,7 @@ export class SignalDigitalSettings extends SignalSettings {
         this.DigitalFalseCaption = new Field();
         this.Invert = new Field();
         this.BitSelect = new Field();
-        this.BitSelectConversion = new Field();
+        this.BitSelectConversion = new Field(BitSelectConversionTypes.None);
     }
 }
 export class SignalAnalogSettings extends SignalSettings {
