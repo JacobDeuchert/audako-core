@@ -28,16 +28,37 @@ export class SignalSettings {
 export class SignalDigitalSettings extends SignalSettings {
     constructor() {
         super('SignalDigitalSettings');
+        this.DigitalTrueColor = new Field();
+        this.DigitalTrueCaption = new Field();
+        this.DigitalFalseColor = new Field();
+        this.DigitalFalseCaption = new Field();
+        this.Invert = new Field();
+        this.BitSelect = new Field();
+        this.BitSelectConversion = new Field();
     }
 }
 export class SignalAnalogSettings extends SignalSettings {
     constructor() {
         super('SignalAnalogSettings');
+        this.MinValue = new Field();
+        this.MaxValue = new Field();
+        this.DefaultValue = new Field();
+        this.DecimalPlaces = new Field();
+        this.Unit = new Field();
+        this.Factor = new Field();
+        this.Offset = new Field();
     }
 }
 export class SignalCounterSettings extends SignalSettings {
     constructor() {
         super('SignalCounterSettings');
+        this.MaxValue = new Field();
+        this.OffsetAutomatic = new Field();
+        this.OffsetDetection = new Field();
+        this.DecimalPlaces = new Field();
+        this.Unit = new Field();
+        this.Factor = new Field();
+        this.Offset = new Field();
     }
 }
 export const SignalTypeSettingsMap = {

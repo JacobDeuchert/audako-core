@@ -33,18 +33,39 @@ exports.SignalSettings = SignalSettings;
 class SignalDigitalSettings extends SignalSettings {
     constructor() {
         super('SignalDigitalSettings');
+        this.DigitalTrueColor = new configuration_entity_model_js_1.Field();
+        this.DigitalTrueCaption = new configuration_entity_model_js_1.Field();
+        this.DigitalFalseColor = new configuration_entity_model_js_1.Field();
+        this.DigitalFalseCaption = new configuration_entity_model_js_1.Field();
+        this.Invert = new configuration_entity_model_js_1.Field();
+        this.BitSelect = new configuration_entity_model_js_1.Field();
+        this.BitSelectConversion = new configuration_entity_model_js_1.Field();
     }
 }
 exports.SignalDigitalSettings = SignalDigitalSettings;
 class SignalAnalogSettings extends SignalSettings {
     constructor() {
         super('SignalAnalogSettings');
+        this.MinValue = new configuration_entity_model_js_1.Field();
+        this.MaxValue = new configuration_entity_model_js_1.Field();
+        this.DefaultValue = new configuration_entity_model_js_1.Field();
+        this.DecimalPlaces = new configuration_entity_model_js_1.Field();
+        this.Unit = new configuration_entity_model_js_1.Field();
+        this.Factor = new configuration_entity_model_js_1.Field();
+        this.Offset = new configuration_entity_model_js_1.Field();
     }
 }
 exports.SignalAnalogSettings = SignalAnalogSettings;
 class SignalCounterSettings extends SignalSettings {
     constructor() {
         super('SignalCounterSettings');
+        this.MaxValue = new configuration_entity_model_js_1.Field();
+        this.OffsetAutomatic = new configuration_entity_model_js_1.Field();
+        this.OffsetDetection = new configuration_entity_model_js_1.Field();
+        this.DecimalPlaces = new configuration_entity_model_js_1.Field();
+        this.Unit = new configuration_entity_model_js_1.Field();
+        this.Factor = new configuration_entity_model_js_1.Field();
+        this.Offset = new configuration_entity_model_js_1.Field();
     }
 }
 exports.SignalCounterSettings = SignalCounterSettings;
