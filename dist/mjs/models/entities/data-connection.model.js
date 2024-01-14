@@ -24,4 +24,44 @@ export var DataConnectionType;
 export class DataConnection extends ConfigurationEntity {
 }
 export class DataConnectionSettings {
+    constructor(_t) {
+        this._t = _t;
+    }
+}
+export class DataConnectionS7Settings extends DataConnectionSettings {
+    constructor() {
+        super('DataConnectionS7Settings');
+    }
+}
+export var DataConnectionOpcUaSecurityPolicy;
+(function (DataConnectionOpcUaSecurityPolicy) {
+    DataConnectionOpcUaSecurityPolicy["None"] = "None";
+    DataConnectionOpcUaSecurityPolicy["Basic128Rsa15"] = "Basic128Rsa15";
+    DataConnectionOpcUaSecurityPolicy["Basic256"] = "Basic256";
+    DataConnectionOpcUaSecurityPolicy["Basic256Sha256"] = "Basic256Sha256";
+})(DataConnectionOpcUaSecurityPolicy || (DataConnectionOpcUaSecurityPolicy = {}));
+export var DataConnectionOpcUaSecurityMode;
+(function (DataConnectionOpcUaSecurityMode) {
+    DataConnectionOpcUaSecurityMode["None"] = "None";
+    DataConnectionOpcUaSecurityMode["Sign"] = "Sign";
+    DataConnectionOpcUaSecurityMode["SignAndEncrypt"] = "SignAndEncrypt";
+})(DataConnectionOpcUaSecurityMode || (DataConnectionOpcUaSecurityMode = {}));
+export var DataConnectionOpcUaSecurityAuthentication;
+(function (DataConnectionOpcUaSecurityAuthentication) {
+    DataConnectionOpcUaSecurityAuthentication["Anonymous"] = "Anonymous";
+    DataConnectionOpcUaSecurityAuthentication["Credentials"] = "Credentials";
+    DataConnectionOpcUaSecurityAuthentication["Certificate"] = "Certificate";
+})(DataConnectionOpcUaSecurityAuthentication || (DataConnectionOpcUaSecurityAuthentication = {}));
+export var DataConnectionOpcUaStringEncoding;
+(function (DataConnectionOpcUaStringEncoding) {
+    DataConnectionOpcUaStringEncoding["ASCII"] = "ASCII";
+    DataConnectionOpcUaStringEncoding["UTF7"] = " UTF7";
+    DataConnectionOpcUaStringEncoding["UTF8"] = "UTF8";
+    DataConnectionOpcUaStringEncoding["Unicode"] = "Unicode";
+    DataConnectionOpcUaStringEncoding["UTF32"] = "UTF32";
+})(DataConnectionOpcUaStringEncoding || (DataConnectionOpcUaStringEncoding = {}));
+export class DataConnectionOpcUaSettings extends DataConnectionSettings {
+    constructor() {
+        super('DataConnectionOpcUaSettings');
+    }
 }

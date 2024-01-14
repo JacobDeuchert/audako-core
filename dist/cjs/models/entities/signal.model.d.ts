@@ -11,6 +11,7 @@ export declare enum SignalType {
 }
 export declare class Signal extends ConfigurationEntity {
     Type: Field<SignalType>;
+    Alias: Field<string>;
     DataConnectionId: Field<string>;
     Address: Field<string>;
     Settings: SignalSettings;

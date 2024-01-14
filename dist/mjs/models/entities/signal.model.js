@@ -12,6 +12,7 @@ export var SignalType;
 export class Signal extends ConfigurationEntity {
     constructor() {
         super();
+        this.Alias = new Field();
         this.Type = new Field();
         this.DataConnectionId = new Field();
         this.Address = new Field();

@@ -13,6 +13,8 @@ export enum SignalType {
 
 export class Signal extends ConfigurationEntity {
   public Type: Field<SignalType>;
+
+  public Alias: Field<string>;
   public DataConnectionId: Field<string>;
   public Address: Field<string>;
 
@@ -24,6 +26,7 @@ export class Signal extends ConfigurationEntity {
 
   constructor() {
     super();
+    this.Alias = new Field<string>();
     this.Type = new Field<SignalType>();
     this.DataConnectionId = new Field<string>();
     this.Address = new Field<string>();

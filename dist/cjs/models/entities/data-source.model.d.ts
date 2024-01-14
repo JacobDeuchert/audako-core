@@ -1,7 +1,8 @@
 import { ConfigurationEntity, Field } from './configuration-entity.model.js';
 export declare enum DataSourceType {
     EdgeGateway = "EdgeGateway",
-    DataAdapter = "DataAdapter"
+    DataAdapter = "DataAdapter",
+    SmartDevice = "SmartDevice"
 }
 export declare class DataSource extends ConfigurationEntity {
     Address: Field<string>;

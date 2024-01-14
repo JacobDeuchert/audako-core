@@ -15,6 +15,7 @@ var SignalType;
 class Signal extends configuration_entity_model_js_1.ConfigurationEntity {
     constructor() {
         super();
+        this.Alias = new configuration_entity_model_js_1.Field();
         this.Type = new configuration_entity_model_js_1.Field();
         this.DataConnectionId = new configuration_entity_model_js_1.Field();
         this.Address = new configuration_entity_model_js_1.Field();
