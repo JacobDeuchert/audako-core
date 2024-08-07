@@ -96,3 +96,4 @@ export declare class SignalCompressionSettings {
     YearIntervalCompressionType: Field<SignalCompressionType>;
     constructor();
 }
+export declare function getDefaultCompressionSettingsBySignalType(type: SignalType): SignalCompressionSettings;

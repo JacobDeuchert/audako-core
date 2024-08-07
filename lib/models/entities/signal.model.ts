@@ -32,6 +32,7 @@ export class Signal extends ConfigurationEntity {
     this.Address = new Field<string>();
     this.Settings = null;
     this.RecordingSettings = new SignalRecordingSettings();
+    this.CompressionSettings = new SignalCompressionSettings();
   }
 }
 
@@ -187,4 +188,29 @@ export class SignalCompressionSettings {
     this.QuarterIntervalCompressionType = new Field<SignalCompressionType>(SignalCompressionType.None);
     this.YearIntervalCompressionType = new Field<SignalCompressionType>(SignalCompressionType.None);
   }
+}
+
+export function getDefaultCompressionSettingsBySignalType(type: SignalType): SignalCompressionSettings {
+  const compressionSettings = new SignalCompressionSettings();
+  if (type === SignalType.AnalogInput || type === SignalType.AnalogInOut) {
+    compressionSettings.SubIntervalCompressionType.Value = SignalCompressionType.ArithmeticMean;
+    compressionSettings.HourIntervalCompressionType.Value = SignalCompressionType.ArithmeticMean;
+    compressionSettings.TwoHourIntervalCompressionType.Value = SignalCompressionType.ArithmeticMean;
+    compressionSettings.DayIntervalCompressionType.Value = SignalCompressionType.ArithmeticMean;
+    compressionSettings.WeekIntervalCompressionType.Value = SignalCompressionType.ArithmeticMean;
+    compressionSettings.MonthIntervalCompressionType.Value = SignalCompressionType.ArithmeticMean;
+    compressionSettings.QuarterIntervalCompressionType.Value = SignalCompressionType.ArithmeticMean;
+    compressionSettings.YearIntervalCompressionType.Value = SignalCompressionType.ArithmeticMean;
+  } else if (type === SignalType.Counter) {
+    compressionSettings.SubIntervalCompressionType.Value = SignalCompressionType.Sum;
+    compressionSettings.HourIntervalCompressionType.Value = SignalCompressionType.Sum;
+    compressionSettings.TwoHourIntervalCompressionType.Value = SignalCompressionType.Sum;
+    compressionSettings.DayIntervalCompressionType.Value = SignalCompressionType.Sum;
+    compressionSettings.WeekIntervalCompressionType.Value = SignalCompressionType.Difference;
+    compressionSettings.MonthIntervalCompressionType.Value = SignalCompressionType.Difference;
+    compressionSettings.QuarterIntervalCompressionType.Value = SignalCompressionType.Difference;
+    compressionSettings.YearIntervalCompressionType.Value = SignalCompressionType.Difference;
+  }
+
+  return compressionSettings;
 }

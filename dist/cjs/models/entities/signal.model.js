@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SignalCompressionSettings = exports.SignalCompressionType = exports.SignalRecordingSettings = exports.RecordingType = exports.RecordingSpecialProcessingType = exports.SignalTypeSettingsMap = exports.SignalCounterSettings = exports.SignalAnalogSettings = exports.SignalDigitalSettings = exports.SignalSettings = exports.BitSelectConversionTypes = exports.Signal = exports.SignalType = void 0;
+exports.getDefaultCompressionSettingsBySignalType = exports.SignalCompressionSettings = exports.SignalCompressionType = exports.SignalRecordingSettings = exports.RecordingType = exports.RecordingSpecialProcessingType = exports.SignalTypeSettingsMap = exports.SignalCounterSettings = exports.SignalAnalogSettings = exports.SignalDigitalSettings = exports.SignalSettings = exports.BitSelectConversionTypes = exports.Signal = exports.SignalType = void 0;
 const configuration_entity_model_js_1 = require("./configuration-entity.model.js");
 var SignalType;
 (function (SignalType) {
@@ -21,6 +21,7 @@ class Signal extends configuration_entity_model_js_1.ConfigurationEntity {
         this.Address = new configuration_entity_model_js_1.Field();
         this.Settings = null;
         this.RecordingSettings = new SignalRecordingSettings();
+        this.CompressionSettings = new SignalCompressionSettings();
     }
 }
 exports.Signal = Signal;
@@ -139,3 +140,28 @@ class SignalCompressionSettings {
     }
 }
 exports.SignalCompressionSettings = SignalCompressionSettings;
+function getDefaultCompressionSettingsBySignalType(type) {
+    const compressionSettings = new SignalCompressionSettings();
+    if (type === SignalType.AnalogInput || type === SignalType.AnalogInOut) {
+        compressionSettings.SubIntervalCompressionType.Value = SignalCompressionType.ArithmeticMean;
+        compressionSettings.HourIntervalCompressionType.Value = SignalCompressionType.ArithmeticMean;
+        compressionSettings.TwoHourIntervalCompressionType.Value = SignalCompressionType.ArithmeticMean;
+        compressionSettings.DayIntervalCompressionType.Value = SignalCompressionType.ArithmeticMean;
+        compressionSettings.WeekIntervalCompressionType.Value = SignalCompressionType.ArithmeticMean;
+        compressionSettings.MonthIntervalCompressionType.Value = SignalCompressionType.ArithmeticMean;
+        compressionSettings.QuarterIntervalCompressionType.Value = SignalCompressionType.ArithmeticMean;
+        compressionSettings.YearIntervalCompressionType.Value = SignalCompressionType.ArithmeticMean;
+    }
+    else if (type === SignalType.Counter) {
+        compressionSettings.SubIntervalCompressionType.Value = SignalCompressionType.Sum;
+        compressionSettings.HourIntervalCompressionType.Value = SignalCompressionType.Sum;
+        compressionSettings.TwoHourIntervalCompressionType.Value = SignalCompressionType.Sum;
+        compressionSettings.DayIntervalCompressionType.Value = SignalCompressionType.Sum;
+        compressionSettings.WeekIntervalCompressionType.Value = SignalCompressionType.Difference;
+        compressionSettings.MonthIntervalCompressionType.Value = SignalCompressionType.Difference;
+        compressionSettings.QuarterIntervalCompressionType.Value = SignalCompressionType.Difference;
+        compressionSettings.YearIntervalCompressionType.Value = SignalCompressionType.Difference;
+    }
+    return compressionSettings;
+}
+exports.getDefaultCompressionSettingsBySignalType = getDefaultCompressionSettingsBySignalType;
