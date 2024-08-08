@@ -1,5 +1,6 @@
 import { EntityType, Field } from '../models/entities/configuration-entity.model.js';
 import { EntityTypeClassMapping } from '../models/entity-type-class-mapping.js';
+import { ObjectUtils } from './object-utils.js';
 export class EntityUtils {
     static isEntityType(type) {
         return Object.keys(EntityType).includes(type);
@@ -16,13 +17,21 @@ export class EntityUtils {
         this._setObjectProperty(entity, propertyPath.split('.'), value, isField);
     }
     static getPropertyValue(entity, propertyPath, isField) {
+        var _a;
         const propertyPathParts = propertyPath.split('.');
         let propertyValue = entity;
+        let previousPropertyPathPart = '';
         for (const propertyPathPart of propertyPathParts) {
             if (!propertyValue) {
                 return null;
             }
+            if (previousPropertyPathPart === 'AdditionalFields') {
+                if ((_a = propertyValue['AdditionalFields'][propertyPathPart]) === null || _a === void 0 ? void 0 : _a.Value) {
+                    propertyValue = ObjectUtils.tryParseJson(propertyValue['AdditionalFields'][propertyPathPart].Value);
+                }
+            }
             propertyValue = propertyValue[propertyPathPart];
+            previousPropertyPathPart = propertyPathPart;
         }
         if (isField || Field.isField(propertyValue)) {
             return propertyValue === null || propertyValue === void 0 ? void 0 : propertyValue.Value;

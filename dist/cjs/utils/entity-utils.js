@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntityUtils = void 0;
 const configuration_entity_model_js_1 = require("../models/entities/configuration-entity.model.js");
 const entity_type_class_mapping_js_1 = require("../models/entity-type-class-mapping.js");
+const object_utils_js_1 = require("./object-utils.js");
 class EntityUtils {
     static isEntityType(type) {
         return Object.keys(configuration_entity_model_js_1.EntityType).includes(type);
@@ -19,13 +20,21 @@ class EntityUtils {
         this._setObjectProperty(entity, propertyPath.split('.'), value, isField);
     }
     static getPropertyValue(entity, propertyPath, isField) {
+        var _a;
         const propertyPathParts = propertyPath.split('.');
         let propertyValue = entity;
+        let previousPropertyPathPart = '';
         for (const propertyPathPart of propertyPathParts) {
             if (!propertyValue) {
                 return null;
             }
+            if (previousPropertyPathPart === 'AdditionalFields') {
+                if ((_a = propertyValue['AdditionalFields'][propertyPathPart]) === null || _a === void 0 ? void 0 : _a.Value) {
+                    propertyValue = object_utils_js_1.ObjectUtils.tryParseJson(propertyValue['AdditionalFields'][propertyPathPart].Value);
+                }
+            }
             propertyValue = propertyValue[propertyPathPart];
+            previousPropertyPathPart = propertyPathPart;
         }
         if (isField || configuration_entity_model_js_1.Field.isField(propertyValue)) {
             return propertyValue === null || propertyValue === void 0 ? void 0 : propertyValue.Value;
