@@ -13,8 +13,8 @@ export class EntityUtils {
         const entity = new typeClass();
         return this._getObjectKeys(entity, deep);
     }
-    static setPropertyValue(entity, propertyPath, value, isField) {
-        this._setObjectProperty(entity, propertyPath.split('.'), value, isField);
+    static setPropertyValue(entity, propertyPath, value, isField, setOnlyExistingFields) {
+        this._setObjectProperty(entity, propertyPath.split('.'), value, isField, setOnlyExistingFields);
     }
     static getPropertyValue(entity, propertyPath, isField) {
         var _a;

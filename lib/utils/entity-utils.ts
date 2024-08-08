@@ -25,8 +25,8 @@ export class EntityUtils {
     return this._getObjectKeys(entity, deep);
   }
 
-  public static setPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string, value: U, isField?: boolean) {
-    this._setObjectProperty(entity, propertyPath.split('.'), value, isField);
+  public static setPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string, value: U, isField?: boolean, setOnlyExistingFields?: boolean) {
+    this._setObjectProperty(entity, propertyPath.split('.'), value, isField, setOnlyExistingFields);
   }
 
   public static getPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string, isField?: boolean): U {
