@@ -1,5 +1,6 @@
 import { ConfigurationEntity, EntityType, Field } from '../models/entities/configuration-entity.model.js';
 import { EntityTypeClassMapping } from '../models/entity-type-class-mapping.js';
+import { ObjectUtils } from './object-utils.js';
 
 export type ObjectKey = {
   keys: ObjectKey[];
@@ -34,12 +35,20 @@ export class EntityUtils {
 
     let propertyValue: any = entity;
 
+    let previousPropertyPathPart = '';
     for (const propertyPathPart of propertyPathParts) {
       if (!propertyValue) {
         return null;
       }
 
+      if (previousPropertyPathPart === 'AdditionalFields') {
+        if (propertyValue['AdditionalFields'][propertyPathPart]?.Value) {
+          propertyValue = ObjectUtils.tryParseJson(propertyValue['AdditionalFields'].Value);
+        }
+      }
+      
       propertyValue = propertyValue[propertyPathPart]; 
+      previousPropertyPathPart = propertyPathPart;
     }
 
     if (isField || Field.isField(propertyValue)) {
