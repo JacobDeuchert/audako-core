@@ -33,7 +33,9 @@ class EntityUtils {
                     propertyValue = object_utils_js_1.ObjectUtils.tryParseJson(propertyValue['AdditionalFields'][propertyPathPart].Value);
                 }
             }
-            propertyValue = propertyValue[propertyPathPart];
+            else {
+                propertyValue = propertyValue[propertyPathPart];
+            }
             previousPropertyPathPart = propertyPathPart;
         }
         if (isField || configuration_entity_model_js_1.Field.isField(propertyValue)) {

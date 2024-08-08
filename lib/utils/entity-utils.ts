@@ -45,9 +45,10 @@ export class EntityUtils {
         if (propertyValue['AdditionalFields'][propertyPathPart]?.Value) {
           propertyValue = ObjectUtils.tryParseJson(propertyValue['AdditionalFields'][propertyPathPart].Value);
         }
+      } else {
+        propertyValue = propertyValue[propertyPathPart]; 
       }
 
-      propertyValue = propertyValue[propertyPathPart]; 
       previousPropertyPathPart = propertyPathPart;
     }
 
