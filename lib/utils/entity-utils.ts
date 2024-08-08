@@ -130,7 +130,7 @@ export class EntityUtils {
       return;
     } else if (objectKeys.includes(currentKey) && typeof object[currentKey] === 'object') {
       const nextObject = object[currentKey];
-      this._setObjectProperty(nextObject, propertyPath, value);
+      this._setObjectProperty(nextObject, propertyPath, value, isField, setOnlyExistingFields);
     } 
   }
 }
