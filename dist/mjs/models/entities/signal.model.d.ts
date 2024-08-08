@@ -75,6 +75,7 @@ export declare class SignalRecordingSettings {
     Interval: Field<number>;
     constructor();
 }
+export declare function getDefaultRecordingSettingsBySignalType(type: SignalType): SignalRecordingSettings;
 export declare enum SignalCompressionType {
     None = "None",
     WeightedMean = "WeightedMean",

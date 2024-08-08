@@ -77,11 +77,11 @@ export class EntityUtils {
         }
         return deepKeys;
     }
-    static _setObjectProperty(object, propertyPath, value, isField) {
+    static _setObjectProperty(object, propertyPath, value, isField, setOnlyExistingFields) {
         const objectKeys = Object.keys(object);
         const currentKey = propertyPath.shift();
         if (propertyPath.length === 0) {
-            if (isField || Field.isField(object[currentKey])) {
+            if ((!setOnlyExistingFields || objectKeys.includes(currentKey)) && (isField || Field.isField(object[currentKey]))) {
                 object[currentKey] = new Field(value);
             }
             else {

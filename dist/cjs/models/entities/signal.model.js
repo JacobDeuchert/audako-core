@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDefaultCompressionSettingsBySignalType = exports.SignalCompressionSettings = exports.SignalCompressionType = exports.SignalRecordingSettings = exports.RecordingType = exports.RecordingSpecialProcessingType = exports.SignalTypeSettingsMap = exports.SignalCounterSettings = exports.SignalAnalogSettings = exports.SignalDigitalSettings = exports.SignalSettings = exports.BitSelectConversionTypes = exports.Signal = exports.SignalType = void 0;
+exports.getDefaultCompressionSettingsBySignalType = exports.SignalCompressionSettings = exports.SignalCompressionType = exports.getDefaultRecordingSettingsBySignalType = exports.SignalRecordingSettings = exports.RecordingType = exports.RecordingSpecialProcessingType = exports.SignalTypeSettingsMap = exports.SignalCounterSettings = exports.SignalAnalogSettings = exports.SignalDigitalSettings = exports.SignalSettings = exports.BitSelectConversionTypes = exports.Signal = exports.SignalType = void 0;
 const configuration_entity_model_js_1 = require("./configuration-entity.model.js");
 var SignalType;
 (function (SignalType) {
@@ -16,10 +16,10 @@ class Signal extends configuration_entity_model_js_1.ConfigurationEntity {
     constructor() {
         super();
         this.Alias = new configuration_entity_model_js_1.Field();
-        this.Type = new configuration_entity_model_js_1.Field();
+        this.Type = new configuration_entity_model_js_1.Field(SignalType.AnalogInput);
         this.DataConnectionId = new configuration_entity_model_js_1.Field();
         this.Address = new configuration_entity_model_js_1.Field();
-        this.Settings = null;
+        this.Settings = new SignalAnalogSettings();
         this.RecordingSettings = new SignalRecordingSettings();
         this.CompressionSettings = new SignalCompressionSettings();
     }
@@ -99,14 +99,23 @@ var RecordingType;
 })(RecordingType || (exports.RecordingType = RecordingType = {}));
 class SignalRecordingSettings {
     constructor() {
-        this.Type = new configuration_entity_model_js_1.Field();
-        this.Interval = new configuration_entity_model_js_1.Field();
-        this.SpecialProcessingType = new configuration_entity_model_js_1.Field();
-        this.Type = new configuration_entity_model_js_1.Field();
-        this.Interval = new configuration_entity_model_js_1.Field();
+        this.SpecialProcessingType = new configuration_entity_model_js_1.Field(RecordingSpecialProcessingType.None);
+        this.Type = new configuration_entity_model_js_1.Field(RecordingType.MeanValue);
+        this.Interval = new configuration_entity_model_js_1.Field(300);
     }
 }
 exports.SignalRecordingSettings = SignalRecordingSettings;
+function getDefaultRecordingSettingsBySignalType(type) {
+    const recordingSettings = new SignalRecordingSettings();
+    if (type === SignalType.AnalogInput || type === SignalType.AnalogInOut) {
+        recordingSettings.Type.Value = RecordingType.MeanValue;
+    }
+    else if (type === SignalType.Counter || type === SignalType.DigitalInput || type === SignalType.DigitalInOut) {
+        recordingSettings.Type.Value = RecordingType.LastValue;
+    }
+    return recordingSettings;
+}
+exports.getDefaultRecordingSettingsBySignalType = getDefaultRecordingSettingsBySignalType;
 var SignalCompressionType;
 (function (SignalCompressionType) {
     SignalCompressionType["None"] = "None";
@@ -120,14 +129,6 @@ var SignalCompressionType;
 class SignalCompressionSettings {
     constructor() {
         this.Timezones = new configuration_entity_model_js_1.Field();
-        this.SubIntervalCompressionType = new configuration_entity_model_js_1.Field();
-        this.HourIntervalCompressionType = new configuration_entity_model_js_1.Field();
-        this.TwoHourIntervalCompressionType = new configuration_entity_model_js_1.Field();
-        this.DayIntervalCompressionType = new configuration_entity_model_js_1.Field();
-        this.WeekIntervalCompressionType = new configuration_entity_model_js_1.Field();
-        this.MonthIntervalCompressionType = new configuration_entity_model_js_1.Field();
-        this.QuarterIntervalCompressionType = new configuration_entity_model_js_1.Field();
-        this.YearIntervalCompressionType = new configuration_entity_model_js_1.Field();
         this.Timezones = new configuration_entity_model_js_1.Field([]);
         this.SubIntervalCompressionType = new configuration_entity_model_js_1.Field(SignalCompressionType.None);
         this.HourIntervalCompressionType = new configuration_entity_model_js_1.Field(SignalCompressionType.None);
