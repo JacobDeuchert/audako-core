@@ -27,10 +27,10 @@ export class Signal extends ConfigurationEntity {
   constructor() {
     super();
     this.Alias = new Field<string>();
-    this.Type = new Field<SignalType>();
+    this.Type = new Field<SignalType>(SignalType.AnalogInput);
     this.DataConnectionId = new Field<string>();
     this.Address = new Field<string>();
-    this.Settings = null;
+    this.Settings = new SignalAnalogSettings();
     this.RecordingSettings = new SignalRecordingSettings();
     this.CompressionSettings = new SignalCompressionSettings();
   }
@@ -146,14 +146,25 @@ export enum RecordingType {
 
 export class SignalRecordingSettings {
   SpecialProcessingType: Field<RecordingSpecialProcessingType>;
-  Type: Field<RecordingType> = new Field<RecordingType>();
-  Interval: Field<number> = new Field<number>();
+  Type: Field<RecordingType>;
+  Interval: Field<number>;
 
   constructor() {
-    this.SpecialProcessingType = new Field<RecordingSpecialProcessingType>();
-    this.Type = new Field<RecordingType>();
-    this.Interval = new Field<number>();
+    this.SpecialProcessingType = new Field<RecordingSpecialProcessingType>(RecordingSpecialProcessingType.None);
+    this.Type = new Field<RecordingType>(RecordingType.MeanValue);
+    this.Interval = new Field<number>(300);
   }
+}
+
+export function getDefaultRecordingSettingsBySignalType(type: SignalType): SignalRecordingSettings {
+  const recordingSettings = new SignalRecordingSettings();
+  if (type === SignalType.AnalogInput || type === SignalType.AnalogInOut) {
+    recordingSettings.Type.Value = RecordingType.MeanValue;
+  } else if (type === SignalType.Counter || type === SignalType.DigitalInput || type === SignalType.DigitalInOut) {
+    recordingSettings.Type.Value = RecordingType.LastValue;
+  }
+
+  return recordingSettings;
 }
 
 export enum SignalCompressionType {
@@ -168,14 +179,14 @@ export enum SignalCompressionType {
 
 export class SignalCompressionSettings {
   Timezones: Field<string[]>  = new Field<string[]>();
-  SubIntervalCompressionType: Field<SignalCompressionType> = new Field<SignalCompressionType>();
-  HourIntervalCompressionType: Field<SignalCompressionType> = new Field<SignalCompressionType>();
-  TwoHourIntervalCompressionType: Field<SignalCompressionType> = new Field<SignalCompressionType>();
-  DayIntervalCompressionType: Field<SignalCompressionType> = new Field<SignalCompressionType>();
-  WeekIntervalCompressionType: Field<SignalCompressionType> = new Field<SignalCompressionType>();
-  MonthIntervalCompressionType: Field<SignalCompressionType> = new Field<SignalCompressionType>();
-  QuarterIntervalCompressionType: Field<SignalCompressionType> = new Field<SignalCompressionType>();
-  YearIntervalCompressionType: Field<SignalCompressionType> = new Field<SignalCompressionType>();
+  SubIntervalCompressionType: Field<SignalCompressionType>;
+  HourIntervalCompressionType: Field<SignalCompressionType>;
+  TwoHourIntervalCompressionType: Field<SignalCompressionType>;
+  DayIntervalCompressionType: Field<SignalCompressionType>;
+  WeekIntervalCompressionType: Field<SignalCompressionType>;
+  MonthIntervalCompressionType: Field<SignalCompressionType>;
+  QuarterIntervalCompressionType: Field<SignalCompressionType>;
+  YearIntervalCompressionType: Field<SignalCompressionType>;
 
   constructor() {
     this.Timezones = new Field<string[]>([]);
