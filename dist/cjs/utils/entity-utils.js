@@ -95,7 +95,10 @@ class EntityUtils {
         const objectKeys = Object.keys(object);
         const currentKey = propertyPath.shift();
         if (propertyPath.length === 0) {
-            if ((!setOnlyExistingFields || objectKeys.includes(currentKey)) && (isField || configuration_entity_model_js_1.Field.isField(object[currentKey]))) {
+            if ((setOnlyExistingFields && !objectKeys.includes(currentKey))) {
+                return;
+            }
+            if (isField || configuration_entity_model_js_1.Field.isField(object[currentKey])) {
                 object[currentKey] = new configuration_entity_model_js_1.Field(value);
             }
             else {
