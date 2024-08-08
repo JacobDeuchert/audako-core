@@ -101,7 +101,7 @@ export class EntityUtils {
     return deepKeys;
   }
 
-  private static _setObjectProperty<T>(object: object, propertyPath: string[], value: T, isField?: boolean): void {
+  private static _setObjectProperty<T>(object: object, propertyPath: string[], value: T, isField?: boolean, setOnlyExistingFields?: boolean): void {
 
     const objectKeys = Object.keys(object);
 
@@ -109,7 +109,7 @@ export class EntityUtils {
 
     if (propertyPath.length === 0) {
 
-      if (objectKeys.includes(currentKey) && (isField || Field.isField(object[currentKey]))) {
+      if ((!setOnlyExistingFields || objectKeys.includes(currentKey)) && (isField || Field.isField(object[currentKey]))) {
         object[currentKey] = new Field(value);
       } else {
         object[currentKey] = value;
