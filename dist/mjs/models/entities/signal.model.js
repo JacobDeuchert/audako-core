@@ -61,8 +61,8 @@ export class SignalCounterSettings extends SignalSettings {
     constructor() {
         super('SignalCounterSettings');
         this.MaxValue = new Field(100);
-        this.OffsetAutomatic = new Field();
-        this.OffsetDetection = new Field();
+        this.OffsetAutomatic = new Field(true);
+        this.OffsetDetection = new Field(true);
         this.DecimalPlaces = new Field(0);
         this.Unit = new Field();
         this.Factor = new Field(1);

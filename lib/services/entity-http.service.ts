@@ -105,6 +105,30 @@ export class EntityHttpService extends BaseHttpService {
     return axios.delete<void>(url, { headers: headers }).then();
   }
 
+  public async copyTo<T extends ConfigurationEntity>(sourceEntityId: string, targetGroupId: string, type: EntityType): Promise<T> {
+    const url: string = `${await this._createBaseUrlByType(type)}/copy/${sourceEntityId}/to/${targetGroupId}`;
+    const headers = await this.getAuthorizationHeader();
+    return axios.get<T>(url, {headers}).then((response) => response.data)
+  }
+
+  public async copyMultipleTo(sourceEntityIds: string[], targetId: string, type: any): Promise<string> {
+    const url: string = `${await this._createBaseUrlByType(type)}/copy/multiple/${targetId}`;
+    const headers = await this.getAuthorizationHeader();
+    return axios.put(url, sourceEntityIds, { responseType: 'text', headers: headers });
+  }
+
+  public async moveTo<T extends ConfigurationEntity>(sourceEntityId: string, targetGroupId: string, type: any): Promise<T> {
+    const url: string = `${await this._createBaseUrlByType(type)}/move/${sourceEntityId}/to/${targetGroupId}`;
+    const headers = await this.getAuthorizationHeader();
+    return axios.get<T>(url, {headers}).then((response) => response.data);
+  }
+
+  public async moveMultipleTo(sourceIds: string[], targetId: string, type: any): Promise<string> {
+    const url: string = `${await this._createBaseUrlByType(type)}/move/multiple/${targetId}`;
+    const headers = await this.getAuthorizationHeader();
+    return axios.put(url, sourceIds, { responseType: 'text', headers: headers });
+  }
+
   private async _createBaseUrlByType(entityType: EntityType): Promise<string> {
     return `${await this.getStructureUrl()}${EntityHttpEndpoints[entityType]}`;
   }

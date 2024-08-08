@@ -26,5 +26,9 @@ export declare class EntityHttpService extends BaseHttpService {
     addEntity<T extends ConfigurationEntity>(type: EntityType, entity: T): Promise<T>;
     updateEntity<T extends ConfigurationEntity>(type: EntityType, entity: T): Promise<T>;
     deleteEntity(type: EntityType, id: string): Promise<void>;
+    copyTo<T extends ConfigurationEntity>(sourceEntityId: string, targetGroupId: string, type: EntityType): Promise<T>;
+    copyMultipleTo(sourceEntityIds: string[], targetId: string, type: any): Promise<string>;
+    moveTo<T extends ConfigurationEntity>(sourceEntityId: string, targetGroupId: string, type: any): Promise<T>;
+    moveMultipleTo(sourceIds: string[], targetId: string, type: any): Promise<string>;
     private _createBaseUrlByType;
 }

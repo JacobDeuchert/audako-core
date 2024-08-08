@@ -92,6 +92,34 @@ export class EntityHttpService extends BaseHttpService {
             return axios.delete(url, { headers: headers }).then();
         });
     }
+    copyTo(sourceEntityId, targetGroupId, type) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const url = `${yield this._createBaseUrlByType(type)}/copy/${sourceEntityId}/to/${targetGroupId}`;
+            const headers = yield this.getAuthorizationHeader();
+            return axios.get(url, { headers }).then((response) => response.data);
+        });
+    }
+    copyMultipleTo(sourceEntityIds, targetId, type) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const url = `${yield this._createBaseUrlByType(type)}/copy/multiple/${targetId}`;
+            const headers = yield this.getAuthorizationHeader();
+            return axios.put(url, sourceEntityIds, { responseType: 'text', headers: headers });
+        });
+    }
+    moveTo(sourceEntityId, targetGroupId, type) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const url = `${yield this._createBaseUrlByType(type)}/move/${sourceEntityId}/to/${targetGroupId}`;
+            const headers = yield this.getAuthorizationHeader();
+            return axios.get(url, { headers }).then((response) => response.data);
+        });
+    }
+    moveMultipleTo(sourceIds, targetId, type) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const url = `${yield this._createBaseUrlByType(type)}/move/multiple/${targetId}`;
+            const headers = yield this.getAuthorizationHeader();
+            return axios.put(url, sourceIds, { responseType: 'text', headers: headers });
+        });
+    }
     _createBaseUrlByType(entityType) {
         return __awaiter(this, void 0, void 0, function* () {
             return `${yield this.getStructureUrl()}${EntityHttpEndpoints[entityType]}`;

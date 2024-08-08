@@ -68,8 +68,8 @@ class SignalCounterSettings extends SignalSettings {
     constructor() {
         super('SignalCounterSettings');
         this.MaxValue = new configuration_entity_model_js_1.Field(100);
-        this.OffsetAutomatic = new configuration_entity_model_js_1.Field();
-        this.OffsetDetection = new configuration_entity_model_js_1.Field();
+        this.OffsetAutomatic = new configuration_entity_model_js_1.Field(true);
+        this.OffsetDetection = new configuration_entity_model_js_1.Field(true);
         this.DecimalPlaces = new configuration_entity_model_js_1.Field(0);
         this.Unit = new configuration_entity_model_js_1.Field();
         this.Factor = new configuration_entity_model_js_1.Field(1);
