@@ -45,7 +45,7 @@ class SignalDigitalSettings extends SignalSettings {
         this.DigitalTrueCaption = new configuration_entity_model_js_1.Field();
         this.DigitalFalseColor = new configuration_entity_model_js_1.Field();
         this.DigitalFalseCaption = new configuration_entity_model_js_1.Field();
-        this.Invert = new configuration_entity_model_js_1.Field();
+        this.Invert = new configuration_entity_model_js_1.Field(false);
         this.BitSelect = new configuration_entity_model_js_1.Field();
         this.BitSelectConversion = new configuration_entity_model_js_1.Field(BitSelectConversionTypes.None);
     }
@@ -54,26 +54,26 @@ exports.SignalDigitalSettings = SignalDigitalSettings;
 class SignalAnalogSettings extends SignalSettings {
     constructor() {
         super('SignalAnalogSettings');
-        this.MinValue = new configuration_entity_model_js_1.Field();
-        this.MaxValue = new configuration_entity_model_js_1.Field();
-        this.DefaultValue = new configuration_entity_model_js_1.Field();
-        this.DecimalPlaces = new configuration_entity_model_js_1.Field();
+        this.MinValue = new configuration_entity_model_js_1.Field(0);
+        this.MaxValue = new configuration_entity_model_js_1.Field(100);
+        this.DefaultValue = new configuration_entity_model_js_1.Field(null);
+        this.DecimalPlaces = new configuration_entity_model_js_1.Field(0);
         this.Unit = new configuration_entity_model_js_1.Field();
-        this.Factor = new configuration_entity_model_js_1.Field();
-        this.Offset = new configuration_entity_model_js_1.Field();
+        this.Factor = new configuration_entity_model_js_1.Field(1);
+        this.Offset = new configuration_entity_model_js_1.Field(0);
     }
 }
 exports.SignalAnalogSettings = SignalAnalogSettings;
 class SignalCounterSettings extends SignalSettings {
     constructor() {
         super('SignalCounterSettings');
-        this.MaxValue = new configuration_entity_model_js_1.Field();
+        this.MaxValue = new configuration_entity_model_js_1.Field(100);
         this.OffsetAutomatic = new configuration_entity_model_js_1.Field();
         this.OffsetDetection = new configuration_entity_model_js_1.Field();
-        this.DecimalPlaces = new configuration_entity_model_js_1.Field();
+        this.DecimalPlaces = new configuration_entity_model_js_1.Field(0);
         this.Unit = new configuration_entity_model_js_1.Field();
-        this.Factor = new configuration_entity_model_js_1.Field();
-        this.Offset = new configuration_entity_model_js_1.Field();
+        this.Factor = new configuration_entity_model_js_1.Field(1);
+        this.Offset = new configuration_entity_model_js_1.Field(0);
     }
 }
 exports.SignalCounterSettings = SignalCounterSettings;
