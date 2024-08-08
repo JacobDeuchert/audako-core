@@ -67,7 +67,7 @@ export class SignalDigitalSettings extends SignalSettings {
     this.DigitalTrueCaption = new Field<string>();
     this.DigitalFalseColor = new Field<string>();
     this.DigitalFalseCaption = new Field<string>();
-    this.Invert = new Field<boolean>();
+    this.Invert = new Field<boolean>(false);
     this.BitSelect = new Field<number>();
     this.BitSelectConversion = new Field<BitSelectConversionTypes>(BitSelectConversionTypes.None);
   }
@@ -87,13 +87,13 @@ export class SignalAnalogSettings extends SignalSettings {
   constructor() {
     super('SignalAnalogSettings')
 
-    this.MinValue = new Field<number>();
-    this.MaxValue = new Field<number>();
-    this.DefaultValue = new Field<number>();
-    this.DecimalPlaces = new Field<number>();
+    this.MinValue = new Field<number>(0);
+    this.MaxValue = new Field<number>(100);
+    this.DefaultValue = new Field<number>(null);
+    this.DecimalPlaces = new Field<number>(0);
     this.Unit = new Field<string>();
-    this.Factor = new Field<number>();
-    this.Offset = new Field<number>();
+    this.Factor = new Field<number>(1);
+    this.Offset = new Field<number>(0);
   }
 }
 
@@ -113,13 +113,13 @@ export class SignalCounterSettings extends SignalSettings {
   constructor() {
     super('SignalCounterSettings')
 
-    this.MaxValue = new Field<number>();
+    this.MaxValue = new Field<number>(100);
     this.OffsetAutomatic = new Field<boolean>();
     this.OffsetDetection = new Field<boolean>();
-    this.DecimalPlaces = new Field<number>();
+    this.DecimalPlaces = new Field<number>(0);
     this.Unit = new Field<string>();
-    this.Factor = new Field<number>();
-    this.Offset = new Field<number>();
+    this.Factor = new Field<number>(1);
+    this.Offset = new Field<number>(0);
   }
 }
 
