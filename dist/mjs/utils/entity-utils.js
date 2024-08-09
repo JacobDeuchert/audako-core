@@ -26,8 +26,10 @@ export class EntityUtils {
                 return null;
             }
             if (previousPropertyPathPart === 'AdditionalFields') {
+                console.log(propertyValue, propertyPathPart);
                 if ((_a = propertyValue[propertyPathPart]) === null || _a === void 0 ? void 0 : _a.Value) {
                     propertyValue = ObjectUtils.tryParseJson(propertyValue[propertyPathPart].Value);
+                    console.log('AdditionalValue', propertyValue);
                 }
             }
             else {
