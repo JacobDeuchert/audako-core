@@ -11,4 +11,5 @@ export declare class EntityUtils {
     static getPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string, isField?: boolean): U;
     private static _getObjectKeys;
     private static _setObjectProperty;
+    private static _setAdditionalField;
 }

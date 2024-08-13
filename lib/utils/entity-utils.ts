@@ -26,7 +26,7 @@ export class EntityUtils {
   }
 
   public static setPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string, value: U, isField?: boolean, setOnlyExistingFields?: boolean) {
-    this._setObjectProperty(entity, propertyPath.split('.'), value, isField, setOnlyExistingFields);
+    this._setObjectProperty(entity, propertyPath.split('.'), value, null, isField, setOnlyExistingFields);
   }
 
   public static getPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string, isField?: boolean): U {
@@ -113,11 +113,16 @@ export class EntityUtils {
     return deepKeys;
   }
 
-  private static _setObjectProperty<T>(object: object, propertyPath: string[], value: T, isField?: boolean, setOnlyExistingFields?: boolean): void {
+  private static _setObjectProperty<T>(object: object, propertyPath: string[], value: T, previousKey: string, isField?: boolean, setOnlyExistingFields?: boolean): void {
 
     const objectKeys = Object.keys(object);
 
     const currentKey = propertyPath.shift();
+
+    if (previousKey === 'AdditionalFields') {
+      this._setAdditionalField(object, propertyPath, value);
+      return;
+    }
 
     if (propertyPath.length === 0) {
 
@@ -132,7 +137,35 @@ export class EntityUtils {
       return;
     } else if (objectKeys.includes(currentKey) && typeof object[currentKey] === 'object') {
       const nextObject = object[currentKey];
-      this._setObjectProperty(nextObject, propertyPath, value, isField, setOnlyExistingFields);
+      this._setObjectProperty(nextObject, propertyPath, value, currentKey, isField , setOnlyExistingFields);
     } 
+  }
+
+  private static _setAdditionalField<T>(object: object, propertyPath: string[], value: T): void {
+    if (propertyPath.length === 0) {
+      return;
+    }
+
+    console.log('AdditionalField', object, propertyPath, value);
+
+    const firstKey = propertyPath.shift();
+
+    if (propertyPath.length === 0) {
+      object[firstKey] = new Field(value?.toString());
+      return;
+    } else {
+      let obj = object[firstKey] ? ObjectUtils.tryParseJson(object[firstKey].Value, {}) : {};
+      for (const key of propertyPath) {
+        const isLastKey = propertyPath.indexOf(key) === propertyPath.length - 1;
+        if (isLastKey) {
+          obj[key] = value;
+        } else {
+          obj[key] = obj[key] || {};
+          obj = obj[key];
+        }
+      }
+
+      object[firstKey] = new Field(JSON.stringify(obj));
+    }
   }
 }

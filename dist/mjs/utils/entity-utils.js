@@ -14,7 +14,7 @@ export class EntityUtils {
         return this._getObjectKeys(entity, deep);
     }
     static setPropertyValue(entity, propertyPath, value, isField, setOnlyExistingFields) {
-        this._setObjectProperty(entity, propertyPath.split('.'), value, isField, setOnlyExistingFields);
+        this._setObjectProperty(entity, propertyPath.split('.'), value, null, isField, setOnlyExistingFields);
     }
     static getPropertyValue(entity, propertyPath, isField) {
         var _a;
@@ -90,9 +90,13 @@ export class EntityUtils {
         }
         return deepKeys;
     }
-    static _setObjectProperty(object, propertyPath, value, isField, setOnlyExistingFields) {
+    static _setObjectProperty(object, propertyPath, value, previousKey, isField, setOnlyExistingFields) {
         const objectKeys = Object.keys(object);
         const currentKey = propertyPath.shift();
+        if (previousKey === 'AdditionalFields') {
+            this._setAdditionalField(object, propertyPath, value);
+            return;
+        }
         if (propertyPath.length === 0) {
             if ((setOnlyExistingFields && !objectKeys.includes(currentKey))) {
                 return;
@@ -107,7 +111,32 @@ export class EntityUtils {
         }
         else if (objectKeys.includes(currentKey) && typeof object[currentKey] === 'object') {
             const nextObject = object[currentKey];
-            this._setObjectProperty(nextObject, propertyPath, value, isField, setOnlyExistingFields);
+            this._setObjectProperty(nextObject, propertyPath, value, currentKey, isField, setOnlyExistingFields);
+        }
+    }
+    static _setAdditionalField(object, propertyPath, value) {
+        if (propertyPath.length === 0) {
+            return;
+        }
+        console.log('AdditionalField', object, propertyPath, value);
+        const firstKey = propertyPath.shift();
+        if (propertyPath.length === 0) {
+            object[firstKey] = new Field(value === null || value === void 0 ? void 0 : value.toString());
+            return;
+        }
+        else {
+            let obj = object[firstKey] ? ObjectUtils.tryParseJson(object[firstKey].Value, {}) : {};
+            for (const key of propertyPath) {
+                const isLastKey = propertyPath.indexOf(key) === propertyPath.length - 1;
+                if (isLastKey) {
+                    obj[key] = value;
+                }
+                else {
+                    obj[key] = obj[key] || {};
+                    obj = obj[key];
+                }
+            }
+            object[firstKey] = new Field(JSON.stringify(obj));
         }
     }
 }
