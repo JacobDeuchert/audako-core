@@ -26,7 +26,7 @@ export class BaseHttpService {
         return __awaiter(this, void 0, void 0, function* () {
             let token = yield getAsyncValueAsPromise(this.accessToken);
             return {
-                Authorization: encodeURI(`Bearer ${token}`),
+                Authorization: `Bearer ${token}`,
             };
         });
     }

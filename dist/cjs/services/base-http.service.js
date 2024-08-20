@@ -32,7 +32,7 @@ class BaseHttpService {
         return __awaiter(this, void 0, void 0, function* () {
             let token = yield (0, async_value_utils_js_1.getAsyncValueAsPromise)(this.accessToken);
             return {
-                Authorization: encodeURI(`Bearer ${token}`),
+                Authorization: `Bearer ${token}`,
             };
         });
     }

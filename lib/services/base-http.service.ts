@@ -18,7 +18,7 @@ export abstract class BaseHttpService {
   protected async getAuthorizationHeader(): Promise<{ [p: string]: string }> {
     let token: string = await getAsyncValueAsPromise(this.accessToken);
     return {
-      Authorization: encodeURI(`Bearer ${token}`),
+      Authorization: `Bearer ${token}`,
     };
   }
 
