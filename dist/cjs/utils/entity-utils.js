@@ -95,11 +95,11 @@ class EntityUtils {
     }
     static _setObjectProperty(object, propertyPath, value, previousKey, isField, setOnlyExistingFields) {
         const objectKeys = Object.keys(object);
-        const currentKey = propertyPath.shift();
         if (previousKey === 'AdditionalFields') {
             this._setAdditionalField(object, propertyPath, value);
             return;
         }
+        const currentKey = propertyPath.shift();
         if (propertyPath.length === 0) {
             if ((setOnlyExistingFields && !objectKeys.includes(currentKey))) {
                 return;

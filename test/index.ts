@@ -1,10 +1,10 @@
 import {ConfigurationEntity, Field, BaseHttpService, Group, EntityUtils, EntityType, Signal} from 'audako-core';
 
-const signal = new Signal();
+const group = new Group();
 
-const signalProperties = EntityUtils.getEntityPropertiesByType(EntityType.Signal, true);
+EntityUtils.setPropertyValue(group, 'AdditionalFields.Order', 8, false, false);
 
-console.log(JSON.stringify(signalProperties));
+console.log(JSON.stringify(group.AdditionalFields));
 
 // EntityUtils.setPropertyValue(signal, 'Name', 'abc');
 
