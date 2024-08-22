@@ -12,16 +12,20 @@ export declare class Formula extends ConfigurationEntity {
     MonthIntervalSettings: FormulaIntervalSettings;
     QuarterIntervalSettings: FormulaIntervalSettings;
     YearIntervalSettings: FormulaIntervalSettings;
+    constructor();
 }
 export declare class FormulaIntervalSettings {
     Formula: Field<string>;
     CompressionType: Field<CompressionType>;
     ProvidePreValues: Field<boolean>;
+    ProvideLastValues: Field<boolean>;
     ValueIntervalType: Field<CompressionInterval | null>;
+    constructor();
 }
 export declare class FormulaNumericSettings {
     DecimalPlaces: Field<number>;
     Unit: Field<string>;
+    constructor();
 }
 export declare enum CompressionType {
     ArithmeticMean = "ArithmeticMean",

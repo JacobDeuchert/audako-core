@@ -18,6 +18,24 @@ export class Formula extends ConfigurationEntity {
   public QuarterIntervalSettings: FormulaIntervalSettings;
   public YearIntervalSettings: FormulaIntervalSettings;
 
+  constructor() {
+    super();
+
+    this.CalculateOnlyWithFullVariableSet = new Field<boolean>(false);
+    this.NumericSettings = new FormulaNumericSettings();
+    this.ProcessIntervalSettings = new FormulaIntervalSettings();
+    this.SubIntervalSettings = new FormulaIntervalSettings();
+    this.HourIntervalSettings = new FormulaIntervalSettings();
+    this.TwoHourIntervalSettings = new FormulaIntervalSettings();
+    this.DayIntervalSettings = new FormulaIntervalSettings();
+    this.WeekIntervalSettings = new FormulaIntervalSettings();
+    this.MonthIntervalSettings = new FormulaIntervalSettings();
+    this.QuarterIntervalSettings = new FormulaIntervalSettings();
+    this.YearIntervalSettings = new FormulaIntervalSettings
+  }
+
+
+
 }
 
 export class FormulaIntervalSettings {
@@ -25,13 +43,27 @@ export class FormulaIntervalSettings {
   public CompressionType: Field<CompressionType>;
 
   public ProvidePreValues: Field<boolean>;
+  public ProvideLastValues: Field<boolean>;
 
   public ValueIntervalType: Field<CompressionInterval | null>;
+
+  constructor() {
+    this.Formula = new Field<string>();
+    this.CompressionType = new Field<CompressionType>(CompressionType.ArithmeticMean);
+    this.ProvidePreValues = new Field<boolean>(false);
+    this.ProvideLastValues = new Field<boolean>(false);
+    this.ValueIntervalType = new Field<CompressionInterval | null>(null);
+  }
 }
 
 export class FormulaNumericSettings {
   public DecimalPlaces: Field<number>;
   public Unit:  Field<string>;
+
+  constructor() {
+    this.DecimalPlaces = new Field<number>(3);
+    this.Unit = new Field<string>();
+  }
 
 }
 
