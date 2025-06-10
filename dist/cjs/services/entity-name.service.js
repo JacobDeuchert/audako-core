@@ -17,22 +17,22 @@ class EntityNameService {
         this.httpService = httpService;
         this._nameCache = {};
     }
-    resolveEntityPath(entityType, id, includeSelf = false, limit) {
+    resolveEntityPath(entityType, id, includeSelf = false, limit, separator = ' / ') {
         return __awaiter(this, void 0, void 0, function* () {
             const entity = yield this.httpService.getPartialEntityById(entityType, id, { Name: 1, Path: 1 });
-            let path = yield this.resolvePathName(entity.Path.splice(limit ? entity.Path.length - limit : 0, entity.Path.length));
+            let path = yield this.resolvePathName(entity.Path.splice(limit ? entity.Path.length - limit : 0, entity.Path.length), separator);
             if (includeSelf) {
-                path = path + '/' + entity.Name.Value;
+                path = path + separator + entity.Name.Value;
             }
             return path;
         });
     }
-    resolvePathName(idPath) {
+    resolvePathName(idPath, separator = ' / ') {
         return __awaiter(this, void 0, void 0, function* () {
             if (idPath.length === 0) {
                 return '';
             }
-            return (0, rxjs_1.firstValueFrom)((0, rxjs_1.combineLatest)(idPath.map((id) => this.resolveName(configuration_entity_model_js_1.EntityType.Group, id))).pipe((0, rxjs_1.map)((names) => names.join(' / '))));
+            return (0, rxjs_1.firstValueFrom)((0, rxjs_1.combineLatest)(idPath.map((id) => this.resolveName(configuration_entity_model_js_1.EntityType.Group, id))).pipe((0, rxjs_1.map)((names) => names.join(separator))));
         });
     }
     resolveName(entityType, id) {

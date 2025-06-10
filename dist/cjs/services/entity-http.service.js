@@ -61,12 +61,6 @@ class EntityHttpService extends base_http_service_js_1.BaseHttpService {
             };
         });
     }
-    resolvePathName(idPath) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const pathGroups = yield this.queryConfiguration(configuration_entity_model_js_1.EntityType.Group, { Id: { $in: idPath } });
-            return idPath.map((id) => { var _a, _b; return (_b = (_a = pathGroups.data.find((x) => x.Id === id)) === null || _a === void 0 ? void 0 : _a.Name) !== null && _b !== void 0 ? _b : id; }).join('/');
-        });
-    }
     uploadProcessImage(id, svg, name = 'process-image.svg') {
         return __awaiter(this, void 0, void 0, function* () {
             const url = `${yield this._createBaseUrlByType(configuration_entity_model_js_1.EntityType.ProcessImage)}/${id}/file/image`;

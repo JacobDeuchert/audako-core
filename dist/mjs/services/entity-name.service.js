@@ -14,22 +14,22 @@ export class EntityNameService {
         this.httpService = httpService;
         this._nameCache = {};
     }
-    resolveEntityPath(entityType, id, includeSelf = false, limit) {
+    resolveEntityPath(entityType, id, includeSelf = false, limit, separator = ' / ') {
         return __awaiter(this, void 0, void 0, function* () {
             const entity = yield this.httpService.getPartialEntityById(entityType, id, { Name: 1, Path: 1 });
-            let path = yield this.resolvePathName(entity.Path.splice(limit ? entity.Path.length - limit : 0, entity.Path.length));
+            let path = yield this.resolvePathName(entity.Path.splice(limit ? entity.Path.length - limit : 0, entity.Path.length), separator);
             if (includeSelf) {
-                path = path + '/' + entity.Name.Value;
+                path = path + separator + entity.Name.Value;
             }
             return path;
         });
     }
-    resolvePathName(idPath) {
+    resolvePathName(idPath, separator = ' / ') {
         return __awaiter(this, void 0, void 0, function* () {
             if (idPath.length === 0) {
                 return '';
             }
-            return firstValueFrom(combineLatest(idPath.map((id) => this.resolveName(EntityType.Group, id))).pipe(map((names) => names.join(' / '))));
+            return firstValueFrom(combineLatest(idPath.map((id) => this.resolveName(EntityType.Group, id))).pipe(map((names) => names.join(separator))));
         });
     }
     resolveName(entityType, id) {

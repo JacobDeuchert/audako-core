@@ -21,7 +21,6 @@ export declare class EntityHttpService extends BaseHttpService {
     }, projection?: {
         [p in keyof T]?: number;
     }): Promise<PaginationResponse<Partial<T>>>;
-    resolvePathName(idPath: string[]): Promise<string>;
     uploadProcessImage(id: string, svg: string, name?: string): Promise<void>;
     addEntity<T extends ConfigurationEntity>(type: EntityType, entity: T): Promise<T>;
     updateEntity<T extends ConfigurationEntity>(type: EntityType, entity: T): Promise<T>;

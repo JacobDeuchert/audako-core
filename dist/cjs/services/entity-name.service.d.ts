@@ -4,7 +4,7 @@ export declare class EntityNameService {
     private httpService;
     private _nameCache;
     constructor(httpService: EntityHttpService);
-    resolveEntityPath(entityType: EntityType, id: string, includeSelf?: boolean, limit?: number): Promise<string>;
-    resolvePathName(idPath: string[]): Promise<string>;
+    resolveEntityPath(entityType: EntityType, id: string, includeSelf?: boolean, limit?: number, separator?: string): Promise<string>;
+    resolvePathName(idPath: string[], separator?: string): Promise<string>;
     resolveName(entityType: EntityType, id: string): Promise<string>;
 }
