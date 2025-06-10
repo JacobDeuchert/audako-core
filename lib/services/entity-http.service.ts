@@ -73,11 +73,6 @@ export class EntityHttpService extends BaseHttpService {
     };
   }
 
-  public async resolvePathName(idPath: string[]): Promise<string> {
-    const pathGroups = await this.queryConfiguration(EntityType.Group, { Id: { $in: idPath } });
-    return idPath.map((id) => pathGroups.data.find((x) => x.Id === id)?.Name ?? id).join('/');
-  }
-
   public async uploadProcessImage(id: string, svg: string, name: string = 'process-image.svg'): Promise<void> {
     const url = `${await this._createBaseUrlByType(EntityType.ProcessImage)}/${id}/file/image`;
     const headers = await this.getAuthorizationHeader();

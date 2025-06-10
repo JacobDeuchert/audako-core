@@ -13,26 +13,28 @@ export class EntityNameService {
     entityType: EntityType,
     id: string,
     includeSelf: boolean = false,
-    limit?: number
+    limit?: number,
+    separator: string = ' / '
   ): Promise<string> {
     const entity = await this.httpService.getPartialEntityById(entityType, id, { Name: 1, Path: 1 });
     let path = await this.resolvePathName(
-      entity.Path.splice(limit ? entity.Path.length - limit : 0, entity.Path.length)
+      entity.Path.splice(limit ? entity.Path.length - limit : 0, entity.Path.length),
+      separator
     );
 
     if (includeSelf) {
-      path = path + '/' + entity.Name.Value;
+      path = path + separator + entity.Name.Value;
     }
 
     return path;
   }
 
-  public async resolvePathName(idPath: string[]): Promise<string> {
+  public async resolvePathName(idPath: string[], separator: string = ' / '): Promise<string> {
     if (idPath.length === 0) {
       return '';
     }
     return firstValueFrom(
-      combineLatest(idPath.map((id) => this.resolveName(EntityType.Group, id))).pipe(map((names) => names.join(' / ')))
+      combineLatest(idPath.map((id) => this.resolveName(EntityType.Group, id))).pipe(map((names) => names.join(separator)))
     );
   }
 
