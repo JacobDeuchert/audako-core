@@ -59,7 +59,7 @@ export class EntityHttpService extends BaseHttpService {
     >(url, queryBody, { headers: headers });
     if (paging) {
       console.log(response.headers);
-      const pagingResponseHeader = JSON.parse(response.headers['paging-headers']);
+      const pagingResponseHeader = JSON.parse(response.headers['paging-headers'] as string);
       const totalCount = Number(pagingResponseHeader.TotalCount);
       return {
         data: response.data,
