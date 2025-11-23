@@ -1,8 +1,7 @@
 import axios from 'axios';
-import { Observable } from 'rxjs';
-import { HttpConfig } from '../models/http-config.model';
+import { HttpConfig } from '../models/http-config.model.js';
 import { AsyncValue, getAsyncValueAsPromise } from '../utils/async-value-utils.js';
-import { BaseHttpService } from './base-http.service';
+import { BaseHttpService } from './base-http.service.js';
 
 export class DataSourceHttpService extends BaseHttpService {
   constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>) {
