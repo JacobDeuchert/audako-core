@@ -1,4 +1,4 @@
-import { Type } from '../../interfaces/type';
+import { Type } from '../../interfaces/type.js';
 
 export enum EntityType {
   Group = 'Group',

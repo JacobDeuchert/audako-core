@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { auditTime, BehaviorSubject, concat, filter, firstValueFrom, isObservable, map, mapTo, of, Subject, takeUntil } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
-import { PromiseUtils } from '../utils/promise-utils';
+import { PromiseUtils } from '../utils/promise-utils.js';
 import { getAsyncValueAsPromise } from '../utils/async-value-utils.js';
 export var LiveHubMethod;
 (function (LiveHubMethod) {

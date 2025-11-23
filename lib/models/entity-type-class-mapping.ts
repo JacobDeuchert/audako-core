@@ -1,5 +1,5 @@
 
-import { Type } from '../interfaces/type';
+import { Type } from '../interfaces/type.js';
 import { BatchDefinition } from './entities/batch-definition.model.js';
 import { ConfigurationEntity, EntityType } from './entities/configuration-entity.model.js';
 import { DashboardTab } from './entities/dashboard-tab.model.js';

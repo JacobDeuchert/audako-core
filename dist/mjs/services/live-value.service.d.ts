@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
-import { HttpConfig } from '../models/http-config.model';
-import { Disposable } from '../interfaces/disposable';
+import { HttpConfig } from '../models/http-config.model.js';
+import { Disposable } from '../interfaces/disposable.js';
 import { AsyncValue } from '../utils/async-value-utils.js';
 export type LivePackage = {
     identifier: string;

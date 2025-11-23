@@ -13,9 +13,9 @@ import {
 } from 'rxjs';
 
 import * as signalR from '@microsoft/signalr';
-import { HttpConfig } from '../models/http-config.model';
-import { Disposable } from '../interfaces/disposable';
-import { PromiseUtils } from '../utils/promise-utils';
+import { HttpConfig } from '../models/http-config.model.js';
+import { Disposable } from '../interfaces/disposable.js';
+import { PromiseUtils } from '../utils/promise-utils.js';
 import { AsyncValue, getAsyncValueAsPromise } from '../utils/async-value-utils.js';
 export type LivePackage = {
   identifier: string;
