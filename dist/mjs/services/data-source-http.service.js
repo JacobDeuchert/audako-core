@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import axios from 'axios';
 import { getAsyncValueAsPromise } from '../utils/async-value-utils.js';
-import { BaseHttpService } from './base-http.service';
+import { BaseHttpService } from './base-http.service.js';
 export class DataSourceHttpService extends BaseHttpService {
     constructor(httpConfig, accessToken) {
         super(httpConfig, accessToken);

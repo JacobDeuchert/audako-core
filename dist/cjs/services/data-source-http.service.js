@@ -15,8 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DataSourceHttpService = void 0;
 const axios_1 = __importDefault(require("axios"));
 const async_value_utils_js_1 = require("../utils/async-value-utils.js");
-const base_http_service_1 = require("./base-http.service");
-class DataSourceHttpService extends base_http_service_1.BaseHttpService {
+const base_http_service_js_1 = require("./base-http.service.js");
+class DataSourceHttpService extends base_http_service_js_1.BaseHttpService {
     constructor(httpConfig, accessToken) {
         super(httpConfig, accessToken);
     }
