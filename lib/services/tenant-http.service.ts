@@ -30,4 +30,11 @@ export class TenantHttpService extends BaseHttpService {
     const response = await axios.get<TenantView[]>(url, { headers: headers });
     return response.data;
   }
+
+  public async filterTenantsByName(name: string): Promise<TenantView[]> {
+    const url = `${await this.getStructureUrl()}/tenant/filter/${name}`;
+    const headers = await this.getAuthorizationHeader();
+    const response = await axios.get<TenantView[]>(url, { headers: headers });
+    return response.data;
+  }
 }

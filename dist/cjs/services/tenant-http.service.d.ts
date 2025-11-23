@@ -7,4 +7,5 @@ export declare class TenantHttpService extends BaseHttpService {
     getTenantViewById(id: string): Promise<TenantView>;
     getTopTenants(): Promise<TenantView[]>;
     getNextTenants(tenantId: string): Promise<TenantView[]>;
+    filterTenantsByName(name: string): Promise<TenantView[]>;
 }

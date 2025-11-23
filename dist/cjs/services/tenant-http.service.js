@@ -43,5 +43,13 @@ class TenantHttpService extends base_http_service_js_1.BaseHttpService {
             return response.data;
         });
     }
+    filterTenantsByName(name) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const url = `${yield this.getStructureUrl()}/tenant/filter/${name}`;
+            const headers = yield this.getAuthorizationHeader();
+            const response = yield axios_1.default.get(url, { headers: headers });
+            return response.data;
+        });
+    }
 }
 exports.TenantHttpService = TenantHttpService;
