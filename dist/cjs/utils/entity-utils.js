@@ -94,6 +94,9 @@ class EntityUtils {
         return deepKeys;
     }
     static _setObjectProperty(object, propertyPath, value, previousKey, isField, setOnlyExistingFields) {
+        if (!object || propertyPath.length === 0) {
+            return;
+        }
         const objectKeys = Object.keys(object);
         if (previousKey === 'AdditionalFields') {
             this._setAdditionalField(object, propertyPath, value);
