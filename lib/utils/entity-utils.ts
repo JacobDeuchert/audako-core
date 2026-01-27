@@ -115,6 +115,10 @@ export class EntityUtils {
 
   private static _setObjectProperty<T>(object: object, propertyPath: string[], value: T, previousKey: string, isField?: boolean, setOnlyExistingFields?: boolean): void {
 
+    if (!object || propertyPath.length === 0) {
+      return;
+    }
+
     const objectKeys = Object.keys(object);
 
     if (previousKey === 'AdditionalFields') {
