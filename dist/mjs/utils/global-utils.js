@@ -17,3 +17,12 @@ export function tryCatch(value) {
         }
     });
 }
+export function isNullOrUndefined(value) {
+    return value === null || value === undefined;
+}
+export function isNullOrEmpty(value) {
+    return isNullOrUndefined(value) || value.length === 0;
+}
+export function isNullOrWhitespace(value) {
+    return isNullOrUndefined(value) || value.trim().length === 0;
+}

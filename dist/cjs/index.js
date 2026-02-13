@@ -60,6 +60,7 @@ var entity_utils_js_1 = require("./utils/entity-utils.js");
 Object.defineProperty(exports, "EntityUtils", { enumerable: true, get: function () { return entity_utils_js_1.EntityUtils; } });
 var object_utils_js_1 = require("./utils/object-utils.js");
 Object.defineProperty(exports, "ObjectUtils", { enumerable: true, get: function () { return object_utils_js_1.ObjectUtils; } });
+__exportStar(require("./utils/global-utils.js"), exports);
 // Service exports
 var base_http_service_js_1 = require("./services/base-http.service.js");
 Object.defineProperty(exports, "BaseHttpService", { enumerable: true, get: function () { return base_http_service_js_1.BaseHttpService; } });

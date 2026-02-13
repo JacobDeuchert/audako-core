@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tryCatch = void 0;
+exports.isNullOrWhitespace = exports.isNullOrEmpty = exports.isNullOrUndefined = exports.tryCatch = void 0;
 function tryCatch(value) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -21,3 +21,15 @@ function tryCatch(value) {
     });
 }
 exports.tryCatch = tryCatch;
+function isNullOrUndefined(value) {
+    return value === null || value === undefined;
+}
+exports.isNullOrUndefined = isNullOrUndefined;
+function isNullOrEmpty(value) {
+    return isNullOrUndefined(value) || value.length === 0;
+}
+exports.isNullOrEmpty = isNullOrEmpty;
+function isNullOrWhitespace(value) {
+    return isNullOrUndefined(value) || value.trim().length === 0;
+}
+exports.isNullOrWhitespace = isNullOrWhitespace;
