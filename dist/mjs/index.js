@@ -24,6 +24,7 @@ export { EntityTypeClassMapping } from './models/entity-type-class-mapping.js';
 export { EntityUtils } from './utils/entity-utils.js';
 export { ObjectUtils } from './utils/object-utils.js';
 export * from './utils/global-utils.js';
+export { getAsyncValueAsPromise } from './utils/async-value-utils.js';
 // Service exports
 export { BaseHttpService } from './services/base-http.service.js';
 export * from './services/entity-http.service.js';

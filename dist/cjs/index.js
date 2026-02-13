@@ -15,7 +15,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DataSourceHttpService = exports.UserProfileHttpService = exports.EntityNameService = exports.TenantHttpService = exports.BaseHttpService = exports.ObjectUtils = exports.EntityUtils = exports.EntityTypeClassMapping = exports.ProcessImage = exports.Formula = exports.EventCategory = exports.DashboardTab = exports.UserProfile = exports.TenantView = exports.DataConnectionSettings = exports.DataSourceType = exports.DataSource = exports.EventDefinition = exports.Dashboard = exports.Group = exports.EntityType = exports.EntityHttpEndpoints = exports.EntityIcons = exports.ConfigurationEntity = exports.Field = void 0;
+exports.DataSourceHttpService = exports.UserProfileHttpService = exports.EntityNameService = exports.TenantHttpService = exports.BaseHttpService = exports.getAsyncValueAsPromise = exports.ObjectUtils = exports.EntityUtils = exports.EntityTypeClassMapping = exports.ProcessImage = exports.Formula = exports.EventCategory = exports.DashboardTab = exports.UserProfile = exports.TenantView = exports.DataConnectionSettings = exports.DataSourceType = exports.DataSource = exports.EventDefinition = exports.Dashboard = exports.Group = exports.EntityType = exports.EntityHttpEndpoints = exports.EntityIcons = exports.ConfigurationEntity = exports.Field = void 0;
 var configuration_entity_model_js_1 = require("./models/entities/configuration-entity.model.js");
 Object.defineProperty(exports, "Field", { enumerable: true, get: function () { return configuration_entity_model_js_1.Field; } });
 var configuration_entity_model_js_2 = require("./models/entities/configuration-entity.model.js");
@@ -61,6 +61,8 @@ Object.defineProperty(exports, "EntityUtils", { enumerable: true, get: function 
 var object_utils_js_1 = require("./utils/object-utils.js");
 Object.defineProperty(exports, "ObjectUtils", { enumerable: true, get: function () { return object_utils_js_1.ObjectUtils; } });
 __exportStar(require("./utils/global-utils.js"), exports);
+var async_value_utils_js_1 = require("./utils/async-value-utils.js");
+Object.defineProperty(exports, "getAsyncValueAsPromise", { enumerable: true, get: function () { return async_value_utils_js_1.getAsyncValueAsPromise; } });
 // Service exports
 var base_http_service_js_1 = require("./services/base-http.service.js");
 Object.defineProperty(exports, "BaseHttpService", { enumerable: true, get: function () { return base_http_service_js_1.BaseHttpService; } });
