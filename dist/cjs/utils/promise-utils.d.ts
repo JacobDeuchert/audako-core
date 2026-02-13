@@ -1,3 +1,3 @@
 export declare class PromiseUtils {
-    static isPromise<T>(value: any): value is Promise<T>;
+    static isPromise<T>(value: any): value is PromiseLike<T>;
 }
