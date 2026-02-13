@@ -1,4 +1,10 @@
 {
   "editor.tabSize": 2,
-  "typescript.preferences.importModuleSpecifierEnding": "js"
+  "typescript.preferences.importModuleSpecifierEnding": "js",
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true,
+    "**/dist": true
+  }
 }

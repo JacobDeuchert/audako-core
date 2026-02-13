@@ -5,6 +5,7 @@ import { BaseHttpService } from './base-http.service.js';
 export declare class TenantHttpService extends BaseHttpService {
     constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
     getTenantViewById(id: string): Promise<TenantView>;
+    getTenantViewForEntityId(entityId: string): Promise<TenantView>;
     getTopTenants(): Promise<TenantView[]>;
     getNextTenants(tenantId: string): Promise<TenantView[]>;
     filterTenantsByName(name: string): Promise<TenantView[]>;

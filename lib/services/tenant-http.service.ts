@@ -17,6 +17,13 @@ export class TenantHttpService extends BaseHttpService {
     return response.data;
   }
 
+  public async getTenantViewForEntityId(entityId: string): Promise<TenantView> {
+    const url = `${await this.getStructureUrl()}/tenant/entity/${entityId}/view`;
+    const headers = await this.getAuthorizationHeader();
+    const response = await axios.get<TenantView>(url, { headers: headers });
+    return response.data;
+  }
+
   public async getTopTenants(): Promise<TenantView[]> {
     const url = `${await this.getStructureUrl()}/tenant/top`;
     const headers = await this.getAuthorizationHeader();

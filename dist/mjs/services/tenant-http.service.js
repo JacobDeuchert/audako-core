@@ -21,6 +21,14 @@ export class TenantHttpService extends BaseHttpService {
             return response.data;
         });
     }
+    getTenantViewForEntityId(entityId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const url = `${yield this.getStructureUrl()}/tenant/entity/${entityId}/view`;
+            const headers = yield this.getAuthorizationHeader();
+            const response = yield axios.get(url, { headers: headers });
+            return response.data;
+        });
+    }
     getTopTenants() {
         return __awaiter(this, void 0, void 0, function* () {
             const url = `${yield this.getStructureUrl()}/tenant/top`;
