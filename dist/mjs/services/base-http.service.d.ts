@@ -7,7 +7,7 @@ export declare abstract class BaseHttpService {
     protected getAuthorizationHeader(): Promise<{
         [p: string]: string;
     }>;
-    protected getAccessTokenAsPromise(): Promise<string>;
+    protected getAccessToken(): Promise<string>;
     protected getStructureUrl(): Promise<string>;
     static requestHttpConfig(systemUrl: string): Promise<HttpConfig>;
     static isApiReachable(apiUrl: string): Promise<boolean>;

@@ -53,5 +53,5 @@ export declare class LiveValueService implements Disposable {
     private _handleHubMessage;
     private _establishConnectionAndHandleEvents;
     private _buildHubConnection;
-    protected getAccessTokenAsPromise(): Promise<string>;
+    protected getAccessToken(): Promise<string>;
 }

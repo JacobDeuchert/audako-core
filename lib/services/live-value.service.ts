@@ -1,7 +1,8 @@
 import {
   auditTime,
   BehaviorSubject,
-  concat, filter,
+  concat,
+  filter,
   firstValueFrom,
   isObservable,
   map,
@@ -9,7 +10,7 @@ import {
   Observable,
   of,
   Subject,
-  takeUntil
+  takeUntil,
 } from 'rxjs';
 
 import * as signalR from '@microsoft/signalr';
@@ -20,7 +21,7 @@ import { AsyncValue, getAsyncValueAsPromise } from '../utils/async-value-utils.j
 export type LivePackage = {
   identifier: string;
   timestamp: Date;
-}
+};
 
 export type SignalLiveValue = {
   value: any;
@@ -65,7 +66,10 @@ export class LiveValueService implements Disposable {
 
   private _unsub: Subject<void>;
 
-  public constructor(private httpConfig: AsyncValue<HttpConfig>, private accessToken: AsyncValue<string>) {
+  public constructor(
+    private httpConfig: AsyncValue<HttpConfig>,
+    private accessToken: AsyncValue<string>,
+  ) {
     this._unsub = new Subject<void>();
 
     this._connectionEstablished = new BehaviorSubject<boolean>(false);
@@ -89,9 +93,12 @@ export class LiveValueService implements Disposable {
       this._establishConnectionAndHandleEvents(this.hubConnection);
     }
 
-    return firstValueFrom(this._connectionEstablished.pipe(
-      filter((x) => x),
-      mapTo(null)));
+    return firstValueFrom(
+      this._connectionEstablished.pipe(
+        filter((x) => x),
+        mapTo(null),
+      ),
+    );
   }
 
   public dispose(): void {
@@ -122,12 +129,11 @@ export class LiveValueService implements Disposable {
       this._enqueueIdsToSubscribe(notSubscribedIds);
     }
 
-    
     const cachedPackages = this._getCachedValuePackages(packageIds);
 
     const livePackages$ = this._livePackageObserver.pipe(
       map((values: SignalLiveValue[]) => values.filter((liveValue) => packageIds.includes(liveValue.identifier))),
-      filter((values: SignalLiveValue[]) => values.length > 0)
+      filter((values: SignalLiveValue[]) => values.length > 0),
     );
 
     if (cachedPackages.length > 0) {
@@ -173,9 +179,6 @@ export class LiveValueService implements Disposable {
     } else {
       console.info('Unknown message: ', message);
     }
-    
-
-    
   }
   private _establishConnectionAndHandleEvents(connection: signalR.HubConnection): void {
     connection
@@ -201,20 +204,14 @@ export class LiveValueService implements Disposable {
   }
 
   private _buildHubConnection(hubUrl: string): signalR.HubConnection {
-    return new signalR.HubConnectionBuilder().withUrl(hubUrl, {
-      accessTokenFactory: () => this.getAccessTokenAsPromise()
-    }).build();
+    return new signalR.HubConnectionBuilder()
+      .withUrl(hubUrl, {
+        accessTokenFactory: () => this.getAccessToken(),
+      })
+      .build();
   }
 
-
-  protected getAccessTokenAsPromise(): Promise<string> {
-    if (isObservable(this.accessToken)) {
-      return firstValueFrom(this.accessToken);
-    } else if (PromiseUtils.isPromise(this.accessToken)) {
-      return this.accessToken;
-    } else {
-      return Promise.resolve(this.accessToken);
-    }
-
+  protected getAccessToken(): Promise<string> {
+    return getAsyncValueAsPromise(this.accessToken);
   }
 }

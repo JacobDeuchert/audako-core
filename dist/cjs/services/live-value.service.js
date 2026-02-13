@@ -35,7 +35,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LiveValueService = exports.SubscriptionPrefix = exports.LiveHubEvent = exports.LiveHubMethod = void 0;
 const rxjs_1 = require("rxjs");
 const signalR = __importStar(require("@microsoft/signalr"));
-const promise_utils_js_1 = require("../utils/promise-utils.js");
 const async_value_utils_js_1 = require("../utils/async-value-utils.js");
 var LiveHubMethod;
 (function (LiveHubMethod) {
@@ -165,20 +164,14 @@ class LiveValueService {
         });
     }
     _buildHubConnection(hubUrl) {
-        return new signalR.HubConnectionBuilder().withUrl(hubUrl, {
-            accessTokenFactory: () => this.getAccessTokenAsPromise()
-        }).build();
+        return new signalR.HubConnectionBuilder()
+            .withUrl(hubUrl, {
+            accessTokenFactory: () => this.getAccessToken(),
+        })
+            .build();
     }
-    getAccessTokenAsPromise() {
-        if ((0, rxjs_1.isObservable)(this.accessToken)) {
-            return (0, rxjs_1.firstValueFrom)(this.accessToken);
-        }
-        else if (promise_utils_js_1.PromiseUtils.isPromise(this.accessToken)) {
-            return this.accessToken;
-        }
-        else {
-            return Promise.resolve(this.accessToken);
-        }
+    getAccessToken() {
+        return (0, async_value_utils_js_1.getAsyncValueAsPromise)(this.accessToken);
     }
 }
 exports.LiveValueService = LiveValueService;

@@ -14,19 +14,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaseHttpService = void 0;
 const axios_1 = __importDefault(require("axios"));
-const rxjs_1 = require("rxjs");
 const async_value_utils_js_1 = require("../utils/async-value-utils.js");
-const promise_utils_js_1 = require("../utils/promise-utils.js");
 class BaseHttpService {
     constructor(httpConfig, accessToken) {
         this.httpConfig = httpConfig;
         this.accessToken = accessToken;
-        if (promise_utils_js_1.PromiseUtils.isPromise(accessToken)) {
-            accessToken.then((token) => (this.accessToken = token));
-        }
-        else {
-            this.accessToken = accessToken;
-        }
     }
     getAuthorizationHeader() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -36,16 +28,8 @@ class BaseHttpService {
             };
         });
     }
-    getAccessTokenAsPromise() {
-        if ((0, rxjs_1.isObservable)(this.accessToken)) {
-            return (0, rxjs_1.firstValueFrom)(this.accessToken);
-        }
-        else if (promise_utils_js_1.PromiseUtils.isPromise(this.accessToken)) {
-            return this.accessToken;
-        }
-        else {
-            return Promise.resolve(this.accessToken);
-        }
+    getAccessToken() {
+        return (0, async_value_utils_js_1.getAsyncValueAsPromise)(this.accessToken);
     }
     getStructureUrl() {
         return __awaiter(this, void 0, void 0, function* () {

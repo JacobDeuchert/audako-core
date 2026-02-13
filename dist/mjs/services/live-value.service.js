@@ -7,9 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { auditTime, BehaviorSubject, concat, filter, firstValueFrom, isObservable, map, mapTo, of, Subject, takeUntil } from 'rxjs';
+import { auditTime, BehaviorSubject, concat, filter, firstValueFrom, map, mapTo, of, Subject, takeUntil, } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
-import { PromiseUtils } from '../utils/promise-utils.js';
 import { getAsyncValueAsPromise } from '../utils/async-value-utils.js';
 export var LiveHubMethod;
 (function (LiveHubMethod) {
@@ -139,19 +138,13 @@ export class LiveValueService {
         });
     }
     _buildHubConnection(hubUrl) {
-        return new signalR.HubConnectionBuilder().withUrl(hubUrl, {
-            accessTokenFactory: () => this.getAccessTokenAsPromise()
-        }).build();
+        return new signalR.HubConnectionBuilder()
+            .withUrl(hubUrl, {
+            accessTokenFactory: () => this.getAccessToken(),
+        })
+            .build();
     }
-    getAccessTokenAsPromise() {
-        if (isObservable(this.accessToken)) {
-            return firstValueFrom(this.accessToken);
-        }
-        else if (PromiseUtils.isPromise(this.accessToken)) {
-            return this.accessToken;
-        }
-        else {
-            return Promise.resolve(this.accessToken);
-        }
+    getAccessToken() {
+        return getAsyncValueAsPromise(this.accessToken);
     }
 }

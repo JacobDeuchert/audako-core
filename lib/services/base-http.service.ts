@@ -8,11 +8,6 @@ export abstract class BaseHttpService {
   
 
   constructor(protected httpConfig: AsyncValue<HttpConfig>, private accessToken: AsyncValue<string>) {
-    if (PromiseUtils.isPromise(accessToken)) {
-      accessToken.then((token) => (this.accessToken = token));
-    } else {
-      this.accessToken = accessToken;
-    }
   }
 
   protected async getAuthorizationHeader(): Promise<{ [p: string]: string }> {
@@ -22,15 +17,8 @@ export abstract class BaseHttpService {
     };
   }
 
-  protected getAccessTokenAsPromise(): Promise<string> {
-    if (isObservable(this.accessToken)) {
-      return firstValueFrom(this.accessToken);
-    } else if (PromiseUtils.isPromise(this.accessToken)) {
-      return this.accessToken;
-    } else {
-      return Promise.resolve(this.accessToken);
-    }
-
+  protected getAccessToken(): Promise<string> {
+    return getAsyncValueAsPromise(this.accessToken);
   }
 
   protected async getStructureUrl(): Promise<string> {
