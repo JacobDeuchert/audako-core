@@ -17,11 +17,12 @@ var EntityType;
     EntityType["BatchDefinition"] = "BatchDefinition";
 })(EntityType || (exports.EntityType = EntityType = {}));
 exports.EntityIcons = {
-    [EntityType.Group]: 'fas fa-folder',
+    [EntityType.Group]: 'mat folder',
     [EntityType.Dashboard]: 'adk adk-dashboard',
-    [EntityType.Signal]: 'fas fa-code',
-    [EntityType.DataConnection]: 'fas fa-circle-notch',
-    [EntityType.DataSource]: 'fas fa-server',
+    [EntityType.Signal]: 'mat code',
+    [EntityType.Formula]: 'mat timeline',
+    [EntityType.DataConnection]: 'mat data_usage',
+    [EntityType.DataSource]: 'mat storage',
 };
 exports.EntityHttpEndpoints = {
     Group: '/base/Group',

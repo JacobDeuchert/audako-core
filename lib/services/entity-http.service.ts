@@ -90,6 +90,14 @@ export class EntityHttpService extends BaseHttpService {
 
   public async updateEntity<T extends ConfigurationEntity>(type: EntityType, entity: T): Promise<T> {
     const url = `${await this._createBaseUrlByType(type)}/${entity.Id}`;
+    // need to remove these properties as backend throws 400 if they are present
+    delete entity.ChangedBy;
+    delete entity.ChangedOn;
+    delete entity.CreatedBy;
+    delete entity.CreatedOn;
+    
+
+
     const headers = await this.getAuthorizationHeader();
     return axios.put<T>(url, entity, { headers: headers }).then((response) => response.data);
   }
@@ -106,19 +114,19 @@ export class EntityHttpService extends BaseHttpService {
     return axios.get<T>(url, {headers}).then((response) => response.data)
   }
 
-  public async copyMultipleTo(sourceEntityIds: string[], targetId: string, type: any): Promise<string> {
+  public async copyMultipleTo(sourceEntityIds: string[], targetId: string, type: EntityType): Promise<string> {
     const url: string = `${await this._createBaseUrlByType(type)}/copy/multiple/${targetId}`;
     const headers = await this.getAuthorizationHeader();
     return axios.put(url, sourceEntityIds, { responseType: 'text', headers: headers });
   }
 
-  public async moveTo<T extends ConfigurationEntity>(sourceEntityId: string, targetGroupId: string, type: any): Promise<T> {
+  public async moveTo<T extends ConfigurationEntity>(sourceEntityId: string, targetGroupId: string, type: EntityType): Promise<T> {
     const url: string = `${await this._createBaseUrlByType(type)}/move/${sourceEntityId}/to/${targetGroupId}`;
     const headers = await this.getAuthorizationHeader();
     return axios.get<T>(url, {headers}).then((response) => response.data);
   }
 
-  public async moveMultipleTo(sourceIds: string[], targetId: string, type: any): Promise<string> {
+  public async moveMultipleTo(sourceIds: string[], targetId: string, type: EntityType): Promise<string> {
     const url: string = `${await this._createBaseUrlByType(type)}/move/multiple/${targetId}`;
     const headers = await this.getAuthorizationHeader();
     return axios.put(url, sourceIds, { responseType: 'text', headers: headers });
