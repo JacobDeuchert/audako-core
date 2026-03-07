@@ -10,6 +10,7 @@ import { EventDefinition } from './entities/event-definition.model.js';
 import { Formula } from './entities/formula.model.js';
 import { Group } from './entities/group.model.js';
 import { ProcessImage } from './entities/process-image.model.js';
+import { ReportTemplate } from './entities/report-template.model.js';
 import { Signal } from './entities/signal.model.js';
 export const EntityTypeClassMapping = {
     [EntityType.Group]: Group,
@@ -23,5 +24,6 @@ export const EntityTypeClassMapping = {
     [EntityType.EventDefinition]: EventDefinition,
     [EntityType.Formula]: Formula,
     [EntityType.ProcessImage]: ProcessImage,
-    [EntityType.BatchDefinition]: BatchDefinition
+    [EntityType.BatchDefinition]: BatchDefinition,
+    [EntityType.ReportTemplate]: ReportTemplate,
 };

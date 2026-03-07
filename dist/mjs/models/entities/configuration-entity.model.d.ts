@@ -10,7 +10,9 @@ export declare enum EntityType {
     EventDefinition = "EventDefinition",
     EventCategory = "EventCategory",
     ProcessImage = "ProcessImage",
-    BatchDefinition = "BatchDefinition"
+    BatchDefinition = "BatchDefinition",
+    ReportTemplate = "ReportTemplate",
+    Report = "Report"
 }
 export declare const EntityIcons: {
     [p in EntityType]?: string;

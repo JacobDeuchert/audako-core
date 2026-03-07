@@ -12,6 +12,8 @@ export var EntityType;
     EntityType["EventCategory"] = "EventCategory";
     EntityType["ProcessImage"] = "ProcessImage";
     EntityType["BatchDefinition"] = "BatchDefinition";
+    EntityType["ReportTemplate"] = "ReportTemplate";
+    EntityType["Report"] = "Report";
 })(EntityType || (EntityType = {}));
 export const EntityIcons = {
     [EntityType.Group]: 'mat folder',
@@ -33,7 +35,9 @@ export const EntityHttpEndpoints = {
     ProcessImage: '/scada/ProcessImage',
     EventCategory: '/base/EventCategory',
     EventDefinition: '/base/EventDefinition',
-    BatchDefinition: '/scada/batchdefinition'
+    BatchDefinition: '/scada/batchdefinition',
+    ReportTemplate: '/scada/ReportTemplate',
+    Report: '/scada/Report',
 };
 export class Field {
     constructor(value = null, ooAttributes = []) {

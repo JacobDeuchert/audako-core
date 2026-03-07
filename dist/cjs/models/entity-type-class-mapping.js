@@ -13,6 +13,7 @@ const event_definition_model_js_1 = require("./entities/event-definition.model.j
 const formula_model_js_1 = require("./entities/formula.model.js");
 const group_model_js_1 = require("./entities/group.model.js");
 const process_image_model_js_1 = require("./entities/process-image.model.js");
+const report_template_model_js_1 = require("./entities/report-template.model.js");
 const signal_model_js_1 = require("./entities/signal.model.js");
 exports.EntityTypeClassMapping = {
     [configuration_entity_model_js_1.EntityType.Group]: group_model_js_1.Group,
@@ -26,5 +27,6 @@ exports.EntityTypeClassMapping = {
     [configuration_entity_model_js_1.EntityType.EventDefinition]: event_definition_model_js_1.EventDefinition,
     [configuration_entity_model_js_1.EntityType.Formula]: formula_model_js_1.Formula,
     [configuration_entity_model_js_1.EntityType.ProcessImage]: process_image_model_js_1.ProcessImage,
-    [configuration_entity_model_js_1.EntityType.BatchDefinition]: batch_definition_model_js_1.BatchDefinition
+    [configuration_entity_model_js_1.EntityType.BatchDefinition]: batch_definition_model_js_1.BatchDefinition,
+    [configuration_entity_model_js_1.EntityType.ReportTemplate]: report_template_model_js_1.ReportTemplate,
 };
