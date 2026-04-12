@@ -3,6 +3,7 @@ import {
   BehaviorSubject,
   concat,
   filter,
+  finalize,
   firstValueFrom,
   isObservable,
   map,
@@ -11,6 +12,7 @@ import {
   of,
   Subject,
   takeUntil,
+  takeWhile,
 } from 'rxjs';
 
 import * as signalR from '@microsoft/signalr';
@@ -31,6 +33,24 @@ export type SignalOffsetValue = {
   value: any;
 } & LivePackage;
 
+export enum OperationStatus {
+  Running = 'Running',
+  Success = 'Success',
+  Failed = 'Failed',
+}
+
+export type OperationMessage = {
+  id: string;
+  name: string;
+  status: OperationStatus;
+
+  statusMessage?: string;
+  createdOn: Date;
+
+  updatedOn?: Date;
+  error: string;
+} & LivePackage;
+
 export type TimestampPackage = LivePackage;
 
 export enum LiveHubMethod {
@@ -48,6 +68,7 @@ export enum SubscriptionPrefix {
   SO = 'SO',
   T = 'T',
   TC = 'TC',
+  OP = 'OP',
 }
 
 export class LiveValueService implements Disposable {
@@ -122,6 +143,21 @@ export class LiveValueService implements Disposable {
     return this.subscribeLiveValuePackages(ids) as Observable<TimestampPackage[]>;
   }
 
+  public subscribeToOperations(operationIds: string[]): Observable<OperationMessage[]> {
+    const prefixedIds = operationIds.map((x) => `${SubscriptionPrefix.OP}:${x}`);
+    return this.subscribeLiveValuePackages(prefixedIds) as Observable<OperationMessage[]>;
+  }
+
+  public getOperationStatus(operationId: string): Observable<OperationMessage> {
+    const prefixedId = `${SubscriptionPrefix.OP}:${operationId}`;
+    return this.subscribeToOperations([operationId]).pipe(
+      map((messages) => messages.find((x) => x.id === operationId)),
+      filter((m) => m != null),
+      takeWhile((m) => m.status !== OperationStatus.Success && m.status !== OperationStatus.Failed, true),
+      finalize(() => this._unsubscribeIds([prefixedId])),
+    );
+  }
+
   public subscribeLiveValuePackages(packageIds: string[]): Observable<LivePackage[]> {
     const notSubscribedIds = packageIds.filter((id) => !this._subscribedIds.includes(id));
 
@@ -140,6 +176,11 @@ export class LiveValueService implements Disposable {
       return concat(of(cachedPackages), livePackages$);
     }
     return livePackages$;
+  }
+
+  private _unsubscribeIds(ids: string[]): void {
+    this._subscribedIds = this._subscribedIds.filter((id) => !ids.includes(id));
+    ids.forEach((id) => delete this._valueCache[id]);
   }
 
   private _enqueueIdsToSubscribe(ids: string[]): void {
