@@ -32,10 +32,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LiveValueService = exports.SubscriptionPrefix = exports.LiveHubEvent = exports.LiveHubMethod = void 0;
+exports.LiveValueService = exports.SubscriptionPrefix = exports.LiveHubEvent = exports.LiveHubMethod = exports.OperationStatus = void 0;
 const rxjs_1 = require("rxjs");
 const signalR = __importStar(require("@microsoft/signalr"));
 const async_value_utils_js_1 = require("../utils/async-value-utils.js");
+var OperationStatus;
+(function (OperationStatus) {
+    OperationStatus["Running"] = "Running";
+    OperationStatus["Success"] = "Success";
+    OperationStatus["Failed"] = "Failed";
+})(OperationStatus || (exports.OperationStatus = OperationStatus = {}));
 var LiveHubMethod;
 (function (LiveHubMethod) {
     LiveHubMethod["ChangeModeAsync"] = "ChangeModeAsync";
@@ -52,6 +58,7 @@ var SubscriptionPrefix;
     SubscriptionPrefix["SO"] = "SO";
     SubscriptionPrefix["T"] = "T";
     SubscriptionPrefix["TC"] = "TC";
+    SubscriptionPrefix["OP"] = "OP";
 })(SubscriptionPrefix || (exports.SubscriptionPrefix = SubscriptionPrefix = {}));
 class LiveValueService {
     constructor(httpConfig, accessToken) {
@@ -97,6 +104,14 @@ class LiveValueService {
     subscribeToTimestamp(ids) {
         return this.subscribeLiveValuePackages(ids);
     }
+    subscribeToOperations(operationIds) {
+        const prefixedIds = operationIds.map((x) => `${SubscriptionPrefix.OP}:${x}`);
+        return this.subscribeLiveValuePackages(prefixedIds);
+    }
+    getOperationStatus(operationId) {
+        const prefixedId = `${SubscriptionPrefix.OP}:${operationId}`;
+        return this.subscribeToOperations([operationId]).pipe((0, rxjs_1.map)((messages) => messages.find((x) => x.id === operationId)), (0, rxjs_1.filter)((m) => m != null), (0, rxjs_1.takeWhile)((m) => m.status !== OperationStatus.Success && m.status !== OperationStatus.Failed, true), (0, rxjs_1.finalize)(() => this._unsubscribeIds([prefixedId])));
+    }
     subscribeLiveValuePackages(packageIds) {
         const notSubscribedIds = packageIds.filter((id) => !this._subscribedIds.includes(id));
         if (this.hubConnection && notSubscribedIds.length > 0) {
@@ -108,6 +123,10 @@ class LiveValueService {
             return (0, rxjs_1.concat)((0, rxjs_1.of)(cachedPackages), livePackages$);
         }
         return livePackages$;
+    }
+    _unsubscribeIds(ids) {
+        this._subscribedIds = this._subscribedIds.filter((id) => !ids.includes(id));
+        ids.forEach((id) => delete this._valueCache[id]);
     }
     _enqueueIdsToSubscribe(ids) {
         const newIds = ids.filter((id) => !this._queuedIds.includes(id));

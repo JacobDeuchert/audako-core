@@ -7,9 +7,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { auditTime, BehaviorSubject, concat, filter, firstValueFrom, map, mapTo, of, Subject, takeUntil, } from 'rxjs';
+import { auditTime, BehaviorSubject, concat, filter, finalize, firstValueFrom, map, mapTo, of, Subject, takeUntil, takeWhile, } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
 import { getAsyncValueAsPromise } from '../utils/async-value-utils.js';
+export var OperationStatus;
+(function (OperationStatus) {
+    OperationStatus["Running"] = "Running";
+    OperationStatus["Success"] = "Success";
+    OperationStatus["Failed"] = "Failed";
+})(OperationStatus || (OperationStatus = {}));
 export var LiveHubMethod;
 (function (LiveHubMethod) {
     LiveHubMethod["ChangeModeAsync"] = "ChangeModeAsync";
@@ -26,6 +32,7 @@ export var SubscriptionPrefix;
     SubscriptionPrefix["SO"] = "SO";
     SubscriptionPrefix["T"] = "T";
     SubscriptionPrefix["TC"] = "TC";
+    SubscriptionPrefix["OP"] = "OP";
 })(SubscriptionPrefix || (SubscriptionPrefix = {}));
 export class LiveValueService {
     constructor(httpConfig, accessToken) {
@@ -71,6 +78,14 @@ export class LiveValueService {
     subscribeToTimestamp(ids) {
         return this.subscribeLiveValuePackages(ids);
     }
+    subscribeToOperations(operationIds) {
+        const prefixedIds = operationIds.map((x) => `${SubscriptionPrefix.OP}:${x}`);
+        return this.subscribeLiveValuePackages(prefixedIds);
+    }
+    getOperationStatus(operationId) {
+        const prefixedId = `${SubscriptionPrefix.OP}:${operationId}`;
+        return this.subscribeToOperations([operationId]).pipe(map((messages) => messages.find((x) => x.id === operationId)), filter((m) => m != null), takeWhile((m) => m.status !== OperationStatus.Success && m.status !== OperationStatus.Failed, true), finalize(() => this._unsubscribeIds([prefixedId])));
+    }
     subscribeLiveValuePackages(packageIds) {
         const notSubscribedIds = packageIds.filter((id) => !this._subscribedIds.includes(id));
         if (this.hubConnection && notSubscribedIds.length > 0) {
@@ -82,6 +97,10 @@ export class LiveValueService {
             return concat(of(cachedPackages), livePackages$);
         }
         return livePackages$;
+    }
+    _unsubscribeIds(ids) {
+        this._subscribedIds = this._subscribedIds.filter((id) => !ids.includes(id));
+        ids.forEach((id) => delete this._valueCache[id]);
     }
     _enqueueIdsToSubscribe(ids) {
         const newIds = ids.filter((id) => !this._queuedIds.includes(id));

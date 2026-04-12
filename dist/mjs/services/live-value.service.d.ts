@@ -12,6 +12,20 @@ export type SignalLiveValue = {
 export type SignalOffsetValue = {
     value: any;
 } & LivePackage;
+export declare enum OperationStatus {
+    Running = "Running",
+    Success = "Success",
+    Failed = "Failed"
+}
+export type OperationMessage = {
+    id: string;
+    name: string;
+    status: OperationStatus;
+    statusMessage?: string;
+    createdOn: Date;
+    updatedOn?: Date;
+    error: string;
+} & LivePackage;
 export type TimestampPackage = LivePackage;
 export declare enum LiveHubMethod {
     ChangeModeAsync = "ChangeModeAsync",
@@ -25,7 +39,8 @@ export declare enum SubscriptionPrefix {
     S = "S",
     SO = "SO",
     T = "T",
-    TC = "TC"
+    TC = "TC",
+    OP = "OP"
 }
 export declare class LiveValueService implements Disposable {
     private httpConfig;
@@ -45,7 +60,10 @@ export declare class LiveValueService implements Disposable {
     subscribeToSignalValues(signalIds: string[]): Observable<SignalLiveValue[]>;
     subscribeToSignalOffsets(signalIds: string[]): Observable<SignalLiveValue[]>;
     subscribeToTimestamp(ids: string[]): Observable<TimestampPackage[]>;
+    subscribeToOperations(operationIds: string[]): Observable<OperationMessage[]>;
+    getOperationStatus(operationId: string): Observable<OperationMessage>;
     subscribeLiveValuePackages(packageIds: string[]): Observable<LivePackage[]>;
+    private _unsubscribeIds;
     private _enqueueIdsToSubscribe;
     private _handleSubscriptionQueue;
     private _getCachedValuePackages;
