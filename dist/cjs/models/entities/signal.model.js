@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDefaultCompressionSettingsBySignalType = exports.SignalCompressionSettings = exports.SignalCompressionType = exports.getDefaultRecordingSettingsBySignalType = exports.SignalRecordingSettings = exports.RecordingType = exports.RecordingSpecialProcessingType = exports.SignalTypeSettingsMap = exports.SignalCounterSettings = exports.SignalAnalogSettings = exports.SignalDigitalSettings = exports.SignalSettings = exports.BitSelectConversionTypes = exports.Signal = exports.SignalType = void 0;
+exports.getDefaultCompressionSettingsBySignalType = exports.SignalCompressionSettings = exports.SignalCompressionType = exports.getDefaultRecordingSettingsBySignalType = exports.SignalRecordingSettings = exports.RecordingType = exports.RecordingSpecialProcessingType = exports.SignalTypeSettingsMap = exports.SignalCounterSettings = exports.SignalAnalogSettings = exports.SignalDigitalSettings = exports.SignalSettings = exports.BitSelectConversionTypes = exports.SignalOutputSettings = exports.Signal = exports.SignalType = void 0;
 const configuration_entity_model_js_1 = require("./configuration-entity.model.js");
 var SignalType;
 (function (SignalType) {
@@ -15,16 +15,24 @@ var SignalType;
 class Signal extends configuration_entity_model_js_1.ConfigurationEntity {
     constructor() {
         super();
-        this.Alias = new configuration_entity_model_js_1.Field();
         this.Type = new configuration_entity_model_js_1.Field(SignalType.AnalogInput);
         this.DataConnectionId = new configuration_entity_model_js_1.Field();
         this.Address = new configuration_entity_model_js_1.Field();
         this.Settings = new SignalAnalogSettings();
+        this.OutputSettings = new SignalOutputSettings();
         this.RecordingSettings = new SignalRecordingSettings();
         this.CompressionSettings = new SignalCompressionSettings();
     }
 }
 exports.Signal = Signal;
+class SignalOutputSettings {
+    constructor() {
+        this.AutoresetEnabled = new configuration_entity_model_js_1.Field(false);
+        this.AutoresetValue = new configuration_entity_model_js_1.Field(0);
+        this.AutoresetDelay = new configuration_entity_model_js_1.Field(3);
+    }
+}
+exports.SignalOutputSettings = SignalOutputSettings;
 var BitSelectConversionTypes;
 (function (BitSelectConversionTypes) {
     BitSelectConversionTypes["None"] = "None";

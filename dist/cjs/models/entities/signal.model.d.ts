@@ -11,12 +11,18 @@ export declare enum SignalType {
 }
 export declare class Signal extends ConfigurationEntity {
     Type: Field<SignalType>;
-    Alias: Field<string>;
     DataConnectionId: Field<string>;
     Address: Field<string>;
     Settings: SignalSettings;
+    OutputSettings: SignalOutputSettings;
     RecordingSettings: SignalRecordingSettings;
     CompressionSettings: SignalCompressionSettings;
+    constructor();
+}
+export declare class SignalOutputSettings {
+    AutoresetEnabled: Field<boolean>;
+    AutoresetValue: Field<number>;
+    AutoresetDelay: Field<number>;
     constructor();
 }
 export declare enum BitSelectConversionTypes {

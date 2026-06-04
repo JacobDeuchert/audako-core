@@ -9,6 +9,9 @@ export declare class DataSource extends ConfigurationEntity {
     Password: Field<string>;
     Type: Field<DataSourceType>;
     PermaLiveModeSettings: PermaLiveModeSettings;
+    Settings: {
+        [key: string]: Field<string>;
+    };
     constructor();
 }
 export declare class PermaLiveModeSettings {

@@ -15,5 +15,12 @@ var ReportTimeStepSize;
     ReportTimeStepSize["Year"] = "Year";
 })(ReportTimeStepSize || (exports.ReportTimeStepSize = ReportTimeStepSize = {}));
 class ReportTemplate extends configuration_entity_model_js_1.ConfigurationEntity {
+    constructor() {
+        super();
+        this.ScriptFile = new configuration_entity_model_js_1.Field();
+        this.TemplateFile = new configuration_entity_model_js_1.Field();
+        this.EngineType = new configuration_entity_model_js_1.Field(ReportEngineType.JsTemplate);
+        this.DefaultStepSize = new configuration_entity_model_js_1.Field(ReportTimeStepSize.Day);
+    }
 }
 exports.ReportTemplate = ReportTemplate;

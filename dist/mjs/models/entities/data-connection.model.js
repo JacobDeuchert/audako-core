@@ -36,6 +36,7 @@ export class DataConnection extends ConfigurationEntity {
         this.Type = new Field(null);
         this.Settings = null;
         this.SpecialDeviceProfile = new Field(DataConnectionSpecialDeviceProfile.None);
+        this.InactivityTimeout = new Field(null);
         this.PollingInterval = new Field(null);
     }
 }

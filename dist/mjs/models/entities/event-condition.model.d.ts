@@ -1,7 +1,9 @@
 import { CompressionInterval, ValueObjectType } from '../historical-value.model.js';
 import { ConfigurationEntity, Field } from './configuration-entity.model.js';
 export declare class EventCondition extends ConfigurationEntity {
+    Enabled: Field<boolean>;
     Settings: ConditionSettings;
+    constructor();
 }
 export declare enum EventConditionSettingsType {
     SignalConditionSettings = "SignalConditionSettings",
@@ -26,31 +28,49 @@ export declare enum SignalConditionSettingsOperator {
     LessThanOrEqual = "LessThanOrEqual",
     NotEqual = "NotEqual"
 }
-export declare class ConditionSettings {
+export declare abstract class ConditionSettings {
     _t: EventConditionSettingsType;
+    constructor(type: EventConditionSettingsType);
 }
 export declare class SignalConditionSettings extends ConditionSettings {
     InConditionOperator: Field<SignalConditionSettingsOperator>;
     OutConditionOperator: Field<SignalConditionSettingsOperator>;
-    InConditionValue: Field<string>;
-    OutConditionValue: Field<string>;
+    InConditionValue: Field<any>;
+    OutConditionValue: Field<any>;
     InDelay: Field<number>;
     OutDelay: Field<number>;
     SignalId: Field<string>;
+    constructor();
 }
 export declare class CounterConditionSettings extends ConditionSettings {
     SignalId: Field<string>;
     Value: Field<number>;
     StartValue: Field<number>;
     StartDate: Field<Date>;
+    DelayedTriggeringEnabled: Field<boolean>;
+    constructor();
 }
 export declare class ConnectionFailureConditionSettings extends ConditionSettings {
     MaxOfflineTime: Field<number>;
     DataSourceId: Field<string>;
+    constructor();
 }
 export declare class DataConnectionFailureConditionSettings extends ConditionSettings {
-    MaxOfflineTimeout: Field<number>;
+    MaxOfflineTime: Field<number>;
     DataConnectionId: Field<string>;
+    constructor();
+}
+export declare class TimebasedConditionSettings extends ConditionSettings {
+    RRule: string;
+    StartsAt: Date;
+    StartTime: string;
+    EndsAt: Date;
+    EndTime: string;
+    DelayedTriggeringEnabled: boolean;
+    TriggerMissedOnAdd: boolean;
+    SubsequentTriggeringEnabled: boolean;
+    Timezone: string;
+    constructor();
 }
 export declare class MinimumMonitoringSettings extends ConditionSettings {
     ObjectType: ValueObjectType;
@@ -61,12 +81,15 @@ export declare class MinimumMonitoringSettings extends ConditionSettings {
     MinimumFrom: string;
     MinimumTill: string;
     MinimumEvent: string;
+    constructor();
 }
 export declare class MaximumMonitoringSettings extends ConditionSettings {
     ObjectType: ValueObjectType;
     ObjectId: string;
     MaximumValue: number | boolean | string;
+    ValueIntervalType: CompressionInterval;
     TimeZone: string;
+    constructor();
 }
 export declare class PeriodMaximumMonitoringSettings extends ConditionSettings {
     ObjectType: ValueObjectType;
@@ -88,6 +111,7 @@ export declare class ChangeRateMonitoringSettings extends ConditionSettings {
     ValueIntervalType: CompressionInterval;
     ValueIntervalCount: number;
     MaximumChangeRate: number | string | boolean;
+    constructor();
 }
 export declare class PlausibilityMonitoringSettings extends ConditionSettings {
     ObjectType: ValueObjectType;
@@ -96,6 +120,7 @@ export declare class PlausibilityMonitoringSettings extends ConditionSettings {
     MaximumValue: number | string | boolean;
     ValueIntervalType: CompressionInterval;
     TimeZone: string;
+    constructor();
 }
 export declare class PositionMonitoringSettings extends ConditionSettings {
     LongitudeObjectId: string;
@@ -103,6 +128,7 @@ export declare class PositionMonitoringSettings extends ConditionSettings {
     FixedLongitude: number;
     FixedLatitude: number;
     FixedDistance: number;
+    constructor();
 }
 export declare class RecordingFailureMonitoringSettings extends ConditionSettings {
     SignalId: Field<string>;
@@ -115,6 +141,7 @@ export declare class DifferenceMonitoringSettings extends ConditionSettings {
     ValueIntervalType: CompressionInterval;
     MaximumDifference: number;
     MaximumTimestampDistance: number;
+    constructor();
 }
 export declare class ObjectSettings {
     ObjectId: string;

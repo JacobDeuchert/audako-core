@@ -12,6 +12,7 @@ export class DataSource extends ConfigurationEntity {
         this.Password = new Field(null);
         this.Type = new Field(DataSourceType.EdgeGateway);
         this.PermaLiveModeSettings = new PermaLiveModeSettings();
+        this.Settings = {};
     }
 }
 export class PermaLiveModeSettings {

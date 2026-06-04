@@ -39,6 +39,7 @@ class DataConnection extends configuration_entity_model_js_1.ConfigurationEntity
         this.Type = new configuration_entity_model_js_1.Field(null);
         this.Settings = null;
         this.SpecialDeviceProfile = new configuration_entity_model_js_1.Field(DataConnectionSpecialDeviceProfile.None);
+        this.InactivityTimeout = new configuration_entity_model_js_1.Field(null);
         this.PollingInterval = new configuration_entity_model_js_1.Field(null);
     }
 }
