@@ -11,6 +11,7 @@ export class DataSource extends ConfigurationEntity {
   public Password: Field<string>;
   public Type: Field<DataSourceType>;
   public PermaLiveModeSettings: PermaLiveModeSettings;
+  public Settings: { [key: string]: Field<string> };
 
   constructor() {
     super();
@@ -19,6 +20,7 @@ export class DataSource extends ConfigurationEntity {
     this.Password = new Field<string>(null);
     this.Type = new Field<DataSourceType>(DataSourceType.EdgeGateway);
     this.PermaLiveModeSettings = new PermaLiveModeSettings();
+    this.Settings = {};
   }
 }
 

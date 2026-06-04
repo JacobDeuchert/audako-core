@@ -35,6 +35,7 @@ export class DataConnection extends ConfigurationEntity {
   public Type: Field<DataConnectionType>;
   public Settings: DataConnectionTypedSettings;
   public SpecialDeviceProfile: Field<DataConnectionSpecialDeviceProfile>;
+  public InactivityTimeout: Field<number | null>;
   public PollingInterval: Field<number | null>;
 
   constructor() {
@@ -44,6 +45,7 @@ export class DataConnection extends ConfigurationEntity {
     this.Type = new Field<DataConnectionType>(null);
     this.Settings = null;
     this.SpecialDeviceProfile = new Field<DataConnectionSpecialDeviceProfile>(DataConnectionSpecialDeviceProfile.None);
+    this.InactivityTimeout = new Field<number | null>(null);
     this.PollingInterval = new Field<number | null>(null);
   }
 }
