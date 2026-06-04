@@ -15,6 +15,7 @@ class DataSource extends configuration_entity_model_js_1.ConfigurationEntity {
         this.Password = new configuration_entity_model_js_1.Field(null);
         this.Type = new configuration_entity_model_js_1.Field(DataSourceType.EdgeGateway);
         this.PermaLiveModeSettings = new PermaLiveModeSettings();
+        this.Settings = {};
     }
 }
 exports.DataSource = DataSource;

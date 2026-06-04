@@ -14,4 +14,5 @@ export declare class ReportTemplate extends ConfigurationEntity {
     TemplateFile: Field<string>;
     EngineType: Field<ReportEngineType>;
     DefaultStepSize: Field<ReportTimeStepSize>;
+    constructor();
 }

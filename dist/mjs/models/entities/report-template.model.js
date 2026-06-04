@@ -1,4 +1,4 @@
-import { ConfigurationEntity } from './configuration-entity.model.js';
+import { ConfigurationEntity, Field } from './configuration-entity.model.js';
 export var ReportEngineType;
 (function (ReportEngineType) {
     ReportEngineType["WYSIWYG"] = "WYSIWYG";
@@ -12,4 +12,11 @@ export var ReportTimeStepSize;
     ReportTimeStepSize["Year"] = "Year";
 })(ReportTimeStepSize || (ReportTimeStepSize = {}));
 export class ReportTemplate extends ConfigurationEntity {
+    constructor() {
+        super();
+        this.ScriptFile = new Field();
+        this.TemplateFile = new Field();
+        this.EngineType = new Field(ReportEngineType.JsTemplate);
+        this.DefaultStepSize = new Field(ReportTimeStepSize.Day);
+    }
 }

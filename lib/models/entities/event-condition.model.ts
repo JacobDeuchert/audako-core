@@ -2,7 +2,13 @@ import { CompressionInterval, ValueObjectType } from '../historical-value.model.
 import { ConfigurationEntity, Field } from './configuration-entity.model.js';
 
 export class EventCondition extends ConfigurationEntity {
+  public Enabled: Field<boolean>;
   public Settings: ConditionSettings;
+
+  constructor() {
+    super();
+    this.Enabled = new Field<boolean>(true);
+  }
 }
 
 export enum EventConditionSettingsType {
@@ -30,21 +36,35 @@ export enum SignalConditionSettingsOperator {
   NotEqual = 'NotEqual',
 }
 
-
-export class ConditionSettings {
+export abstract class ConditionSettings {
   public _t: EventConditionSettingsType;
+
+  constructor(type: EventConditionSettingsType) {
+    this._t = type;
+  }
 }
 
 export class SignalConditionSettings extends ConditionSettings {
   public InConditionOperator: Field<SignalConditionSettingsOperator>;
   public OutConditionOperator: Field<SignalConditionSettingsOperator>;
-  public InConditionValue: Field<string>;
-  public OutConditionValue: Field<string>;
+  public InConditionValue: Field<any>;
+  public OutConditionValue: Field<any>;
 
   public InDelay: Field<number>;
   public OutDelay: Field<number>;
 
   public SignalId: Field<string>;
+
+  constructor() {
+    super(EventConditionSettingsType.SignalConditionSettings);
+    this.InConditionOperator = new Field<SignalConditionSettingsOperator>();
+    this.OutConditionOperator = new Field<SignalConditionSettingsOperator>();
+    this.InConditionValue = new Field<any>();
+    this.OutConditionValue = new Field<any>();
+    this.InDelay = new Field<number>();
+    this.OutDelay = new Field<number>();
+    this.SignalId = new Field<string>();
+  }
 }
 
 export class CounterConditionSettings extends ConditionSettings {
@@ -52,18 +72,62 @@ export class CounterConditionSettings extends ConditionSettings {
   public Value: Field<number>;
   public StartValue: Field<number>;
   public StartDate: Field<Date>;
+  public DelayedTriggeringEnabled: Field<boolean>;
+
+  constructor() {
+    super(EventConditionSettingsType.CounterConditionSettings);
+    this.SignalId = new Field<string>();
+    this.Value = new Field<number>();
+    this.StartValue = new Field<number>();
+    this.StartDate = new Field<Date>();
+    this.DelayedTriggeringEnabled = new Field<boolean>(false);
+  }
 }
 
 export class ConnectionFailureConditionSettings extends ConditionSettings {
   public MaxOfflineTime: Field<number>;
 
   public DataSourceId: Field<string>;
+
+  constructor() {
+    super(EventConditionSettingsType.ConnectionFailureConditionSettings);
+    this.MaxOfflineTime = new Field<number>();
+    this.DataSourceId = new Field<string>();
+  }
 }
 
 export class DataConnectionFailureConditionSettings extends ConditionSettings {
-  public MaxOfflineTimeout: Field<number>;
+  public MaxOfflineTime: Field<number>;
 
   public DataConnectionId: Field<string>;
+
+  constructor() {
+    super(EventConditionSettingsType.DataConnectionFailure);
+    this.MaxOfflineTime = new Field<number>();
+    this.DataConnectionId = new Field<string>();
+  }
+}
+
+export class TimebasedConditionSettings extends ConditionSettings {
+  public RRule: string;
+
+  public StartsAt: Date;
+  public StartTime: string;
+  public EndsAt: Date;
+  public EndTime: string;
+
+  public DelayedTriggeringEnabled: boolean;
+  public TriggerMissedOnAdd: boolean;
+  public SubsequentTriggeringEnabled: boolean;
+
+  public Timezone: string;
+
+  constructor() {
+    super(EventConditionSettingsType.TimebasedConditionSettings);
+    this.DelayedTriggeringEnabled = false;
+    this.TriggerMissedOnAdd = false;
+    this.SubsequentTriggeringEnabled = false;
+  }
 }
 
 export class MinimumMonitoringSettings extends ConditionSettings {
@@ -78,13 +142,22 @@ export class MinimumMonitoringSettings extends ConditionSettings {
   public MinimumFrom: string;
   public MinimumTill: string;
   public MinimumEvent: string;
+
+  constructor() {
+    super(EventConditionSettingsType.MinimumMonitoringSettings);
+  }
 }
 
 export class MaximumMonitoringSettings extends ConditionSettings {
   public ObjectType: ValueObjectType;
   public ObjectId: string;
   public MaximumValue: number | boolean | string;
+  public ValueIntervalType: CompressionInterval;
   public TimeZone: string;
+
+  constructor() {
+    super(EventConditionSettingsType.MaximumMonitoringSettings);
+  }
 }
 
 export class PeriodMaximumMonitoringSettings extends ConditionSettings {
@@ -96,10 +169,9 @@ export class PeriodMaximumMonitoringSettings extends ConditionSettings {
   public Periods: PeriodMaximumMonitoringSettingsPeriod[];
 
   constructor() {
-    super();
+    super(EventConditionSettingsType.PeriodMaximumMonitoringSettings);
     this.Periods = [];
   }
-
 }
 
 export class PeriodMaximumMonitoringSettingsPeriod {
@@ -117,6 +189,10 @@ export class ChangeRateMonitoringSettings extends ConditionSettings {
   public ValueIntervalType: CompressionInterval;
   public ValueIntervalCount: number;
   public MaximumChangeRate: number | string | boolean;
+
+  constructor() {
+    super(EventConditionSettingsType.ChangeRateMonitoringSettings);
+  }
 }
 
 export class PlausibilityMonitoringSettings extends ConditionSettings {
@@ -128,6 +204,10 @@ export class PlausibilityMonitoringSettings extends ConditionSettings {
 
   public ValueIntervalType: CompressionInterval;
   public TimeZone: string;
+
+  constructor() {
+    super(EventConditionSettingsType.PlausibilityMonitoringSettings);
+  }
 }
 
 export class PositionMonitoringSettings extends ConditionSettings {
@@ -137,6 +217,10 @@ export class PositionMonitoringSettings extends ConditionSettings {
   public FixedLongitude: number;
   public FixedLatitude: number;
   public FixedDistance: number;
+
+  constructor() {
+    super(EventConditionSettingsType.PositionMonitoringSettings);
+  }
 }
 
 export class RecordingFailureMonitoringSettings extends ConditionSettings {
@@ -145,8 +229,7 @@ export class RecordingFailureMonitoringSettings extends ConditionSettings {
   public MaxOutageTime: Field<number>;
 
   constructor() {
-    super();
-    this._t = EventConditionSettingsType.RecordingFailureMonitoringSettings;
+    super(EventConditionSettingsType.RecordingFailureMonitoringSettings);
     this.SignalId = new Field<string>(null);
     this.MaxOutageTime = new Field<number>(60000);
   }
@@ -161,6 +244,10 @@ export class DifferenceMonitoringSettings extends ConditionSettings {
 
   public MaximumDifference: number;
   public MaximumTimestampDistance: number;
+
+  constructor() {
+    super(EventConditionSettingsType.DifferenceMonitoringSettings);
+  }
 }
 
 export class ObjectSettings {

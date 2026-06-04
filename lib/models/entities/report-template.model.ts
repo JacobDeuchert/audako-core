@@ -17,4 +17,12 @@ export class ReportTemplate extends ConfigurationEntity {
   public TemplateFile: Field<string>;
   public EngineType: Field<ReportEngineType>;
   public DefaultStepSize: Field<ReportTimeStepSize>;
+
+  constructor() {
+    super();
+    this.ScriptFile = new Field<string>();
+    this.TemplateFile = new Field<string>();
+    this.EngineType = new Field<ReportEngineType>(ReportEngineType.JsTemplate);
+    this.DefaultStepSize = new Field<ReportTimeStepSize>(ReportTimeStepSize.Day);
+  }
 }

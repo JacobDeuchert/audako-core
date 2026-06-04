@@ -14,11 +14,12 @@ export enum SignalType {
 export class Signal extends ConfigurationEntity {
   public Type: Field<SignalType>;
 
-  public Alias: Field<string>;
   public DataConnectionId: Field<string>;
   public Address: Field<string>;
 
   public Settings: SignalSettings;
+
+  public OutputSettings: SignalOutputSettings;
 
   public RecordingSettings: SignalRecordingSettings;
 
@@ -26,13 +27,25 @@ export class Signal extends ConfigurationEntity {
 
   constructor() {
     super();
-    this.Alias = new Field<string>();
     this.Type = new Field<SignalType>(SignalType.AnalogInput);
     this.DataConnectionId = new Field<string>();
     this.Address = new Field<string>();
     this.Settings = new SignalAnalogSettings();
+    this.OutputSettings = new SignalOutputSettings();
     this.RecordingSettings = new SignalRecordingSettings();
     this.CompressionSettings = new SignalCompressionSettings();
+  }
+}
+
+export class SignalOutputSettings {
+  public AutoresetEnabled: Field<boolean>;
+  public AutoresetValue: Field<number>;
+  public AutoresetDelay: Field<number>;
+
+  constructor() {
+    this.AutoresetEnabled = new Field<boolean>(false);
+    this.AutoresetValue = new Field<number>(0);
+    this.AutoresetDelay = new Field<number>(3);
   }
 }
 

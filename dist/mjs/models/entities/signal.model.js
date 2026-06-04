@@ -12,13 +12,20 @@ export var SignalType;
 export class Signal extends ConfigurationEntity {
     constructor() {
         super();
-        this.Alias = new Field();
         this.Type = new Field(SignalType.AnalogInput);
         this.DataConnectionId = new Field();
         this.Address = new Field();
         this.Settings = new SignalAnalogSettings();
+        this.OutputSettings = new SignalOutputSettings();
         this.RecordingSettings = new SignalRecordingSettings();
         this.CompressionSettings = new SignalCompressionSettings();
+    }
+}
+export class SignalOutputSettings {
+    constructor() {
+        this.AutoresetEnabled = new Field(false);
+        this.AutoresetValue = new Field(0);
+        this.AutoresetDelay = new Field(3);
     }
 }
 export var BitSelectConversionTypes;

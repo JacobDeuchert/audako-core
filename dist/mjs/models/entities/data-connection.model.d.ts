@@ -32,6 +32,7 @@ export declare class DataConnection extends ConfigurationEntity {
     Type: Field<DataConnectionType>;
     Settings: DataConnectionTypedSettings;
     SpecialDeviceProfile: Field<DataConnectionSpecialDeviceProfile>;
+    InactivityTimeout: Field<number | null>;
     PollingInterval: Field<number | null>;
     constructor();
 }
