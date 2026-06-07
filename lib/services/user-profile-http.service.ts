@@ -2,10 +2,11 @@ import axios from 'axios';
 import { HttpConfig } from '../models/http-config.model.js';
 import { UserProfile } from '../models/user-profile.model.js';
 import { BaseHttpService } from './base-http.service.js';
+import { AsyncValue } from '../utils/async-value-utils.js';
 
 export class UserProfileHttpService extends BaseHttpService {
 
-  constructor(httpConfig: HttpConfig, token: string | Promise<string>) {
+  constructor(httpConfig: HttpConfig, token: AsyncValue<string>) {
     super(httpConfig, token);
   }
   public async getUserProfile(): Promise<UserProfile> {
