@@ -4,4 +4,5 @@ import { BaseHttpService } from './base-http.service.js';
 export declare class UserProfileHttpService extends BaseHttpService {
     constructor(httpConfig: HttpConfig, token: string | Promise<string>);
     getUserProfile(): Promise<UserProfile>;
+    updateUserProfile(profile: UserProfile): Promise<void>;
 }

@@ -25,4 +25,19 @@ export class UserProfileHttpService extends BaseHttpService {
       throw new Error('Failed to request user profile with error: ' + err?.message);
     }
   }
+
+  public async updateUserProfile(profile: UserProfile): Promise<void> {
+    try {
+      const authHeaders = await this.getAuthorizationHeader();
+      await axios.put(
+        `${await this.getStructureUrl()}/userprofile`,
+        profile,
+        {
+          headers: authHeaders
+        }
+      );
+    } catch (err) {
+      throw new Error('Failed to update user profile with error: ' + err?.message);
+    }
+  }
 }

@@ -35,5 +35,18 @@ class UserProfileHttpService extends base_http_service_js_1.BaseHttpService {
             }
         });
     }
+    updateUserProfile(profile) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const authHeaders = yield this.getAuthorizationHeader();
+                yield axios_1.default.put(`${yield this.getStructureUrl()}/userprofile`, profile, {
+                    headers: authHeaders
+                });
+            }
+            catch (err) {
+                throw new Error('Failed to update user profile with error: ' + (err === null || err === void 0 ? void 0 : err.message));
+            }
+        });
+    }
 }
 exports.UserProfileHttpService = UserProfileHttpService;
