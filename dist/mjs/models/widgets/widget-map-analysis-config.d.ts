@@ -1,0 +1,40 @@
+import { BaseWidgetConfig, ValueEntity, IntervalSettings, TimeManagementSettings } from './shared.js';
+import { CompressionInterval } from '../historical-value.model.js';
+export declare const MapAnalysesConfigVersion: string;
+export declare enum MapAnalysisValueDisplayType {
+    LastValue = "LastValue",
+    Difference = "Difference",
+    Average = "Average"
+}
+export type MapAnalysisValueEntity = ValueEntity & {
+    displayType: MapAnalysisValueDisplayType;
+    label?: string;
+};
+export type MapAnalysisEntry = {
+    color: string;
+    eventDefinitionId: string;
+    valueEntities: MapAnalysisValueEntity[];
+};
+export type MapAnalysisObject = {
+    name: string;
+    latitudeEntity: ValueEntity;
+    longitudeEntity: ValueEntity;
+    analysisEntries: MapAnalysisEntry[];
+    compressionInterval: CompressionInterval;
+    drawPathLine: boolean;
+    pathLineWidth: number;
+    pathLineColor: string;
+};
+export type MapAnalysisDisplayOptions = {
+    showTimestamp: boolean;
+    showLatLng: boolean;
+    showDuration: boolean;
+};
+export declare const DEFAULT_MAP_ANALYSIS_DISPLAY_OPTIONS: MapAnalysisDisplayOptions;
+export declare class WidgetMapAnalysesConfig extends BaseWidgetConfig {
+    analysesObjects: MapAnalysisObject[];
+    timeManagementSettings: TimeManagementSettings;
+    historicalSetting: IntervalSettings;
+    displayOptions: MapAnalysisDisplayOptions;
+    constructor(config?: Omit<Partial<WidgetMapAnalysesConfig>, 'version'>);
+}
