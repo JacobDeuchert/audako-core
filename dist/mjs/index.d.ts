@@ -101,5 +101,6 @@ export { TenantHttpService } from './services/tenant-http.service.js';
 export { EntityNameService } from './services/entity-name.service.js';
 export { UserProfileHttpService } from './services/user-profile-http.service.js';
 export { DataSourceHttpService } from './services/data-source-http.service.js';
+export { DataConnectionBrowserService } from './services/data-connection-browser.service.js';
 export * from './services/live-value.service.js';
 export * from './services/historical-value.service.js';

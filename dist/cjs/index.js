@@ -15,7 +15,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DataSourceHttpService = exports.UserProfileHttpService = exports.EntityNameService = exports.TenantHttpService = exports.BaseHttpService = exports.getAsyncValueAsPromise = exports.ObjectUtils = exports.EntityUtils = exports.EntityTypeClassMapping = exports.UserProfile = exports.TenantView = exports.DataConnectionSettings = exports.EntityType = exports.EntityHttpEndpoints = exports.EntityIcons = exports.EntityObjectOrientationAttribute = exports.FieldObjectOrientationAttribute = exports.ConfigurationEntity = exports.TranslatableField = exports.Field = void 0;
+exports.DataConnectionBrowserService = exports.DataSourceHttpService = exports.UserProfileHttpService = exports.EntityNameService = exports.TenantHttpService = exports.BaseHttpService = exports.getAsyncValueAsPromise = exports.ObjectUtils = exports.EntityUtils = exports.EntityTypeClassMapping = exports.UserProfile = exports.TenantView = exports.DataConnectionSettings = exports.EntityType = exports.EntityHttpEndpoints = exports.EntityIcons = exports.EntityObjectOrientationAttribute = exports.FieldObjectOrientationAttribute = exports.ConfigurationEntity = exports.TranslatableField = exports.Field = void 0;
 var configuration_entity_model_js_1 = require("./models/entities/configuration-entity.model.js");
 Object.defineProperty(exports, "Field", { enumerable: true, get: function () { return configuration_entity_model_js_1.Field; } });
 var configuration_entity_model_js_2 = require("./models/entities/configuration-entity.model.js");
@@ -140,5 +140,7 @@ var user_profile_http_service_js_1 = require("./services/user-profile-http.servi
 Object.defineProperty(exports, "UserProfileHttpService", { enumerable: true, get: function () { return user_profile_http_service_js_1.UserProfileHttpService; } });
 var data_source_http_service_js_1 = require("./services/data-source-http.service.js");
 Object.defineProperty(exports, "DataSourceHttpService", { enumerable: true, get: function () { return data_source_http_service_js_1.DataSourceHttpService; } });
+var data_connection_browser_service_js_1 = require("./services/data-connection-browser.service.js");
+Object.defineProperty(exports, "DataConnectionBrowserService", { enumerable: true, get: function () { return data_connection_browser_service_js_1.DataConnectionBrowserService; } });
 __exportStar(require("./services/live-value.service.js"), exports);
 __exportStar(require("./services/historical-value.service.js"), exports);
