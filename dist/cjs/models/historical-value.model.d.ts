@@ -10,6 +10,14 @@ export declare enum CompressionInterval {
     QuarterInterval = "QuarterInterval",
     YearInterval = "YearInterval"
 }
+export declare enum MeasurementValueSource {
+    System = "System",
+    Process = "Process",
+    Import = "Import",
+    Manual = "Manual",
+    Mixed = "Mixed",
+    Manipulated = "Manipulated"
+}
 export type ValueObjectType = EntityType.Signal | EntityType.Formula;
 export type HistoricalValueMap = {
     IntervalStart: string;

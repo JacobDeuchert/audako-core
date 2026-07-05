@@ -10,3 +10,12 @@ export var CompressionInterval;
     CompressionInterval["QuarterInterval"] = "QuarterInterval";
     CompressionInterval["YearInterval"] = "YearInterval";
 })(CompressionInterval || (CompressionInterval = {}));
+export var MeasurementValueSource;
+(function (MeasurementValueSource) {
+    MeasurementValueSource["System"] = "System";
+    MeasurementValueSource["Process"] = "Process";
+    MeasurementValueSource["Import"] = "Import";
+    MeasurementValueSource["Manual"] = "Manual";
+    MeasurementValueSource["Mixed"] = "Mixed";
+    MeasurementValueSource["Manipulated"] = "Manipulated";
+})(MeasurementValueSource || (MeasurementValueSource = {}));

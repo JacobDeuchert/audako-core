@@ -67,6 +67,7 @@ Object.defineProperty(exports, "TenantView", { enumerable: true, get: function (
 var user_profile_model_js_1 = require("./models/user-profile.model.js");
 Object.defineProperty(exports, "UserProfile", { enumerable: true, get: function () { return user_profile_model_js_1.UserProfile; } });
 __exportStar(require("./models/historical-value.model.js"), exports);
+__exportStar(require("./models/historical-value-operation.model.js"), exports);
 var entity_type_class_mapping_js_1 = require("./models/entity-type-class-mapping.js");
 Object.defineProperty(exports, "EntityTypeClassMapping", { enumerable: true, get: function () { return entity_type_class_mapping_js_1.EntityTypeClassMapping; } });
 var entity_utils_js_1 = require("./utils/entity-utils.js");
@@ -144,3 +145,4 @@ var data_connection_browser_service_js_1 = require("./services/data-connection-b
 Object.defineProperty(exports, "DataConnectionBrowserService", { enumerable: true, get: function () { return data_connection_browser_service_js_1.DataConnectionBrowserService; } });
 __exportStar(require("./services/live-value.service.js"), exports);
 __exportStar(require("./services/historical-value.service.js"), exports);
+__exportStar(require("./services/historical-value-manipulation-http.service.js"), exports);

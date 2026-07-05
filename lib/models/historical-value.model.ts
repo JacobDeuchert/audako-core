@@ -12,6 +12,15 @@ export enum CompressionInterval {
   YearInterval = 'YearInterval'
 }
 
+export enum MeasurementValueSource {
+  System = 'System',
+  Process = 'Process',
+  Import = 'Import',
+  Manual = 'Manual',
+  Mixed = 'Mixed',
+  Manipulated = 'Manipulated',
+}
+
 export type ValueObjectType = EntityType.Signal | EntityType.Formula;
 
 
