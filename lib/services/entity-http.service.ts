@@ -91,13 +91,9 @@ export class EntityHttpService extends BaseHttpService {
   public async updateEntity<T extends ConfigurationEntity>(type: EntityType, entity: T): Promise<T> {
     const url = `${await this._createBaseUrlByType(type)}/${entity.Id}`;
     // need to remove these properties as backend throws 400 if they are present
-    delete entity.ChangedBy;
-    delete entity.ChangedOn;
     delete entity.CreatedBy;
     delete entity.CreatedOn;
     
-
-
     const headers = await this.getAuthorizationHeader();
     return axios.put<T>(url, entity, { headers: headers }).then((response) => response.data);
   }

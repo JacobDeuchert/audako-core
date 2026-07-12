@@ -82,8 +82,6 @@ class EntityHttpService extends base_http_service_js_1.BaseHttpService {
         return __awaiter(this, void 0, void 0, function* () {
             const url = `${yield this._createBaseUrlByType(type)}/${entity.Id}`;
             // need to remove these properties as backend throws 400 if they are present
-            delete entity.ChangedBy;
-            delete entity.ChangedOn;
             delete entity.CreatedBy;
             delete entity.CreatedOn;
             const headers = yield this.getAuthorizationHeader();
