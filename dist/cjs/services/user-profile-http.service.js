@@ -35,11 +35,11 @@ class UserProfileHttpService extends base_http_service_js_1.BaseHttpService {
             }
         });
     }
-    updateUserProfile(profile) {
+    updateUserProfileSettings(settings) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const authHeaders = yield this.getAuthorizationHeader();
-                yield axios_1.default.put(`${yield this.getStructureUrl()}/userprofile`, profile, {
+                yield axios_1.default.put(`${yield this.getStructureUrl()}/userprofile`, settings, {
                     headers: authHeaders
                 });
             }

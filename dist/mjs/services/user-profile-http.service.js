@@ -29,11 +29,11 @@ export class UserProfileHttpService extends BaseHttpService {
             }
         });
     }
-    updateUserProfile(profile) {
+    updateUserProfileSettings(settings) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const authHeaders = yield this.getAuthorizationHeader();
-                yield axios.put(`${yield this.getStructureUrl()}/userprofile`, profile, {
+                yield axios.put(`${yield this.getStructureUrl()}/userprofile`, settings, {
                     headers: authHeaders
                 });
             }

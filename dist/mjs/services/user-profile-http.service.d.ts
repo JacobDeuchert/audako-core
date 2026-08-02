@@ -5,5 +5,5 @@ import { AsyncValue } from '../utils/async-value-utils.js';
 export declare class UserProfileHttpService extends BaseHttpService {
     constructor(httpConfig: HttpConfig, token: AsyncValue<string>);
     getUserProfile(): Promise<UserProfile>;
-    updateUserProfile(profile: UserProfile): Promise<void>;
+    updateUserProfileSettings(settings: Record<string, string>): Promise<void>;
 }

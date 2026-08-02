@@ -27,12 +27,12 @@ export class UserProfileHttpService extends BaseHttpService {
     }
   }
 
-  public async updateUserProfile(profile: UserProfile): Promise<void> {
+  public async updateUserProfileSettings(settings: Record<string, string>): Promise<void> {
     try {
       const authHeaders = await this.getAuthorizationHeader();
       await axios.put(
         `${await this.getStructureUrl()}/userprofile`,
-        profile,
+        settings,
         {
           headers: authHeaders
         }
