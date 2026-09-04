@@ -12,11 +12,37 @@ import { EntityTypeClassMapping } from '../../models/entity-type-class-mapping.j
  * {@link AdapterRegistry} for the entity type. `baseFromWire` / `baseToWire` already run around
  * every adapter, so a per-entity adapter only handles its own renames and defaults.
  */
+/**
+ * How much of the entity the payload contains, and therefore how far the shared read pass may
+ * go when filling model defaults.
+ *
+ * - `full`      the payload is the whole entity: absent *and* present-but-null keys are filled
+ *               from the model defaults.
+ * - `projected` the payload is a `$projection` result and only carries the requested keys, so
+ *               only present-but-null keys are filled. Filling absent keys would fabricate data
+ *               the caller never asked for (and, worse, would look like real server state).
+ */
+export type FromWireMode = 'full' | 'projected';
+
 export interface EntityAdapter<T = any> {
-  /** Wire -> canonical model. */
-  fromWire(wire: any, ctx: ApiVersionInfo): T;
+  /**
+   * Wire -> canonical model.
+   *
+   * @param mode `projected` when the payload is a `$projection` result. Adapters that fill a key
+   *        which is *absent* from the wire (rather than present and null) must skip that fill in
+   *        `projected` mode.
+   */
+  fromWire(wire: any, ctx: ApiVersionInfo, mode?: FromWireMode): T;
   /** Canonical model -> wire payload. */
   toWire(entity: T, ctx: ApiVersionInfo): any;
+}
+
+/**
+ * True when the shared read pass and the per-entity adapters may fill `key` from a model default.
+ * In `projected` mode a key that is not on the wire was simply not requested.
+ */
+export function canFillFromDefault(wire: any, key: string, mode: FromWireMode = 'full'): boolean {
+  return mode !== 'projected' || (!!wire && typeof wire === 'object' && key in wire);
 }
 
 /** Adapter that passes payloads through unchanged. */
@@ -100,7 +126,7 @@ function isFillableSubObject(value: any): boolean {
 }
 
 /**
- * Recursive part of {@link baseFromWire}: fills absent/null keys from `defaults` and descends into
+ * Top-level part of {@link baseFromWire}: fills absent/null keys from `defaults` and descends into
  * nested plain settings objects (`DataSource.PermaLiveModeSettings`, `Formula.*IntervalSettings`,
  * `BatchDefinition.BatchReviewSettings`/`ReleaseSettings`, ...) where the server may return a
  * partially populated object - for example `FormulaIntervalSettings.ProvideLastValues` is `null`
@@ -110,8 +136,12 @@ function isFillableSubObject(value: any): boolean {
  * `OpcUaSettings.TimestampSource` and the MeterBus fields) and array elements
  * (`Formula.Variables[].TagScope`). Both are `null`/empty on the default instance, so there is no
  * template to walk; they need the per-entity adapter that knows the concrete class.
+ *
+ * `mode` only gates the top level: once a key is present on the wire its value is the complete
+ * server value, so a nested object is filled the same way in both modes (a `$projection` key
+ * containing a `.` is ignored by the platform, so partial sub-objects cannot be projected).
  */
-function fillDefaults(wire: any, defaults: any): any {
+function fillDefaults(wire: any, defaults: any, mode: FromWireMode): any {
   const entity: any = { ...wire };
   for (const key of Object.keys(defaults)) {
     const defaultValue = defaults[key];
@@ -121,12 +151,14 @@ function fillDefaults(wire: any, defaults: any): any {
 
     const value = entity[key];
     if (value === null || value === undefined) {
-      entity[key] = cloneDefault(defaultValue);
+      if (canFillFromDefault(wire, key, mode)) {
+        entity[key] = cloneDefault(defaultValue);
+      }
       continue;
     }
 
     if (isFillableSubObject(defaultValue) && isFillableSubObject(value)) {
-      entity[key] = fillDefaults(value, defaultValue);
+      entity[key] = fillDefaults(value, defaultValue, 'full');
     }
   }
   return entity;
@@ -139,8 +171,11 @@ function fillDefaults(wire: any, defaults: any): any {
  * Both platform lines need this - v5 serializes every property (null instead of absent) and v4
  * returns null where the server has no stored default
  * (docs/analysis/v4-to-v5-models.md, "Server-side defaults").
+ *
+ * @param mode `projected` for `$projection` results, where keys missing from the payload were
+ *        not requested and must stay missing. Defaults to `full`.
  */
-export function baseFromWire<T = any>(wire: any, entityType: EntityType): T {
+export function baseFromWire<T = any>(wire: any, entityType: EntityType, mode: FromWireMode = 'full'): T {
   if (!wire || typeof wire !== 'object' || Array.isArray(wire)) {
     return wire;
   }
@@ -150,7 +185,7 @@ export function baseFromWire<T = any>(wire: any, entityType: EntityType): T {
     return wire;
   }
 
-  const entity: any = fillDefaults(wire, defaults);
+  const entity: any = fillDefaults(wire, defaults, mode);
   return entity as T;
 }
 
@@ -184,10 +219,19 @@ export class AdapterRegistry {
     return this._adapters.get(entityType) || identityAdapter;
   }
 
-  /** `baseFromWire` followed by the per-entity adapter. */
-  public applyFromWire<T = any>(entityType: EntityType, wire: any, ctx: ApiVersionInfo): T {
-    const prepared = baseFromWire(wire, entityType);
-    return this.getAdapter<T>(entityType).fromWire(prepared, ctx);
+  /**
+   * `baseFromWire` followed by the per-entity adapter.
+   *
+   * @param mode `projected` for `$projection` results; see {@link FromWireMode}.
+   */
+  public applyFromWire<T = any>(
+    entityType: EntityType,
+    wire: any,
+    ctx: ApiVersionInfo,
+    mode: FromWireMode = 'full',
+  ): T {
+    const prepared = baseFromWire(wire, entityType, mode);
+    return this.getAdapter<T>(entityType).fromWire(prepared, ctx, mode);
   }
 
   /** The per-entity adapter followed by `baseToWire`. */

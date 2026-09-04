@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runtimeScriptAdapterV4 = void 0;
 const configuration_entity_model_js_1 = require("../../../models/entities/configuration-entity.model.js");
+const entity_adapter_js_1 = require("../entity-adapter.js");
 /**
  * v4 adapter for `RuntimeScript`.
  *
@@ -10,12 +11,15 @@ const configuration_entity_model_js_1 = require("../../../models/entities/config
  * script reads as disabled. Treat undefined/null as `true` on reads below 4.13.
  */
 exports.runtimeScriptAdapterV4 = {
-    fromWire(wire, ctx) {
+    fromWire(wire, ctx, mode) {
         if (!wire || typeof wire !== 'object' || !ctx.isV4) {
             return wire;
         }
-        // Below 4.13 `Enabled` does not exist on the wire; the canonical default is `true`.
-        if (!ctx.isAtLeast('4.13') && (wire.Enabled === null || wire.Enabled === undefined)) {
+        // Below 4.13 `Enabled` does not exist on the wire; the canonical default is `true`. On a
+        // projected read an absent `Enabled` was simply not requested, so nothing is invented.
+        if (!ctx.isAtLeast('4.13') &&
+            (wire.Enabled === null || wire.Enabled === undefined) &&
+            (0, entity_adapter_js_1.canFillFromDefault)(wire, 'Enabled', mode)) {
             return Object.assign(Object.assign({}, wire), { Enabled: new configuration_entity_model_js_1.Field(true) });
         }
         return wire;

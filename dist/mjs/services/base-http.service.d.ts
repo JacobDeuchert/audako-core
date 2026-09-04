@@ -24,6 +24,10 @@ export declare abstract class BaseHttpService {
         [p: string]: string;
     }>;
     protected getAccessToken(): Promise<string>;
+    /**
+     * @deprecated Resolve endpoints with {@link resolve} instead: the structure service path
+     * differs per platform version, and only the resolver knows the per-version routes.
+     */
     protected getStructureUrl(): Promise<string>;
     /**
      * @deprecated Use the `httpConfig` accessor of the `ApiContext` instead.

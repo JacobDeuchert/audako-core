@@ -1,7 +1,7 @@
 import { ApiVersionInfo } from '../../../api/api-version.js';
 import { Field } from '../../../models/entities/configuration-entity.model.js';
 import { RuntimeScript } from '../../../models/entities/runtime-script.model.js';
-import { EntityAdapter } from '../entity-adapter.js';
+import { canFillFromDefault, EntityAdapter, FromWireMode } from '../entity-adapter.js';
 
 /**
  * v4 adapter for `RuntimeScript`.
@@ -11,13 +11,18 @@ import { EntityAdapter } from '../entity-adapter.js';
  * script reads as disabled. Treat undefined/null as `true` on reads below 4.13.
  */
 export const runtimeScriptAdapterV4: EntityAdapter<RuntimeScript> = {
-  fromWire(wire: any, ctx: ApiVersionInfo): RuntimeScript {
+  fromWire(wire: any, ctx: ApiVersionInfo, mode?: FromWireMode): RuntimeScript {
     if (!wire || typeof wire !== 'object' || !ctx.isV4) {
       return wire;
     }
 
-    // Below 4.13 `Enabled` does not exist on the wire; the canonical default is `true`.
-    if (!ctx.isAtLeast('4.13') && (wire.Enabled === null || wire.Enabled === undefined)) {
+    // Below 4.13 `Enabled` does not exist on the wire; the canonical default is `true`. On a
+    // projected read an absent `Enabled` was simply not requested, so nothing is invented.
+    if (
+      !ctx.isAtLeast('4.13') &&
+      (wire.Enabled === null || wire.Enabled === undefined) &&
+      canFillFromDefault(wire, 'Enabled', mode)
+    ) {
       return { ...wire, Enabled: new Field<boolean>(true) } as RuntimeScript;
     }
 

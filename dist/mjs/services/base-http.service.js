@@ -35,6 +35,10 @@ export class BaseHttpService {
     getAccessToken() {
         return this.ctx.getAccessToken();
     }
+    /**
+     * @deprecated Resolve endpoints with {@link resolve} instead: the structure service path
+     * differs per platform version, and only the resolver knows the per-version routes.
+     */
     getStructureUrl() {
         return __awaiter(this, void 0, void 0, function* () {
             const httpConfig = yield this.getHttpConfig();

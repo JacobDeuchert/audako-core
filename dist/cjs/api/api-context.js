@@ -95,7 +95,14 @@ class ApiContext {
             return (0, async_value_utils_js_1.getAsyncValueAsPromise)(this._versionInfo);
         }
         if (!this._versionInfoPromise) {
-            this._versionInfoPromise = this.getHttpConfig().then((httpConfig) => (0, version_detection_js_1.detectApiVersion)(ApiContext.getApiRootUrl(httpConfig), { httpConfig: httpConfig }));
+            this._versionInfoPromise = this.getHttpConfig()
+                .then((httpConfig) => (0, version_detection_js_1.detectApiVersion)(ApiContext.getApiRootUrl(httpConfig), { httpConfig: httpConfig }))
+                .catch((error) => {
+                // Do not cache a failure: a transient network error during detection would otherwise
+                // break every later request on this context.
+                this._versionInfoPromise = undefined;
+                throw error;
+            });
         }
         return this._versionInfoPromise;
     }

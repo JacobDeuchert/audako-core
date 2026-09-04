@@ -2,21 +2,11 @@ import { describe, expect, it, vi } from 'vitest';
 import { ApiContext } from '../../lib/api/api-context.js';
 import { createApiVersionInfo } from '../../lib/api/api-version.js';
 import { HistoricalValueOperationStatus } from '../../lib/models/historical-value-operation.model.js';
-import { HttpConfig } from '../../lib/models/http-config.model.js';
 import { HistoricalValueManipulationHttpService } from '../../lib/services/historical-value-manipulation-http.service.js';
-
-const v4Config = {
-  Services: { BaseUri: 'https://host/api', Structure: '/structure', Historian: '/historian' },
-  Authentication: null,
-} as unknown as HttpConfig;
-
-const v5Config = {
-  Services: { BaseUri: 'https://host/api', Structure: '/v1/structure', Historian: '/v1/historian' },
-  Authentication: null,
-} as unknown as HttpConfig;
+import { V4_CONFIG, V5_CONFIG } from './api-context-stub.js';
 
 function createService(version: '4.23.0' | '5.0.0') {
-  const ctx = new ApiContext(version.startsWith('4') ? v4Config : v5Config, 'token', createApiVersionInfo(version));
+  const ctx = new ApiContext(version.startsWith('4') ? V4_CONFIG : V5_CONFIG, 'token', createApiVersionInfo(version));
   const service = new HistoricalValueManipulationHttpService(ctx);
   return {
     service: service,
@@ -171,14 +161,7 @@ describe('HistoricalValueOperation v4 adapter', () => {
     post.mockResolvedValue({ status: 200, data: v5Operation } as any);
 
     const [operation] = await service.getHistoricalValueOperations('signal-1');
-    const started = await service.startHistoricalValueOperation(
-      'signal-1',
-      new Date(0),
-      new Date(0),
-      'CET',
-      'x',
-      'y',
-    );
+    const started = await service.startHistoricalValueOperation('signal-1', new Date(0), new Date(0), 'CET', 'x', 'y');
 
     expect(operation).toEqual(v5Operation);
     expect(started).toEqual(v5Operation);

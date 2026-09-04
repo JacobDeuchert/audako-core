@@ -1,5 +1,5 @@
 import { EntityType } from '../../models/entities/configuration-entity.model.js';
-import { EndpointTable, ResolvedEndpoint, ServiceUrls } from './endpoint-resolver.js';
+import type { EndpointTable, ResolvedEndpoint, ServiceUrls } from './endpoint-resolver.js';
 
 /**
  * v4 domain-prefixed entity paths (`/base/Group`) became kebab-plural segments under the

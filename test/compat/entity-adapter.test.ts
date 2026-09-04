@@ -128,3 +128,61 @@ describe('AdapterRegistry', () => {
     expect(seen).toBe('4.23.0');
   });
 });
+
+describe('baseFromWire projected mode', () => {
+  it('does not fabricate absent fields on a projected read', () => {
+    const entity: any = baseFromWire({ Id: 'g1', Name: { Value: 'g' } }, EntityType.Group, 'projected');
+
+    expect(Object.keys(entity).sort()).toEqual(['Id', 'Name']);
+    expect(entity).not.toHaveProperty('Tags');
+  });
+
+  it('still treats a present-but-null field as absent on a projected read', () => {
+    const entity: any = baseFromWire({ Id: 'g1', Tags: null }, EntityType.Group, 'projected');
+    expect(entity.Tags).toEqual(new Group().Tags);
+  });
+
+  it('keeps falsy wire values in both modes', () => {
+    for (const mode of ['full', 'projected'] as const) {
+      const entity: any = baseFromWire(
+        { Id: '', Name: { Value: '', OOAttributes: [] }, Tags: [], Deleted: false, Version: 0 },
+        EntityType.Group,
+        mode,
+      );
+
+      expect(entity.Id).toBe('');
+      expect(entity.Name.Value).toBe('');
+      expect(entity.Tags).toEqual([]);
+      expect(entity.Deleted).toBe(false);
+      expect(entity.Version).toBe(0);
+    }
+  });
+
+  it('fills nested settings defaults of a sub-object that is present on a projected read', () => {
+    const registry = new AdapterRegistry();
+    const wire = { Id: 'g1', Name: { Value: 'g' } };
+
+    // Sanity: the same payload read in full mode does get the remaining defaults.
+    const full: any = registry.applyFromWire(EntityType.Group, wire, v4);
+    const projected: any = registry.applyFromWire(EntityType.Group, wire, v4, 'projected');
+
+    expect(Object.keys(full).length).toBeGreaterThan(Object.keys(projected).length);
+    expect(Object.keys(projected).sort()).toEqual(['Id', 'Name']);
+  });
+
+  it('passes the mode on to the per-entity adapter', () => {
+    const registry = new AdapterRegistry();
+    const seen: (string | undefined)[] = [];
+    registry.register(EntityType.Group, {
+      fromWire: (wire: any, _ctx, mode) => {
+        seen.push(mode);
+        return wire;
+      },
+      toWire: (entity: any) => entity,
+    });
+
+    registry.applyFromWire(EntityType.Group, { Id: 'g1' }, v4);
+    registry.applyFromWire(EntityType.Group, { Id: 'g1' }, v4, 'projected');
+    expect(seen).toEqual(['full', 'projected']);
+  });
+});

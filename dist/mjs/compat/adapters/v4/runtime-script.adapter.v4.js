@@ -1,4 +1,5 @@
 import { Field } from '../../../models/entities/configuration-entity.model.js';
+import { canFillFromDefault } from '../entity-adapter.js';
 /**
  * v4 adapter for `RuntimeScript`.
  *
@@ -7,12 +8,15 @@ import { Field } from '../../../models/entities/configuration-entity.model.js';
  * script reads as disabled. Treat undefined/null as `true` on reads below 4.13.
  */
 export const runtimeScriptAdapterV4 = {
-    fromWire(wire, ctx) {
+    fromWire(wire, ctx, mode) {
         if (!wire || typeof wire !== 'object' || !ctx.isV4) {
             return wire;
         }
-        // Below 4.13 `Enabled` does not exist on the wire; the canonical default is `true`.
-        if (!ctx.isAtLeast('4.13') && (wire.Enabled === null || wire.Enabled === undefined)) {
+        // Below 4.13 `Enabled` does not exist on the wire; the canonical default is `true`. On a
+        // projected read an absent `Enabled` was simply not requested, so nothing is invented.
+        if (!ctx.isAtLeast('4.13') &&
+            (wire.Enabled === null || wire.Enabled === undefined) &&
+            canFillFromDefault(wire, 'Enabled', mode)) {
             return Object.assign(Object.assign({}, wire), { Enabled: new Field(true) });
         }
         return wire;

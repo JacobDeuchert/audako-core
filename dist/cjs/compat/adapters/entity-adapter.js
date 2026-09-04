@@ -1,7 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.entityAdapters = exports.AdapterRegistry = exports.baseFromWire = exports.baseToWire = exports.SERVER_OWNED_FIELDS = exports.identityAdapter = void 0;
+exports.entityAdapters = exports.AdapterRegistry = exports.baseFromWire = exports.baseToWire = exports.SERVER_OWNED_FIELDS = exports.identityAdapter = exports.canFillFromDefault = void 0;
 const entity_type_class_mapping_js_1 = require("../../models/entity-type-class-mapping.js");
+/**
+ * True when the shared read pass and the per-entity adapters may fill `key` from a model default.
+ * In `projected` mode a key that is not on the wire was simply not requested.
+ */
+function canFillFromDefault(wire, key, mode = 'full') {
+    return mode !== 'projected' || (!!wire && typeof wire === 'object' && key in wire);
+}
+exports.canFillFromDefault = canFillFromDefault;
 /** Adapter that passes payloads through unchanged. */
 exports.identityAdapter = {
     fromWire: (wire) => wire,
@@ -74,7 +82,7 @@ function isFillableSubObject(value) {
     return (!!value && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date) && !('Value' in value));
 }
 /**
- * Recursive part of {@link baseFromWire}: fills absent/null keys from `defaults` and descends into
+ * Top-level part of {@link baseFromWire}: fills absent/null keys from `defaults` and descends into
  * nested plain settings objects (`DataSource.PermaLiveModeSettings`, `Formula.*IntervalSettings`,
  * `BatchDefinition.BatchReviewSettings`/`ReleaseSettings`, ...) where the server may return a
  * partially populated object - for example `FormulaIntervalSettings.ProvideLastValues` is `null`
@@ -84,8 +92,12 @@ function isFillableSubObject(value) {
  * `OpcUaSettings.TimestampSource` and the MeterBus fields) and array elements
  * (`Formula.Variables[].TagScope`). Both are `null`/empty on the default instance, so there is no
  * template to walk; they need the per-entity adapter that knows the concrete class.
+ *
+ * `mode` only gates the top level: once a key is present on the wire its value is the complete
+ * server value, so a nested object is filled the same way in both modes (a `$projection` key
+ * containing a `.` is ignored by the platform, so partial sub-objects cannot be projected).
  */
-function fillDefaults(wire, defaults) {
+function fillDefaults(wire, defaults, mode) {
     const entity = Object.assign({}, wire);
     for (const key of Object.keys(defaults)) {
         const defaultValue = defaults[key];
@@ -94,11 +106,13 @@ function fillDefaults(wire, defaults) {
         }
         const value = entity[key];
         if (value === null || value === undefined) {
-            entity[key] = cloneDefault(defaultValue);
+            if (canFillFromDefault(wire, key, mode)) {
+                entity[key] = cloneDefault(defaultValue);
+            }
             continue;
         }
         if (isFillableSubObject(defaultValue) && isFillableSubObject(value)) {
-            entity[key] = fillDefaults(value, defaultValue);
+            entity[key] = fillDefaults(value, defaultValue, 'full');
         }
     }
     return entity;
@@ -110,8 +124,11 @@ function fillDefaults(wire, defaults) {
  * Both platform lines need this - v5 serializes every property (null instead of absent) and v4
  * returns null where the server has no stored default
  * (docs/analysis/v4-to-v5-models.md, "Server-side defaults").
+ *
+ * @param mode `projected` for `$projection` results, where keys missing from the payload were
+ *        not requested and must stay missing. Defaults to `full`.
  */
-function baseFromWire(wire, entityType) {
+function baseFromWire(wire, entityType, mode = 'full') {
     if (!wire || typeof wire !== 'object' || Array.isArray(wire)) {
         return wire;
     }
@@ -119,7 +136,7 @@ function baseFromWire(wire, entityType) {
     if (!defaults) {
         return wire;
     }
-    const entity = fillDefaults(wire, defaults);
+    const entity = fillDefaults(wire, defaults, mode);
     return entity;
 }
 exports.baseFromWire = baseFromWire;
@@ -150,10 +167,14 @@ class AdapterRegistry {
     getAdapter(entityType) {
         return this._adapters.get(entityType) || exports.identityAdapter;
     }
-    /** `baseFromWire` followed by the per-entity adapter. */
-    applyFromWire(entityType, wire, ctx) {
-        const prepared = baseFromWire(wire, entityType);
-        return this.getAdapter(entityType).fromWire(prepared, ctx);
+    /**
+     * `baseFromWire` followed by the per-entity adapter.
+     *
+     * @param mode `projected` for `$projection` results; see {@link FromWireMode}.
+     */
+    applyFromWire(entityType, wire, ctx, mode = 'full') {
+        const prepared = baseFromWire(wire, entityType, mode);
+        return this.getAdapter(entityType).fromWire(prepared, ctx, mode);
     }
     /** The per-entity adapter followed by `baseToWire`. */
     applyToWire(entityType, entity, ctx) {

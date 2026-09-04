@@ -1,6 +1,10 @@
 # audako-core: v4 / v5 platform compatibility plan
 
-Status: planning, nothing implemented. Last updated 2026-09-02.
+Status: rollout steps 1 and 2 implemented on branch `feat/v4-v5-compat` (`ApiContext`, version
+helper, compatibility check, endpoint resolver, and the v4 adapters for the entities that differ,
+with fixture tests). Steps 3 and 4 (migrating the apps, deprecation logging against a live v5
+system) are open, as are the open items below. App-facing summary: `docs/migration-2.0.md`.
+Last updated 2026-09-04.
 
 ## Goal
 
@@ -243,3 +247,69 @@ Verdict: mostly URL edits plus a few contract changes. Full table in
 3. Migrate apps to the new constructor and add the compatibility check at connect time.
 4. Enable deprecation logging in one app against a v5 system to confirm no legacy paths
    remain.
+
+## Implementation notes (2026-09-04)
+
+Deliberate deviations from, and decisions taken beyond, the plan above. Each one is also
+commented at the code site.
+
+**Version helper**
+
+- `checkCompatibility` has a sixth status, `invalidVersion`, beyond the four the plan lists. It
+  covers both an unparseable version string and a 4.x above the final 4.23 (which cannot exist).
+- `detectApiVersion` throws `ApiVersionDetectionError` when neither version path answers usably.
+  The plan did not name an error for the detection step itself.
+- `HttpConfig.ApiVersion` (open item 3) is already read: when the config carries it, nothing is
+  probed. Harmless if the platform never adds the key.
+- `ApiVersionInfo` is cached per `ApiContext`, but a *failed* detection is not cached, so a
+  transient network error does not permanently break the context.
+
+**Adapters**
+
+- `EventCategory.toWire` below 4.23 writes **both** `Acknowledgment` and `RequiresAcknowledgment`.
+  The release attribution of the rename is fuzzy by about one release
+  (docs/analysis/v4-models-4.22-4.23.md), and both platforms bind the payload to their typed model
+  and ignore the key they do not know.
+- `BatchDefinition.MetadataField.Editable` below 4.17 is derived as
+  `Source == Manual && ObligatoryAt == Stop`, i.e. exactly what `BatchDefinitionMigrator_V1` does.
+  Non-manual fields stay `false`, not `ObligatoryAt`-derived.
+- `TranslatableField.Translations` is **not** stripped on writes below 4.16. The server ignores the
+  unknown key, the write does not fail, and stripping it would only hide from the caller that the
+  data went nowhere. Translations stay behind the `translations` feature flag.
+- The shared `baseFromWire` default pass does **not** descend into `_t`-discriminated sub-settings
+  (`DataConnection.Settings`, so `OpcUaSettings.TimestampSource` and the MeterBus fields) or into
+  array elements (`Formula.Variables[].TagScope`). They are `null`/empty on the default instance,
+  so there is no template to walk; they need a per-entity adapter that knows the concrete class.
+- `baseFromWire` runs in one of two modes. A full read fills absent *and* present-but-null keys
+  from the model constructor defaults; a `$projection` read only fills present-but-null keys,
+  because filling absent ones would fabricate server state for keys the caller never asked for.
+  `EntityHttpService` picks the mode from the presence of a projection, in both
+  `getPartialEntityById` and `queryConfiguration`. Per-entity adapters get the mode as a third
+  `fromWire` argument for the same reason (`RuntimeScript.Enabled`, `EventDefinition.EventCategoryId`).
+- The v4 adapters register themselves as a side effect of importing
+  `lib/compat/adapters/index.ts`, which is the entry point `EntityHttpService` uses.
+  `entity-adapter.ts` (the registry) must stay free of imports from `v4/`, or registration would
+  depend on module evaluation order. Verified to happen in both the CJS and the ESM build output.
+
+**Historian**
+
+- `HistoricalValueRequest.MinMaxInterval` is not just dropped on v5: when only it is set, its value
+  is promoted to `MinMaxIntervalType`, so old call sites keep the min/max behaviour they asked for.
+- v4 operation status mapping: `Processing -> Pending` (v5 does not distinguish queued from
+  running) and `Undone -> Completed` plus `IsRedoable: true` (v5 expresses the undo state through
+  `IsUndoable`/`IsRedoable`, not through the status).
+- `getCounterOffsets` no longer emits the stray leading `&` after `?` that v4 core produced.
+
+**Endpoints and services**
+
+- `EntityHttpService.getEntityInfosByIds` assumes `entity-info` accepts the store's
+  `$filter {Id: {$in: [...]}}` operator form. The analysis doc documents no filter grammar for the
+  endpoint, so this is the one place where the batching in `EntityNameService` rests on an
+  assumption; it falls back to the per-id lookups when the request fails.
+- The `version` endpoint exists in both endpoint tables for completeness, but version detection
+  uses the two static paths directly: it has to run before there is a version to resolve against.
+- `BaseHttpService.getStructureUrl` is kept (subclasses in apps may use it) and deprecated: only
+  the resolver knows the per-version routes.
+- The deprecation logger is installed automatically on every `ApiContext` but, because
+  `lib/compat` is not exported, its sink cannot be redirected from an app. If rollout step 4 needs
+  app-side logging, core has to grow a small public facade in `lib/api/` for it.

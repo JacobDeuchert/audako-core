@@ -48,6 +48,10 @@ export abstract class BaseHttpService {
     return this.ctx.getAccessToken();
   }
 
+  /**
+   * @deprecated Resolve endpoints with {@link resolve} instead: the structure service path
+   * differs per platform version, and only the resolver knows the per-version routes.
+   */
   protected async getStructureUrl(): Promise<string> {
     const httpConfig = await this.getHttpConfig();
     return `${httpConfig.Services.BaseUri}${httpConfig.Services.Structure}`;

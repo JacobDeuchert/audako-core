@@ -1,7 +1,7 @@
 import { ApiVersionInfo } from '../../../api/api-version.js';
 import { Field } from '../../../models/entities/configuration-entity.model.js';
 import { EventDefinition } from '../../../models/entities/event-definition.model.js';
-import { EntityAdapter } from '../entity-adapter.js';
+import { canFillFromDefault, EntityAdapter, FromWireMode } from '../entity-adapter.js';
 
 /**
  * 4.12 `ExpressionParameters[].Type` values -> the `*Settings` names `EventDefinitionMigrator_V2`
@@ -62,7 +62,7 @@ function mapExpressionParameterTypes(entity: any, map: { [from: string]: string 
  * - 4.17 `EventCategoryId` arrives as bare `null` instead of `{Value:null}` -> coerce below 4.17.
  */
 export const eventDefinitionAdapterV4: EntityAdapter<EventDefinition> = {
-  fromWire(wire: any, ctx: ApiVersionInfo): EventDefinition {
+  fromWire(wire: any, ctx: ApiVersionInfo, mode?: FromWireMode): EventDefinition {
     if (!wire || typeof wire !== 'object' || !ctx.isV4) {
       return wire;
     }
@@ -70,8 +70,13 @@ export const eventDefinitionAdapterV4: EntityAdapter<EventDefinition> = {
     let entity: any = wire;
 
     // Below 4.17 the server sends `EventCategoryId: null`; apps dereference `.Value`.
-    // (`baseFromWire` covers this too, but the adapter must be correct on its own.)
-    if (!ctx.isAtLeast('4.17') && (entity.EventCategoryId === null || entity.EventCategoryId === undefined)) {
+    // (`baseFromWire` covers this too, but the adapter must be correct on its own.) A key that is
+    // absent on a projected read was not requested, so it is left absent.
+    if (
+      !ctx.isAtLeast('4.17') &&
+      (entity.EventCategoryId === null || entity.EventCategoryId === undefined) &&
+      canFillFromDefault(wire, 'EventCategoryId', mode)
+    ) {
       entity = { ...entity, EventCategoryId: new Field<string>() };
     }
 

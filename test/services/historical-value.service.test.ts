@@ -1,31 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiContext } from '../../lib/api/api-context.js';
 import { createApiVersionInfo } from '../../lib/api/api-version.js';
-import { HttpConfig } from '../../lib/models/http-config.model.js';
 import { CompressionInterval } from '../../lib/models/historical-value.model.js';
 import { EntityType } from '../../lib/models/entities/configuration-entity.model.js';
+import { V4_CONFIG, V5_CONFIG } from './api-context-stub.js';
 import {
   HistoricalValueRequest,
   HistoricalValueService,
   OffsetSource,
 } from '../../lib/services/historical-value.service.js';
 
-const v4Config = {
-  Services: { BaseUri: 'https://host/api', Structure: '/structure', Historian: '/historian', Live: '/live' },
-  Authentication: null,
-} as unknown as HttpConfig;
-
-const v5Config = {
-  Services: { BaseUri: 'https://host/api', Structure: '/v1/structure', Historian: '/v1/historian', Live: '/live' },
-  Authentication: null,
-} as unknown as HttpConfig;
-
 function createService(version: '4.23.0' | '5.0.0') {
-  const ctx = new ApiContext(
-    version.startsWith('4') ? v4Config : v5Config,
-    'token',
-    createApiVersionInfo(version),
-  );
+  const ctx = new ApiContext(version.startsWith('4') ? V4_CONFIG : V5_CONFIG, 'token', createApiVersionInfo(version));
   const service = new HistoricalValueService(ctx);
   const post = vi.spyOn(ctx.http, 'post').mockResolvedValue({ status: 200, data: {} } as any);
   const get = vi.spyOn(ctx.http, 'get').mockResolvedValue({ status: 200, data: {} } as any);
@@ -134,9 +120,7 @@ describe('getNearestValue normalization', () => {
 
     expect(post.mock.calls[0][0]).toBe('https://host/api/historian/value/nearest');
     expect(value.Value).toBe(42);
-    expect(value.Notes).toEqual([
-      { Note: 'checked', CreatedBy: 'user-1', Timestamp: '2026-01-01T00:00:00Z' },
-    ]);
+    expect(value.Notes).toEqual([{ Note: 'checked', CreatedBy: 'user-1', Timestamp: '2026-01-01T00:00:00Z' }]);
   });
 
   it('passes a v5 MeasuredValue through', async () => {
@@ -214,11 +198,11 @@ describe('setCustomOffset body casing', () => {
 
 describe('deprecated constructor', () => {
   it('still accepts (httpConfig, accessToken)', async () => {
-    const service = new HistoricalValueService(v4Config, 'token');
+    const service = new HistoricalValueService(V4_CONFIG, 'token');
     const ctx = (service as any).ctx as ApiContext;
 
     expect(ctx).toBeInstanceOf(ApiContext);
-    await expect(ctx.getHttpConfig()).resolves.toBe(v4Config);
+    await expect(ctx.getHttpConfig()).resolves.toBe(V4_CONFIG);
     await expect(ctx.getAccessToken()).resolves.toBe('token');
   });
 });

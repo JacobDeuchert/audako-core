@@ -62,7 +62,7 @@ export function historicalValueOperationFromWire(wire, versionInfo) {
         StartedOn: (_b = wire.StartedOn) !== null && _b !== void 0 ? _b : wire.CreatedOn, 
         // v4 `ChangedOn` was touched on every status change; only a finished operation has a
         // meaningful stop time. Still running -> null, matching v5.
-        StoppedOn: (_c = wire.StoppedOn) !== null && _c !== void 0 ? _c : (finished ? (_d = wire.ChangedOn) !== null && _d !== void 0 ? _d : null : null), 
+        StoppedOn: (_c = wire.StoppedOn) !== null && _c !== void 0 ? _c : (finished ? ((_d = wire.ChangedOn) !== null && _d !== void 0 ? _d : null) : null), 
         // v4 exposed neither flag; derive them from the status the same way the UI used to.
         IsUndoable: (_e = wire.IsUndoable) !== null && _e !== void 0 ? _e : legacyStatus === HistoricalValueOperationStatus.Completed, IsRedoable: (_f = wire.IsRedoable) !== null && _f !== void 0 ? _f : legacyStatus === HistoricalValueOperationStatus.Undone });
 }

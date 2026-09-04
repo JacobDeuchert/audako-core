@@ -78,7 +78,7 @@ export function historicalValueOperationFromWire(wire: any, versionInfo: ApiVers
     StartedOn: wire.StartedOn ?? wire.CreatedOn,
     // v4 `ChangedOn` was touched on every status change; only a finished operation has a
     // meaningful stop time. Still running -> null, matching v5.
-    StoppedOn: wire.StoppedOn ?? (finished ? wire.ChangedOn ?? null : null),
+    StoppedOn: wire.StoppedOn ?? (finished ? (wire.ChangedOn ?? null) : null),
     // v4 exposed neither flag; derive them from the status the same way the UI used to.
     IsUndoable: wire.IsUndoable ?? legacyStatus === HistoricalValueOperationStatus.Completed,
     IsRedoable: wire.IsRedoable ?? legacyStatus === HistoricalValueOperationStatus.Undone,
@@ -86,10 +86,7 @@ export function historicalValueOperationFromWire(wire: any, versionInfo: ApiVers
 }
 
 /** {@link historicalValueOperationFromWire} for a list response. */
-export function historicalValueOperationsFromWire(
-  wire: any,
-  versionInfo: ApiVersionInfo,
-): HistoricalValueOperation[] {
+export function historicalValueOperationsFromWire(wire: any, versionInfo: ApiVersionInfo): HistoricalValueOperation[] {
   if (!Array.isArray(wire)) {
     return [];
   }

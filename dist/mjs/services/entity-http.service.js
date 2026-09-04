@@ -33,7 +33,9 @@ export class EntityHttpService extends BaseHttpService {
             const endpoint = yield this.resolve({ name: 'entityById', entityType: entityType, id: id });
             const url = projection ? withQueryParam(endpoint.url, '$projection', JSON.stringify(projection)) : endpoint.url;
             const response = yield this._request({ method: endpoint.method, url: url });
-            return this._fromWire(entityType, response.data, yield this.getVersionInfo());
+            // A projected read only carries the requested keys: the shared read pass must not fill the
+            // rest from the model defaults, or the result would look like real server state.
+            return this._fromWire(entityType, response.data, yield this.getVersionInfo(), projection ? 'projected' : 'full');
         });
     }
     /**
@@ -79,7 +81,8 @@ export class EntityHttpService extends BaseHttpService {
                 data: body,
                 headers: headers,
             });
-            const data = (response.data || []).map((item) => this._fromWire(entityType, item, versionInfo));
+            const mode = projectionValue ? 'projected' : 'full';
+            const data = (response.data || []).map((item) => this._fromWire(entityType, item, versionInfo, mode));
             // `Paging-Headers: {"TotalCount":N}` is unchanged in v5 and only sent when $paging was.
             const pagingHeader = paging ? (_a = response.headers) === null || _a === void 0 ? void 0 : _a['paging-headers'] : null;
             if (pagingHeader) {
@@ -249,9 +252,14 @@ export class EntityHttpService extends BaseHttpService {
             }
         });
     }
-    /** Wire -> canonical model, through the entity's adapter. */
-    _fromWire(entityType, wire, versionInfo) {
-        return entityAdapters.applyFromWire(entityType, wire, versionInfo);
+    /**
+     * Wire -> canonical model, through the entity's adapter.
+     *
+     * `mode` is `projected` for `$projection` results, where the shared read pass may only fill
+     * keys that are on the wire (see {@link FromWireMode}).
+     */
+    _fromWire(entityType, wire, versionInfo, mode = 'full') {
+        return entityAdapters.applyFromWire(entityType, wire, versionInfo, mode);
     }
     /**
      * Canonical model -> wire payload. Always returns a copy: `applyToWire` strips the server-owned

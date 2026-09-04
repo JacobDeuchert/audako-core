@@ -3,7 +3,7 @@ import { ApiContext } from '../api/api-context.js';
 import { ApiVersionInfo } from '../api/api-version.js';
 import { parseApiError } from '../api/errors.js';
 // Imported through the adapter entry point so the v4 adapters register themselves.
-import { entityAdapters } from '../compat/adapters/index.js';
+import { entityAdapters, FromWireMode } from '../compat/adapters/index.js';
 import {
   ConfigurationEntity,
   EntityType,
@@ -104,7 +104,14 @@ export class EntityHttpService extends BaseHttpService {
     const url = projection ? withQueryParam(endpoint.url, '$projection', JSON.stringify(projection)) : endpoint.url;
 
     const response = await this._request<Partial<T>>({ method: endpoint.method, url: url });
-    return this._fromWire<Partial<T>>(entityType, response.data, await this.getVersionInfo());
+    // A projected read only carries the requested keys: the shared read pass must not fill the
+    // rest from the model defaults, or the result would look like real server state.
+    return this._fromWire<Partial<T>>(
+      entityType,
+      response.data,
+      await this.getVersionInfo(),
+      projection ? 'projected' : 'full',
+    );
   }
 
   /**
@@ -158,7 +165,8 @@ export class EntityHttpService extends BaseHttpService {
       headers: headers,
     });
 
-    const data = (response.data || []).map((item) => this._fromWire<Partial<T>>(entityType, item, versionInfo));
+    const mode: FromWireMode = projectionValue ? 'projected' : 'full';
+    const data = (response.data || []).map((item) => this._fromWire<Partial<T>>(entityType, item, versionInfo, mode));
 
     // `Paging-Headers: {"TotalCount":N}` is unchanged in v5 and only sent when $paging was.
     const pagingHeader = paging ? (response.headers as any)?.['paging-headers'] : null;
@@ -338,9 +346,19 @@ export class EntityHttpService extends BaseHttpService {
     }
   }
 
-  /** Wire -> canonical model, through the entity's adapter. */
-  private _fromWire<T>(entityType: EntityType, wire: any, versionInfo: ApiVersionInfo): T {
-    return entityAdapters.applyFromWire<T>(entityType, wire, versionInfo);
+  /**
+   * Wire -> canonical model, through the entity's adapter.
+   *
+   * `mode` is `projected` for `$projection` results, where the shared read pass may only fill
+   * keys that are on the wire (see {@link FromWireMode}).
+   */
+  private _fromWire<T>(
+    entityType: EntityType,
+    wire: any,
+    versionInfo: ApiVersionInfo,
+    mode: FromWireMode = 'full',
+  ): T {
+    return entityAdapters.applyFromWire<T>(entityType, wire, versionInfo, mode);
   }
 
   /**

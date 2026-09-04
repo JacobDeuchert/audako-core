@@ -1,21 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
 import { ApiContext } from '../../lib/api/api-context.js';
 import { createApiVersionInfo } from '../../lib/api/api-version.js';
-import { HttpConfig } from '../../lib/models/http-config.model.js';
 import { DataSourceHttpService } from '../../lib/services/data-source-http.service.js';
-
-const v4Config = {
-  Services: { BaseUri: 'https://host/api', Structure: '/structure', Driver: '/driver' },
-  Authentication: null,
-} as unknown as HttpConfig;
-
-const v5Config = {
-  Services: { BaseUri: 'https://host/api', Structure: '/v1/structure', Driver: '/v1/driver' },
-  Authentication: null,
-} as unknown as HttpConfig;
+import { V4_CONFIG, V5_CONFIG } from './api-context-stub.js';
 
 function createService(version: '4.23.0' | '5.0.0') {
-  const ctx = new ApiContext(version.startsWith('4') ? v4Config : v5Config, 'token', createApiVersionInfo(version));
+  const ctx = new ApiContext(version.startsWith('4') ? V4_CONFIG : V5_CONFIG, 'token', createApiVersionInfo(version));
   return {
     service: new DataSourceHttpService(ctx),
     get: vi.spyOn(ctx.http, 'get').mockResolvedValue({ status: 200, data: '' } as any),

@@ -143,7 +143,12 @@ export declare class EntityHttpService extends BaseHttpService {
     getEntityInfosByIds(entityType: EntityType, ids: string[], language?: string): Promise<EntityInfo[]>;
     /** Runs a request on the context's axios instance and normalizes failures to `ApiError`. */
     private _request;
-    /** Wire -> canonical model, through the entity's adapter. */
+    /**
+     * Wire -> canonical model, through the entity's adapter.
+     *
+     * `mode` is `projected` for `$projection` results, where the shared read pass may only fill
+     * keys that are on the wire (see {@link FromWireMode}).
+     */
     private _fromWire;
     /**
      * Canonical model -> wire payload. Always returns a copy: `applyToWire` strips the server-owned

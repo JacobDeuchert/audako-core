@@ -107,9 +107,14 @@ export class ApiContext {
     }
 
     if (!this._versionInfoPromise) {
-      this._versionInfoPromise = this.getHttpConfig().then((httpConfig) =>
-        detectApiVersion(ApiContext.getApiRootUrl(httpConfig), { httpConfig: httpConfig }),
-      );
+      this._versionInfoPromise = this.getHttpConfig()
+        .then((httpConfig) => detectApiVersion(ApiContext.getApiRootUrl(httpConfig), { httpConfig: httpConfig }))
+        .catch((error) => {
+          // Do not cache a failure: a transient network error during detection would otherwise
+          // break every later request on this context.
+          this._versionInfoPromise = undefined;
+          throw error;
+        });
     }
 
     return this._versionInfoPromise;

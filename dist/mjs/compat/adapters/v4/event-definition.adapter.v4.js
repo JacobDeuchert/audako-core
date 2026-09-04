@@ -1,4 +1,5 @@
 import { Field } from '../../../models/entities/configuration-entity.model.js';
+import { canFillFromDefault } from '../entity-adapter.js';
 /**
  * 4.12 `ExpressionParameters[].Type` values -> the `*Settings` names `EventDefinitionMigrator_V2`
  * wrote when 4.13 bumped `EventDefinition` to `CollectionVersion(2)`. From 4.13 on the value
@@ -51,14 +52,17 @@ function mapExpressionParameterTypes(entity, map) {
  * - 4.17 `EventCategoryId` arrives as bare `null` instead of `{Value:null}` -> coerce below 4.17.
  */
 export const eventDefinitionAdapterV4 = {
-    fromWire(wire, ctx) {
+    fromWire(wire, ctx, mode) {
         if (!wire || typeof wire !== 'object' || !ctx.isV4) {
             return wire;
         }
         let entity = wire;
         // Below 4.17 the server sends `EventCategoryId: null`; apps dereference `.Value`.
-        // (`baseFromWire` covers this too, but the adapter must be correct on its own.)
-        if (!ctx.isAtLeast('4.17') && (entity.EventCategoryId === null || entity.EventCategoryId === undefined)) {
+        // (`baseFromWire` covers this too, but the adapter must be correct on its own.) A key that is
+        // absent on a projected read was not requested, so it is left absent.
+        if (!ctx.isAtLeast('4.17') &&
+            (entity.EventCategoryId === null || entity.EventCategoryId === undefined) &&
+            canFillFromDefault(wire, 'EventCategoryId', mode)) {
             entity = Object.assign(Object.assign({}, entity), { EventCategoryId: new Field() });
         }
         // On 4.12 the migrator has not run, so `Type` still carries the pre-4.13 short names.

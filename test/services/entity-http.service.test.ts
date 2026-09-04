@@ -123,7 +123,7 @@ describe('EntityHttpService.updateEntity', () => {
     }
   });
 
-  it('never mutates the caller\'s instance', async () => {
+  it("never mutates the caller's instance", async () => {
     const stub = service('4.23.0');
     stub.request.mockResolvedValue({ data: { Id: 'g1' }, headers: {} });
 
@@ -227,5 +227,49 @@ describe('v5-only entity endpoints', () => {
 
     const v4 = service('4.23.0');
     await expect(v4.service.getEntityInfos(EntityType.Group)).rejects.toBeInstanceOf(UnsupportedApiVersionError);
+  });
+});
+
+describe('EntityHttpService projected reads', () => {
+  it('does not fill model defaults for keys a projection left out', async () => {
+    const { service: svc, request } = service('5.0.0');
+    request.mockResolvedValue({ data: { Id: 'abc', Name: { Value: 'Group' } }, headers: {} });
+
+    const entity: any = await svc.getPartialEntityById(EntityType.Group, 'abc', { Name: 1 });
+
+    expect(Object.keys(entity).sort()).toEqual(['Id', 'Name']);
+    expect(entity).not.toHaveProperty('Tags');
+  });
+
+  it('fills model defaults on an unprojected read', async () => {
+    const { service: svc, request } = service('5.0.0');
+    request.mockResolvedValue({ data: { Id: 'abc', Name: null }, headers: {} });
+
+    const entity: any = await svc.getEntityById(EntityType.Group, 'abc');
+
+    expect(entity.Name).toEqual(new Group().Name);
+    expect(entity.Tags).toEqual(new Group().Tags);
+  });
+
+  it('still normalizes present-but-null keys of a projected read', async () => {
+    const { service: svc, request } = service('5.0.0');
+    request.mockResolvedValue({ data: { Id: 'abc', Name: null }, headers: {} });
+
+    const entity: any = await svc.getPartialEntityById(EntityType.Group, 'abc', { Name: 1 });
+
+    expect(entity.Name).toEqual(new Group().Name);
+    expect(entity).not.toHaveProperty('Tags');
+  });
+
+  it('applies the projected mode to query rows as well', async () => {
+    const { service: svc, request } = service('5.0.0');
+    request.mockResolvedValue({ data: [{ Id: 'a', Name: { Value: 'x' } }], headers: {} });
+
+    const projected = await svc.queryConfiguration(EntityType.Group, {}, undefined, { Name: 1 } as any);
+    expect(Object.keys(projected.data[0]).sort()).toEqual(['Id', 'Name']);
+
+    request.mockResolvedValue({ data: [{ Id: 'a', Name: { Value: 'x' } }], headers: {} });
+    const full = await svc.queryConfiguration(EntityType.Group, {});
+    expect(Object.keys(full.data[0]).length).toBeGreaterThan(2);
   });
 });
