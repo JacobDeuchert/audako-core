@@ -51,7 +51,6 @@ __exportStar(require("./models/entities/batch-definition.model.js"), exports);
 __exportStar(require("./models/entities/report-template.model.js"), exports);
 __exportStar(require("./models/entities/report.model.js"), exports);
 __exportStar(require("./models/entities/document.model.js"), exports);
-__exportStar(require("./models/entities/storage.model.js"), exports);
 __exportStar(require("./models/entities/camera.model.js"), exports);
 __exportStar(require("./models/entities/switch-schedule.model.js"), exports);
 __exportStar(require("./models/entities/user.model.js"), exports);
@@ -146,3 +145,5 @@ Object.defineProperty(exports, "DataConnectionBrowserService", { enumerable: tru
 __exportStar(require("./services/live-value.service.js"), exports);
 __exportStar(require("./services/historical-value.service.js"), exports);
 __exportStar(require("./services/historical-value-manipulation-http.service.js"), exports);
+// Runtime API version / compatibility exports (lib/compat is intentionally not exported)
+__exportStar(require("./api/index.js"), exports);

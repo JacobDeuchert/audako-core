@@ -25,7 +25,6 @@ const report_template_model_js_1 = require("./entities/report-template.model.js"
 const role_model_js_1 = require("./entities/role.model.js");
 const runtime_script_model_js_1 = require("./entities/runtime-script.model.js");
 const signal_model_js_1 = require("./entities/signal.model.js");
-const storage_model_js_1 = require("./entities/storage.model.js");
 const switch_schedule_model_js_1 = require("./entities/switch-schedule.model.js");
 const task_definition_model_js_1 = require("./entities/task-definition.model.js");
 const user_model_js_1 = require("./entities/user.model.js");
@@ -46,7 +45,6 @@ exports.EntityTypeClassMapping = {
     [configuration_entity_model_js_1.EntityType.ReportTemplate]: report_template_model_js_1.ReportTemplate,
     [configuration_entity_model_js_1.EntityType.Report]: report_model_js_1.Report,
     [configuration_entity_model_js_1.EntityType.Document]: document_model_js_1.Document,
-    [configuration_entity_model_js_1.EntityType.Storage]: storage_model_js_1.Storage,
     [configuration_entity_model_js_1.EntityType.Camera]: camera_model_js_1.Camera,
     [configuration_entity_model_js_1.EntityType.SwitchSchedule]: switch_schedule_model_js_1.SwitchSchedule,
     [configuration_entity_model_js_1.EntityType.User]: user_model_js_1.User,

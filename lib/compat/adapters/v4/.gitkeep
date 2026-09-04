@@ -1,0 +1,2 @@
+Per-entity v4 adapters live here (one file per entity that differs from the v5 canonical model).
+See lib/compat/adapters/entity-adapter.ts for how to write and register one.

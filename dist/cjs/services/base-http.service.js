@@ -14,39 +14,76 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaseHttpService = void 0;
 const axios_1 = __importDefault(require("axios"));
-const async_value_utils_js_1 = require("../utils/async-value-utils.js");
+const api_context_js_1 = require("../api/api-context.js");
+const version_detection_js_1 = require("../api/version-detection.js");
 class BaseHttpService {
-    constructor(httpConfig, accessToken) {
-        this.httpConfig = httpConfig;
-        this.accessToken = accessToken;
+    constructor(httpConfigOrCtx, accessToken) {
+        this.ctx =
+            httpConfigOrCtx instanceof api_context_js_1.ApiContext
+                ? httpConfigOrCtx
+                : new api_context_js_1.ApiContext(httpConfigOrCtx, accessToken);
+    }
+    /** `HttpConfig` of the target system. */
+    getHttpConfig() {
+        return this.ctx.getHttpConfig();
+    }
+    /** Detected platform version of the target system. */
+    getVersionInfo() {
+        return this.ctx.getVersionInfo();
+    }
+    /** Resolves an endpoint for the detected API version. */
+    resolve(endpoint) {
+        return this.ctx.resolve(endpoint);
     }
     getAuthorizationHeader() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let token = yield (0, async_value_utils_js_1.getAsyncValueAsPromise)(this.accessToken);
-            return {
-                Authorization: `Bearer ${token}`,
-            };
-        });
+        return this.ctx.getAuthorizationHeader();
     }
     getAccessToken() {
-        return (0, async_value_utils_js_1.getAsyncValueAsPromise)(this.accessToken);
+        return this.ctx.getAccessToken();
     }
     getStructureUrl() {
         return __awaiter(this, void 0, void 0, function* () {
-            const httpConfig = yield (0, async_value_utils_js_1.getAsyncValueAsPromise)(this.httpConfig);
+            const httpConfig = yield this.getHttpConfig();
             return `${httpConfig.Services.BaseUri}${httpConfig.Services.Structure}`;
         });
     }
-    static requestHttpConfig(systemUrl) {
-        return axios_1.default
-            .get(`${systemUrl}/assets/conf/application.config`)
-            .then((response) => response.data);
+    /**
+     * @deprecated Use the `httpConfig` accessor of the `ApiContext` instead.
+     */
+    get httpConfig() {
+        return () => this.ctx.getHttpConfig();
     }
+    static requestHttpConfig(systemUrl) {
+        return (0, api_context_js_1.requestHttpConfig)(systemUrl);
+    }
+    /**
+     * Probes the anonymous version endpoint. The v1 path is tried first: with the legacy proxy
+     * rewrite disabled the pre-v1 path falls through to the UI catch-all and answers HTML 200,
+     * which would be a false positive (docs/analysis/v4-to-v5-endpoints.md section 5).
+     */
     static isApiReachable(apiUrl) {
-        return axios_1.default
-            .get(`${apiUrl}/api/structure/about/version`)
-            .then((response) => response.status === 200 || response.status === 401)
-            .catch((error) => { var _a; return ((_a = error === null || error === void 0 ? void 0 : error.response) === null || _a === void 0 ? void 0 : _a.status) === 401; });
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            const base = (apiUrl || '').replace(/\/+$/, '');
+            for (const path of [version_detection_js_1.V5_VERSION_PATH, version_detection_js_1.V4_VERSION_PATH]) {
+                try {
+                    const response = yield axios_1.default.get(`${base}${path}`, {
+                        responseType: 'text',
+                        transformResponse: [(data) => data],
+                    });
+                    const body = typeof response.data === 'string' ? response.data.trim() : '';
+                    if (response.status === 200 && !body.startsWith('<')) {
+                        return true;
+                    }
+                }
+                catch (error) {
+                    if (((_a = error === null || error === void 0 ? void 0 : error.response) === null || _a === void 0 ? void 0 : _a.status) === 401) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
     }
 }
 exports.BaseHttpService = BaseHttpService;

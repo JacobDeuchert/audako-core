@@ -24,7 +24,6 @@ export * from './models/entities/batch-definition.model.js';
 export * from './models/entities/report-template.model.js';
 export * from './models/entities/report.model.js';
 export * from './models/entities/document.model.js';
-export * from './models/entities/storage.model.js';
 export * from './models/entities/camera.model.js';
 export * from './models/entities/switch-schedule.model.js';
 export * from './models/entities/user.model.js';
@@ -106,3 +105,4 @@ export { DataConnectionBrowserService } from './services/data-connection-browser
 export * from './services/live-value.service.js';
 export * from './services/historical-value.service.js';
 export * from './services/historical-value-manipulation-http.service.js';
+export * from './api/index.js';

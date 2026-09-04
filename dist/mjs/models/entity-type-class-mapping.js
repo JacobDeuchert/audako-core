@@ -22,7 +22,6 @@ import { ReportTemplate } from './entities/report-template.model.js';
 import { Role } from './entities/role.model.js';
 import { RuntimeScript } from './entities/runtime-script.model.js';
 import { Signal } from './entities/signal.model.js';
-import { Storage } from './entities/storage.model.js';
 import { SwitchSchedule } from './entities/switch-schedule.model.js';
 import { TaskDefinition } from './entities/task-definition.model.js';
 import { User } from './entities/user.model.js';
@@ -43,7 +42,6 @@ export const EntityTypeClassMapping = {
     [EntityType.ReportTemplate]: ReportTemplate,
     [EntityType.Report]: Report,
     [EntityType.Document]: Document,
-    [EntityType.Storage]: Storage,
     [EntityType.Camera]: Camera,
     [EntityType.SwitchSchedule]: SwitchSchedule,
     [EntityType.User]: User,

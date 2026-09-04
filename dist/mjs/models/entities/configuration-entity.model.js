@@ -16,7 +16,6 @@ export var EntityType;
     EntityType["ReportTemplate"] = "ReportTemplate";
     EntityType["Report"] = "Report";
     EntityType["Document"] = "Document";
-    EntityType["Storage"] = "Storage";
     EntityType["Camera"] = "Camera";
     EntityType["SwitchSchedule"] = "SwitchSchedule";
     EntityType["User"] = "User";
@@ -53,7 +52,6 @@ export const EntityHttpEndpoints = {
     ReportTemplate: '/scada/ReportTemplate',
     Report: '/scada/Report',
     Document: '/base/Document',
-    Storage: '/base/Storage',
     Camera: '/scada/Camera',
     SwitchSchedule: '/scada/SwitchSchedule',
     User: '/base/User',

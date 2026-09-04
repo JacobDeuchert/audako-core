@@ -1,6 +1,6 @@
 {
   "name": "audako-core",
-  "version": "1.0.12",
+  "version": "2.0.0",
   "description": "Core Services, Models and Functions for the audako platform",
   "main": "./dist/cjs/index.js",
   "module": "./dist/mjs/index.js",
@@ -18,7 +18,7 @@
     }
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
     "prettier": "npx prettier --write .",
     "build": "rm -rf dist && tsc -p ./lib/tsconfig.json && tsc -p ./lib/tsconfig-cjs.json && echo '{\"type\": \"module\"}' > dist/mjs/package.json && echo '{\"type\": \"commonjs\"}' > dist/cjs/package.json"
   },
@@ -30,6 +30,7 @@
     "rxjs": "^7.5.5"
   },
   "devDependencies": {
-    "typescript": "^5.3.2"
+    "typescript": "^5.3.2",
+    "vitest": "^5.0.0"
   }
 }

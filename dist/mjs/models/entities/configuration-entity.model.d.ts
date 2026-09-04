@@ -15,7 +15,6 @@ export declare enum EntityType {
     ReportTemplate = "ReportTemplate",
     Report = "Report",
     Document = "Document",
-    Storage = "Storage",
     Camera = "Camera",
     SwitchSchedule = "SwitchSchedule",
     User = "User",
