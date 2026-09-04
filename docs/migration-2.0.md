@@ -10,7 +10,8 @@ platform diffs.
 ## 1. New constructor: `ApiContext`
 
 Every service took `(httpConfig, accessToken)`. It now takes a single `ApiContext`, which also
-carries the detected platform version.
+carries the detected platform version. **Breaking:** the two-argument form is gone from every
+service, including `LiveValueService`; wrap the config in an `ApiContext` once and pass that.
 
 ```ts
 // before
@@ -21,9 +22,9 @@ const ctx = await ApiContext.connect(systemUrl, accessToken);
 const service = new EntityHttpService(ctx);
 ```
 
-The old two-argument form still works and is deprecated. It cannot carry version information, so
-the context detects the version lazily on the first request (one extra GET), or reads it from
-`HttpConfig.ApiVersion` when the config provides it.
+The `ApiContext` itself still takes `(httpConfig, accessToken)`. Without an explicit
+`ApiVersionInfo` it detects the version lazily on the first request (one extra GET), or reads it
+from `HttpConfig.ApiVersion` when the config provides it.
 
 Build the context yourself when you already have the config:
 
@@ -86,7 +87,7 @@ remove.
 
 ## 4. Storage is gone
 
-`Storage`, `StorageEntry`, `FileEntry`, `EntityType.Storage`, its `EntityHttpEndpoints` entry and
+`Storage`, `StorageEntry`, `FileEntry`, `EntityType.Storage`, its v4 endpoint path and
 its `EntityTypeClassMapping` entry were removed. v5 replaced the entity with a service-local
 `DashboardTabStorage` with different fields and endpoints, so there is nothing to adapt. Apps that
 used it need a platform-side successor; nothing in core replaces it.
@@ -98,17 +99,17 @@ used it need a platform-side successor; nothing in core replaces it.
 | `EntityHttpService.copyMultipleTo` / `moveMultipleTo` | Return `Promise<string>` (the operation id). Previously the raw axios response with a text body. v5 answers `{"OperationId":"..."}`, v4 the bare id; both are normalized. |
 | `EntityHttpService.updateEntity` | No longer mutates the entity you pass in. `CreatedBy`/`CreatedOn` are stripped from the wire copy on v4 only; on v5 they are kept and `ChangedOn` is round-tripped, because it is the optimistic-concurrency token there. Round-trip the entity you got from the GET, or v5 answers `EntityChangedElsewhere`. |
 | `EntityHttpService.getPartialEntityById` / `queryConfiguration` | Unprojected reads get model defaults filled in for absent and `null` fields. Projected reads only get `null` fields filled - keys you did not request stay absent. |
-| `HistoricalValueService.getNearestValue` | Returns `MeasuredValue`, not `HistoricalValue & {Value: number}`. `Value` is free-form on v5; check the type before using it as a number. `getNearesValue` remains as a deprecated alias. |
+| `HistoricalValueService.getNearestValue` | Returns `MeasuredValue`, not `HistoricalValue & {Value: number}`. `Value` is free-form on v5; check the type before using it as a number. |
 | `HistoricalValueService.getHistoricalValueObjects` / `getNthHistoricalValue` | Still `HistoricalValueObject`, but v4 rows are normalized: a flat `Note`/`CreatedBy` pair is lifted into `Notes[]`. The v5 `Min*`/`Max*` fields are undefined on v4. |
-| `HistoricalValueService.setCustomOffset` | Takes the PascalCase `SetCounterCustomOffsetRequest` (`{Timestamp, Value, Note?, Source}`). The old camelCase body is still accepted and converted. The service re-cases per version - v5 requires PascalCase. |
-| `HistoricalValueRequest.MinMaxInterval` | Deprecated: v5 dropped it. When only `MinMaxInterval` is set it is promoted to `MinMaxIntervalType` and removed from the v5 request. |
-| `HistoricalValueOperation` | Follows the v5 shape: `UserId`, `StartedOn`, `StoppedOn`, `ErrorMessage`, `Progress`, `IsUndoable`, `IsRedoable`, `LiveOperationId`, `Layer`. `Timezone`, `CreatedOn`, `CreatedBy`, `ChangedOn`, `ChangedBy` are optional and deprecated; on v4 they are still delivered *and* mapped onto the new fields. `Status` is canonically `Pending \| Completed \| Failed`; the v4-only `Processing` and `Undone` are mapped (see implementation notes in the plan). |
+| `HistoricalValueService.setCustomOffset` | Takes the PascalCase `SetCounterCustomOffsetRequest` (`{Timestamp, Value, Note?, Source}`). The service re-cases per version - v5 requires PascalCase, v4 read it camelCase. |
+| `HistoricalValueRequest.MinMaxInterval` | Removed: v5 dropped the field and v4 already accepted `MinMaxIntervalType`. Use `MinMaxIntervalType`. |
+| `HistoricalValueOperation` | Follows the v5 shape: `UserId`, `StartedOn`, `StoppedOn`, `ErrorMessage`, `Progress`, `IsUndoable`, `IsRedoable`, `LiveOperationId`, `Layer`. The v4-only `Timezone`, `CreatedOn`, `CreatedBy`, `ChangedOn`, `ChangedBy` are **not** part of the type any more: the v4 adapter maps them onto the canonical fields and drops the old keys. `Status` is `Pending \| Completed \| Failed`; the v4-only `Processing` and `Undone` values are gone from the enum and mapped on read (see implementation notes in the plan). |
 | `DataSourceHttpService.sendDatSrcConfiguration` | Returns `DriverJobInfo \| null` (`{JobId, Timestamp}` on v5, `null` on v4). This call never worked before: the driver URL was not awaited, so the request went to `[object Promise]/command/...`. |
 | `DataConnectionBrowserService.browseConnection` | Returns `ConnectionBrowseItem[]` instead of `any`. |
 | `EventCategory.Acknowledgment` | New optional field, **v5 only**, and not the same thing as the v4 wire key of that name (which was the old spelling of `RequiresAcknowledgment`). Gate on `supports('acknowledgmentField')`. |
 | `HttpConfig` | New optional keys (`Services.Ticket`/`Manufacturing`/`Runtime`/`ExternalApi`, `Authentication.RequireHttps`, `Configuration`, `ApiVersion`). Never build URLs as `BaseUri + '/v1/...'`; the `/v1` lives in the per-service paths and the migration is per service. |
 | `BaseHttpService.isApiReachable` | Probes the v1 version path first. With the legacy proxy rewrite disabled the old path answers HTML 200, which used to be a false positive. |
-| `BaseHttpService.getStructureUrl` | Deprecated. Subclasses should resolve endpoints instead of building URLs. |
+| `BaseHttpService.getStructureUrl` | Removed, together with the protected `httpConfig` accessor. Subclasses resolve endpoints (`this.resolve({ name })`) or read `this.ctx` instead of building URLs. |
 
 New, v5-only and gated:
 
@@ -118,6 +119,22 @@ New, v5-only and gated:
   the per-id lookups on v4.
 - `queryConfiguration(..., { sort, language })` - `$sort` and the `Language` header; both are
   silently dropped on v4.
+
+Removed outright. 2.0 carries no compatibility shims; every one of these has a canonical
+replacement listed above:
+
+- The `(httpConfig, accessToken)` constructor of every service and of `LiveValueService`. Only
+  `constructor(ctx: ApiContext)` remains.
+- `BaseHttpService.getStructureUrl()` and the protected `BaseHttpService.httpConfig` accessor.
+- `HistoricalValueService.getNearesValue` (typo alias of `getNearestValue`) and
+  `HistoricalValueService.getHistoricalValues` (duplicate of `requestHistoricalValues`).
+- The camelCase `SetCustomOffsetRequest`; `setCustomOffset` takes only
+  `SetCounterCustomOffsetRequest`.
+- `HistoricalValueRequest.MinMaxInterval`; use `MinMaxIntervalType`, which v4 also accepts.
+- `HistoricalValueOperation.Timezone` / `.CreatedOn` / `.CreatedBy` / `.ChangedOn` / `.ChangedBy`
+  and `HistoricalValueOperationStatus.Processing` / `.Undone`.
+- `EntityHttpEndpoints` (the v4 per-entity path map). It was a wire detail, not a model, and now
+  lives as `V4_ENTITY_PATHS` in the non-exported `lib/compat/endpoints/endpoints.v4.ts`.
 
 Errors are now parsed: `ApiError` (`status`, `title`, `detail`, `type`, `instance`, `raw`) with
 `EntityLockedError` for the v5 `423 Locked`. `title` carries the platform error code on v5.

@@ -18,10 +18,8 @@ import {
 import * as signalR from '@microsoft/signalr';
 import { ApiContext } from '../api/api-context.js';
 import { ApiVersionInfo } from '../api/api-version.js';
-import { HttpConfig } from '../models/http-config.model.js';
 import { Disposable } from '../interfaces/disposable.js';
 import { PromiseUtils } from '../utils/promise-utils.js';
-import { AsyncValue } from '../utils/async-value-utils.js';
 export type LivePackage = {
   identifier: string;
   timestamp: Date;
@@ -113,17 +111,8 @@ export class LiveValueService implements Disposable {
   /**
    * @param ctx Context of the target system.
    */
-  public constructor(ctx: ApiContext);
-  /**
-   * @deprecated Pass an `ApiContext` instead. This form cannot carry version information and
-   * will be removed in a future major.
-   */
-  public constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
-  public constructor(httpConfigOrCtx: ApiContext | AsyncValue<HttpConfig>, accessToken?: AsyncValue<string>) {
-    this.ctx =
-      httpConfigOrCtx instanceof ApiContext
-        ? httpConfigOrCtx
-        : new ApiContext(httpConfigOrCtx as AsyncValue<HttpConfig>, accessToken);
+  public constructor(ctx: ApiContext) {
+    this.ctx = ctx;
 
     this._unsub = new Subject<void>();
 

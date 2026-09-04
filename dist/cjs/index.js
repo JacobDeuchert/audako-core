@@ -15,7 +15,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DataConnectionBrowserService = exports.DataSourceHttpService = exports.UserProfileHttpService = exports.EntityNameService = exports.TenantHttpService = exports.BaseHttpService = exports.getAsyncValueAsPromise = exports.ObjectUtils = exports.EntityUtils = exports.EntityTypeClassMapping = exports.UserProfile = exports.TenantView = exports.DataConnectionSettings = exports.EntityType = exports.EntityHttpEndpoints = exports.EntityIcons = exports.EntityObjectOrientationAttribute = exports.FieldObjectOrientationAttribute = exports.ConfigurationEntity = exports.TranslatableField = exports.Field = void 0;
+exports.DataConnectionBrowserService = exports.DataSourceHttpService = exports.UserProfileHttpService = exports.EntityNameService = exports.TenantHttpService = exports.BaseHttpService = exports.getAsyncValueAsPromise = exports.ObjectUtils = exports.EntityUtils = exports.EntityTypeClassMapping = exports.UserProfile = exports.TenantView = exports.DataConnectionSettings = exports.EntityType = exports.EntityIcons = exports.EntityObjectOrientationAttribute = exports.FieldObjectOrientationAttribute = exports.ConfigurationEntity = exports.TranslatableField = exports.Field = void 0;
 var configuration_entity_model_js_1 = require("./models/entities/configuration-entity.model.js");
 Object.defineProperty(exports, "Field", { enumerable: true, get: function () { return configuration_entity_model_js_1.Field; } });
 var configuration_entity_model_js_2 = require("./models/entities/configuration-entity.model.js");
@@ -29,9 +29,7 @@ Object.defineProperty(exports, "EntityObjectOrientationAttribute", { enumerable:
 var configuration_entity_model_js_6 = require("./models/entities/configuration-entity.model.js");
 Object.defineProperty(exports, "EntityIcons", { enumerable: true, get: function () { return configuration_entity_model_js_6.EntityIcons; } });
 var configuration_entity_model_js_7 = require("./models/entities/configuration-entity.model.js");
-Object.defineProperty(exports, "EntityHttpEndpoints", { enumerable: true, get: function () { return configuration_entity_model_js_7.EntityHttpEndpoints; } });
-var configuration_entity_model_js_8 = require("./models/entities/configuration-entity.model.js");
-Object.defineProperty(exports, "EntityType", { enumerable: true, get: function () { return configuration_entity_model_js_8.EntityType; } });
+Object.defineProperty(exports, "EntityType", { enumerable: true, get: function () { return configuration_entity_model_js_7.EntityType; } });
 __exportStar(require("./models/entities/custom-field-settings.model.js"), exports);
 __exportStar(require("./models/entities/group.model.js"), exports);
 __exportStar(require("./models/entities/dashboard.model.js"), exports);

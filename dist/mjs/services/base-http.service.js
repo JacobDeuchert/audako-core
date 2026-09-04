@@ -8,14 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import axios from 'axios';
-import { ApiContext, requestHttpConfig } from '../api/api-context.js';
+import { requestHttpConfig } from '../api/api-context.js';
 import { V4_VERSION_PATH, V5_VERSION_PATH } from '../api/version-detection.js';
 export class BaseHttpService {
-    constructor(httpConfigOrCtx, accessToken) {
-        this.ctx =
-            httpConfigOrCtx instanceof ApiContext
-                ? httpConfigOrCtx
-                : new ApiContext(httpConfigOrCtx, accessToken);
+    /**
+     * @param ctx Context of the target system.
+     */
+    constructor(ctx) {
+        this.ctx = ctx;
     }
     /** `HttpConfig` of the target system. */
     getHttpConfig() {
@@ -34,22 +34,6 @@ export class BaseHttpService {
     }
     getAccessToken() {
         return this.ctx.getAccessToken();
-    }
-    /**
-     * @deprecated Resolve endpoints with {@link resolve} instead: the structure service path
-     * differs per platform version, and only the resolver knows the per-version routes.
-     */
-    getStructureUrl() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const httpConfig = yield this.getHttpConfig();
-            return `${httpConfig.Services.BaseUri}${httpConfig.Services.Structure}`;
-        });
-    }
-    /**
-     * @deprecated Use the `httpConfig` accessor of the `ApiContext` instead.
-     */
-    get httpConfig() {
-        return () => this.ctx.getHttpConfig();
     }
     static requestHttpConfig(systemUrl) {
         return requestHttpConfig(systemUrl);

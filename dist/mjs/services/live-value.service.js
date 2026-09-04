@@ -9,7 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { auditTime, BehaviorSubject, concat, filter, finalize, firstValueFrom, map, mapTo, of, Subject, takeUntil, takeWhile, } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
-import { ApiContext } from '../api/api-context.js';
 export var OperationStatus;
 (function (OperationStatus) {
     OperationStatus["Running"] = "Running";
@@ -49,11 +48,11 @@ export var SubscriptionPrefix;
     SubscriptionPrefix["OP"] = "OP";
 })(SubscriptionPrefix || (SubscriptionPrefix = {}));
 export class LiveValueService {
-    constructor(httpConfigOrCtx, accessToken) {
-        this.ctx =
-            httpConfigOrCtx instanceof ApiContext
-                ? httpConfigOrCtx
-                : new ApiContext(httpConfigOrCtx, accessToken);
+    /**
+     * @param ctx Context of the target system.
+     */
+    constructor(ctx) {
+        this.ctx = ctx;
         this._unsub = new Subject();
         this._connectionEstablished = new BehaviorSubject(false);
         this._valueCache = {};

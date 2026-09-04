@@ -1,11 +1,8 @@
-import { ApiContext } from '../api/api-context.js';
 import {
   historicalValueOperationFromWire,
   historicalValueOperationsFromWire,
 } from '../compat/adapters/historical-value-operation.adapter.v4.js';
 import { HistoricalValueOperation } from '../models/historical-value-operation.model.js';
-import { HttpConfig } from '../models/http-config.model.js';
-import { AsyncValue } from '../utils/async-value-utils.js';
 import { BaseHttpService } from './base-http.service.js';
 
 /**
@@ -17,18 +14,6 @@ import { BaseHttpService } from './base-http.service.js';
  * `lib/compat/adapters/historical-value-operation.adapter.v4.ts`.
  */
 export class HistoricalValueManipulationHttpService extends BaseHttpService {
-  /**
-   * @param ctx Context of the target system.
-   */
-  constructor(ctx: ApiContext);
-  /**
-   * @deprecated Pass an `ApiContext` instead.
-   */
-  constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
-  constructor(httpConfigOrCtx: ApiContext | AsyncValue<HttpConfig>, accessToken?: AsyncValue<string>) {
-    super(httpConfigOrCtx as any, accessToken as any);
-  }
-
   public async getHistoricalValueOperations(signalId: string): Promise<HistoricalValueOperation[]> {
     const [endpoint, versionInfo] = await Promise.all([
       this.resolve({ name: 'historicalValueOperations', signalId: signalId }),

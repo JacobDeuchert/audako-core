@@ -1,13 +1,50 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.V4_ENDPOINTS = void 0;
+exports.V4_ENDPOINTS = exports.V4_ENTITY_PATHS = void 0;
 const configuration_entity_model_js_1 = require("../../models/entities/configuration-entity.model.js");
+/**
+ * v4 domain-prefixed entity paths, appended to the structure service root
+ * (`{structure}/base/Group`). Mirrors `V5_ENTITY_SEGMENTS`; `Record<EntityType, string>` makes a
+ * missing entity type a compile error. `Storage` is intentionally absent: it is no longer a
+ * configuration entity in v5 and was dropped from audako-core.
+ *
+ * The `/alarming/`, `/maintenance/` and `/runtime/` prefixes reproduce exactly what core sent
+ * before 2.0; see open item 2 in docs/migration-2.0.md.
+ */
+exports.V4_ENTITY_PATHS = {
+    [configuration_entity_model_js_1.EntityType.Group]: '/base/Group',
+    [configuration_entity_model_js_1.EntityType.Signal]: '/daq/Signal',
+    [configuration_entity_model_js_1.EntityType.Formula]: '/daq/Formula',
+    [configuration_entity_model_js_1.EntityType.Dashboard]: '/base/Dashboard',
+    [configuration_entity_model_js_1.EntityType.DashboardTab]: '/base/DashboardTab',
+    [configuration_entity_model_js_1.EntityType.DataConnection]: '/daq/DataConnection',
+    [configuration_entity_model_js_1.EntityType.DataSource]: '/daq/DataSource',
+    [configuration_entity_model_js_1.EntityType.Connector]: '/daq/Connector',
+    [configuration_entity_model_js_1.EntityType.EventCondition]: '/base/condition',
+    [configuration_entity_model_js_1.EntityType.EventDefinition]: '/base/EventDefinition',
+    [configuration_entity_model_js_1.EntityType.EventCategory]: '/base/EventCategory',
+    [configuration_entity_model_js_1.EntityType.ProcessImage]: '/scada/ProcessImage',
+    [configuration_entity_model_js_1.EntityType.BatchDefinition]: '/scada/batchdefinition',
+    [configuration_entity_model_js_1.EntityType.ReportTemplate]: '/scada/ReportTemplate',
+    [configuration_entity_model_js_1.EntityType.Report]: '/scada/Report',
+    [configuration_entity_model_js_1.EntityType.Document]: '/base/Document',
+    [configuration_entity_model_js_1.EntityType.Camera]: '/scada/Camera',
+    [configuration_entity_model_js_1.EntityType.SwitchSchedule]: '/scada/SwitchSchedule',
+    [configuration_entity_model_js_1.EntityType.User]: '/base/User',
+    [configuration_entity_model_js_1.EntityType.Role]: '/base/Role',
+    [configuration_entity_model_js_1.EntityType.Recipient]: '/alarming/Recipient',
+    [configuration_entity_model_js_1.EntityType.RecipientGroup]: '/alarming/RecipientGroup',
+    [configuration_entity_model_js_1.EntityType.AlarmingPlan]: '/alarming/AlarmingPlan',
+    [configuration_entity_model_js_1.EntityType.MaintenanceService]: '/maintenance/MaintenanceService',
+    [configuration_entity_model_js_1.EntityType.TaskDefinition]: '/maintenance/TaskDefinition',
+    [configuration_entity_model_js_1.EntityType.RuntimeScript]: '/runtime/RuntimeScript',
+};
 function get(url) {
     return { url: url, method: 'GET' };
 }
-/** v4 entity collection root: `{structure}/{domain}/{Type}` from `EntityHttpEndpoints`. */
+/** v4 entity collection root: `{structure}/{domain}/{Type}` from `V4_ENTITY_PATHS`. */
 function entityRoot(urls, entityType) {
-    return `${urls.structure}${configuration_entity_model_js_1.EntityHttpEndpoints[entityType]}`;
+    return `${urls.structure}${exports.V4_ENTITY_PATHS[entityType]}`;
 }
 /** Historian value group root. All v4 value endpoints hang under `/value`. */
 function valueRoot(urls) {

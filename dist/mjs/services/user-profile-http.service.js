@@ -9,9 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { BaseHttpService } from './base-http.service.js';
 export class UserProfileHttpService extends BaseHttpService {
-    constructor(httpConfigOrCtx, accessToken) {
-        super(httpConfigOrCtx, accessToken);
-    }
     /** `GET {structure}/userprofile` (v4) / `GET {structure}/user-profile` (v5). Same response. */
     getUserProfile() {
         return __awaiter(this, void 0, void 0, function* () {

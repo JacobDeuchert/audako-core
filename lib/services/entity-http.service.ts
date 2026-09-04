@@ -1,5 +1,4 @@
 import { AxiosResponse } from 'axios';
-import { ApiContext } from '../api/api-context.js';
 import { ApiVersionInfo } from '../api/api-version.js';
 import { parseApiError } from '../api/errors.js';
 // Imported through the adapter entry point so the v4 adapters register themselves.
@@ -9,8 +8,6 @@ import {
   EntityType,
   TranslatableField,
 } from '../models/entities/configuration-entity.model.js';
-import { HttpConfig } from '../models/http-config.model.js';
-import { AsyncValue } from '../utils/async-value-utils.js';
 import { BaseHttpService } from './base-http.service.js';
 
 export type PaginationResponse<T> = {
@@ -75,18 +72,6 @@ function withQueryParam(url: string, key: string, value: string): string {
 }
 
 export class EntityHttpService extends BaseHttpService {
-  /**
-   * @param ctx Context of the target system.
-   */
-  constructor(ctx: ApiContext);
-  /**
-   * @deprecated Pass an `ApiContext` instead.
-   */
-  constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
-  constructor(httpConfigOrCtx: ApiContext | AsyncValue<HttpConfig>, accessToken?: AsyncValue<string>) {
-    super(httpConfigOrCtx as any, accessToken as any);
-  }
-
   public async getEntityById<T extends ConfigurationEntity>(entityType: EntityType, id: string): Promise<T> {
     return this.getPartialEntityById(entityType, id, null) as Promise<T>;
   }

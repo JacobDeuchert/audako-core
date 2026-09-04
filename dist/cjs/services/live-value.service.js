@@ -35,7 +35,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LiveValueService = exports.SubscriptionPrefix = exports.LiveHubEvent = exports.clampLiveInterval = exports.MIN_LIVE_INTERVAL_MS_V5 = exports.DEFAULT_LIVE_INTERVAL_MS = exports.LiveHubMethod = exports.OperationStatus = void 0;
 const rxjs_1 = require("rxjs");
 const signalR = __importStar(require("@microsoft/signalr"));
-const api_context_js_1 = require("../api/api-context.js");
 var OperationStatus;
 (function (OperationStatus) {
     OperationStatus["Running"] = "Running";
@@ -76,11 +75,11 @@ var SubscriptionPrefix;
     SubscriptionPrefix["OP"] = "OP";
 })(SubscriptionPrefix || (exports.SubscriptionPrefix = SubscriptionPrefix = {}));
 class LiveValueService {
-    constructor(httpConfigOrCtx, accessToken) {
-        this.ctx =
-            httpConfigOrCtx instanceof api_context_js_1.ApiContext
-                ? httpConfigOrCtx
-                : new api_context_js_1.ApiContext(httpConfigOrCtx, accessToken);
+    /**
+     * @param ctx Context of the target system.
+     */
+    constructor(ctx) {
+        this.ctx = ctx;
         this._unsub = new rxjs_1.Subject();
         this._connectionEstablished = new rxjs_1.BehaviorSubject(false);
         this._valueCache = {};

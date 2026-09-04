@@ -12,9 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TenantHttpService = void 0;
 const base_http_service_js_1 = require("./base-http.service.js");
 class TenantHttpService extends base_http_service_js_1.BaseHttpService {
-    constructor(httpConfigOrCtx, accessToken) {
-        super(httpConfigOrCtx, accessToken);
-    }
     getTenantViewById(id) {
         return this._get({ name: 'tenantViewById', tenantId: id });
     }

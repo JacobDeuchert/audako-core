@@ -8,12 +8,12 @@ import { HistoricalValueOperation, HistoricalValueOperationStatus } from '../../
  * - `Undone` meant "completed, then rolled back"; v5 keeps `Completed` and expresses the undo
  *   state through `IsUndoable` / `IsRedoable`.
  */
-export declare function mapV4OperationStatus(status: HistoricalValueOperationStatus | string | undefined): HistoricalValueOperationStatus;
+export declare function mapV4OperationStatus(status: string | undefined): HistoricalValueOperationStatus;
 /**
  * Normalizes one operation payload to the canonical shape. v5 payloads pass through unchanged;
  * v4 payloads get `UserId` / `StartedOn` / `StoppedOn` derived from the old audit fields and
- * `IsUndoable` / `IsRedoable` derived from the old status. The v4 fields themselves are kept
- * (deprecated on the model) so nothing an app already reads disappears.
+ * `IsUndoable` / `IsRedoable` derived from the old status. The v4-only keys are dropped, so
+ * callers only ever see the canonical shape.
  */
 export declare function historicalValueOperationFromWire(wire: any, versionInfo: ApiVersionInfo): HistoricalValueOperation;
 /** {@link historicalValueOperationFromWire} for a list response. */

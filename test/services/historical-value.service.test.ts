@@ -22,7 +22,7 @@ const query: HistoricalValueRequest = {
   ObjectType: EntityType.Signal,
   ObjectId: 'signal-1',
   IntervalType: CompressionInterval.HourInterval,
-  MinMaxInterval: CompressionInterval.DayInterval,
+  MinMaxIntervalType: CompressionInterval.DayInterval,
   From: '2026-01-01T00:00:00Z',
   Till: '2026-01-02T00:00:00Z',
   Timezone: 'CET',
@@ -73,41 +73,6 @@ describe('HistoricalValueService URL resolution', () => {
   });
 });
 
-describe('MinMaxInterval handling', () => {
-  it('keeps MinMaxInterval on v4', async () => {
-    const { service, post } = createService('4.23.0');
-    post.mockResolvedValue({ status: 200, data: [] } as any);
-
-    await service.requestHistoricalValues([query]);
-
-    expect(post.mock.calls[0][1]).toEqual([query]);
-  });
-
-  it('strips MinMaxInterval on v5 and promotes it to MinMaxIntervalType', async () => {
-    const { service, post } = createService('5.0.0');
-    post.mockResolvedValue({ status: 200, data: [] } as any);
-
-    await service.requestHistoricalValues([query]);
-
-    const body = (post.mock.calls[0][1] as any[])[0];
-    expect(body.MinMaxInterval).toBeUndefined();
-    expect(body.MinMaxIntervalType).toBe(CompressionInterval.DayInterval);
-    // The caller's object is not mutated.
-    expect(query.MinMaxInterval).toBe(CompressionInterval.DayInterval);
-  });
-
-  it('does not overwrite an explicit MinMaxIntervalType on v5', async () => {
-    const { service, post } = createService('5.0.0');
-    post.mockResolvedValue({ status: 200, data: [] } as any);
-
-    await service.requestHistoricalValues([{ ...query, MinMaxIntervalType: CompressionInterval.WeekInterval }]);
-
-    const body = (post.mock.calls[0][1] as any[])[0];
-    expect(body.MinMaxIntervalType).toBe(CompressionInterval.WeekInterval);
-    expect(body.MinMaxInterval).toBeUndefined();
-  });
-});
-
 describe('getNearestValue normalization', () => {
   it('lifts the flat v4 note into Notes', async () => {
     const { service, post } = createService('4.23.0');
@@ -134,7 +99,7 @@ describe('getNearestValue normalization', () => {
     };
     post.mockResolvedValue({ status: 200, data: measuredValue } as any);
 
-    const value = await service.getNearesValue(query);
+    const value = await service.getNearestValue(query);
 
     expect(post.mock.calls[0][0]).toBe('https://host/api/v1/historian/historical-values/nearest');
     expect(value).toEqual(measuredValue);
@@ -176,33 +141,5 @@ describe('setCustomOffset body casing', () => {
       'https://host/api/v1/historian/historical-values/counters/signal-1/offsets/custom',
     );
     expect(post.mock.calls[0][1]).toEqual(canonical);
-  });
-
-  it('accepts the deprecated camelCase request shape', async () => {
-    const { service, post } = createService('5.0.0');
-
-    await service.setCustomOffset('signal-1', {
-      timestamp: '2026-01-01T00:00:00Z',
-      value: 12.5,
-      source: OffsetSource.Manual,
-    });
-
-    expect(post.mock.calls[0][1]).toEqual({
-      Timestamp: '2026-01-01T00:00:00Z',
-      Value: 12.5,
-      Note: null,
-      Source: OffsetSource.Manual,
-    });
-  });
-});
-
-describe('deprecated constructor', () => {
-  it('still accepts (httpConfig, accessToken)', async () => {
-    const service = new HistoricalValueService(V4_CONFIG, 'token');
-    const ctx = (service as any).ctx as ApiContext;
-
-    expect(ctx).toBeInstanceOf(ApiContext);
-    await expect(ctx.getHttpConfig()).resolves.toBe(V4_CONFIG);
-    await expect(ctx.getAccessToken()).resolves.toBe('token');
   });
 });

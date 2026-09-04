@@ -18,9 +18,6 @@ import { BaseHttpService } from './base-http.service.js';
  * `lib/compat/adapters/historical-value-operation.adapter.v4.ts`.
  */
 export class HistoricalValueManipulationHttpService extends BaseHttpService {
-    constructor(httpConfigOrCtx, accessToken) {
-        super(httpConfigOrCtx, accessToken);
-    }
     getHistoricalValueOperations(signalId) {
         return __awaiter(this, void 0, void 0, function* () {
             const [endpoint, versionInfo] = yield Promise.all([

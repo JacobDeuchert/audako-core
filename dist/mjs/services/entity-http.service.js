@@ -16,9 +16,6 @@ function withQueryParam(url, key, value) {
     return `${url}${url.includes('?') ? '&' : '?'}${key}=${value}`;
 }
 export class EntityHttpService extends BaseHttpService {
-    constructor(httpConfigOrCtx, accessToken) {
-        super(httpConfigOrCtx, accessToken);
-    }
     getEntityById(entityType, id) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.getPartialEntityById(entityType, id, null);

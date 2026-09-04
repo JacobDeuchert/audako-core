@@ -1,9 +1,7 @@
-import { ApiContext } from '../api/api-context.js';
 import {
   customOffsetBodyToWire,
   measuredValueFromWire,
   measuredValuePackageFromWire,
-  valueQueriesToWire,
 } from '../compat/adapters/historical-value.adapter.v4.js';
 import {
   CompressionInterval,
@@ -14,9 +12,7 @@ import {
   MeasurementValueSource,
   ValueObjectType,
 } from '../models/historical-value.model.js';
-import { HttpConfig } from '../models/http-config.model.js';
 import { ValueEntityType } from '../models/widgets/shared.js';
-import { AsyncValue } from '../utils/async-value-utils.js';
 import { BaseHttpService } from './base-http.service.js';
 
 /**
@@ -27,11 +23,6 @@ export type HistoricalValueRequest = {
   ObjectId: string,
 
   IntervalType: CompressionInterval | string,
-  /**
-   * @deprecated Dropped in v5. Use `MinMaxIntervalType`. When only this field is set the
-   * service promotes it to `MinMaxIntervalType` on v5 and strips it from the request.
-   */
-  MinMaxInterval?: CompressionInterval,
   MinMaxIntervalType?: CompressionInterval | string,
 
   From: Date | string,
@@ -143,18 +134,6 @@ export interface SetCounterCustomOffsetRequest {
   Source: OffsetSource;
 }
 
-/**
- * @deprecated camelCase body of the v4 endpoint. Still accepted by
- * {@link HistoricalValueService.setCustomOffset} and mapped onto
- * {@link SetCounterCustomOffsetRequest}; use the PascalCase form.
- */
-export interface SetCustomOffsetRequest {
-  timestamp: string;
-  value: number;
-  note?: string | null;
-  source: OffsetSource;
-}
-
 export class CounterOffset {
   Date: string;
   Value: number;
@@ -169,37 +148,15 @@ export class HistoricalValueObject {
   Values: HistoricalValue[];
 }
 
-/** True for the deprecated camelCase offset body. */
-function isLegacyCustomOffsetRequest(
-  request: SetCounterCustomOffsetRequest | SetCustomOffsetRequest,
-): request is SetCustomOffsetRequest {
-  return (request as SetCustomOffsetRequest)?.timestamp !== undefined;
-}
-
 export class HistoricalValueService extends BaseHttpService {
-  /**
-   * @param ctx Context of the target system.
-   */
-  constructor(ctx: ApiContext);
-  /**
-   * @deprecated Pass an `ApiContext` instead.
-   */
-  constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
-  constructor(httpConfigOrCtx: ApiContext | AsyncValue<HttpConfig>, accessToken?: AsyncValue<string>) {
-    super(httpConfigOrCtx as any, accessToken as any);
-  }
-
   /**
    * Flat-row value query. v4: `POST {historian}/value/manyflat`,
    * v5: `POST {historian}/historical-values/query-many-flat`.
    */
   public async requestHistoricalValues(requests: HistoricalValueRequest[]): Promise<HistoricalValueMap[]> {
-    const [endpoint, body] = await Promise.all([
-      this.resolve({ name: 'historicalValuesQueryManyFlat' }),
-      this.toValueQueries(requests),
-    ]);
+    const endpoint = await this.resolve({ name: 'historicalValuesQueryManyFlat' });
 
-    const response = await this.ctx.http.post<HistoricalValueMap[]>(endpoint.url, body);
+    const response = await this.ctx.http.post<HistoricalValueMap[]>(endpoint.url, requests);
 
     if (response.status !== 200) {
       throw new Error(response.statusText);
@@ -209,28 +166,18 @@ export class HistoricalValueService extends BaseHttpService {
   }
 
   /**
-   * @deprecated Duplicate of {@link requestHistoricalValues} - same endpoint, only the declared
-   * return type differs. Use `requestHistoricalValues`.
-   */
-  public async getHistoricalValues(historicalValueRequest: HistoricalValueRequest[]): Promise<HistoricalValue[]> {
-    const rows = await this.requestHistoricalValues(historicalValueRequest);
-    return rows as unknown as HistoricalValue[];
-  }
-
-  /**
    * Packaged value query. v4: `POST {historian}/value/many`,
    * v5: `POST {historian}/historical-values/query-many`.
    */
   public async getHistoricalValueObjects(
     historicalValueRequest: HistoricalValueRequest[],
   ): Promise<HistoricalValueObject[]> {
-    const [endpoint, body, versionInfo] = await Promise.all([
+    const [endpoint, versionInfo] = await Promise.all([
       this.resolve({ name: 'historicalValuesQueryMany' }),
-      this.toValueQueries(historicalValueRequest),
       this.getVersionInfo(),
     ]);
 
-    const response = await this.ctx.http.post<MeasuredValuePackage[]>(endpoint.url, body);
+    const response = await this.ctx.http.post<MeasuredValuePackage[]>(endpoint.url, historicalValueRequest);
     const packages = Array.isArray(response.data) ? response.data : [];
     return packages.map(
       (valuePackage) => measuredValuePackageFromWire(valuePackage, versionInfo) as unknown as HistoricalValueObject,
@@ -250,18 +197,8 @@ export class HistoricalValueService extends BaseHttpService {
       this.getVersionInfo(),
     ]);
 
-    const response = await this.ctx.http.post<MeasuredValue>(
-      endpoint.url,
-      valueQueriesToWire([historicalValueRequest], versionInfo)[0],
-    );
+    const response = await this.ctx.http.post<MeasuredValue>(endpoint.url, historicalValueRequest);
     return measuredValueFromWire(response.data, versionInfo);
-  }
-
-  /**
-   * @deprecated Typo alias of {@link getNearestValue}.
-   */
-  public async getNearesValue(historicalValueRequest: HistoricalValueRequest): Promise<MeasuredValue> {
-    return this.getNearestValue(historicalValueRequest);
   }
 
   public async getNthHistoricalValue(request: NthHistoricalRequest): Promise<HistoricalValueObject> {
@@ -310,29 +247,16 @@ export class HistoricalValueService extends BaseHttpService {
   /**
    * Sets the custom offset of a counter signal.
    *
-   * The body casing differs: v4 read camelCase, v5 PascalCase. Pass the canonical
-   * {@link SetCounterCustomOffsetRequest}; the deprecated camelCase
-   * {@link SetCustomOffsetRequest} is still accepted and converted.
+   * The body casing differs: v4 read camelCase, v5 PascalCase. Pass the canonical PascalCase
+   * {@link SetCounterCustomOffsetRequest}; the v4 adapter re-cases it for the v4 wire.
    */
-  public async setCustomOffset(
-    id: string,
-    request: SetCounterCustomOffsetRequest | SetCustomOffsetRequest,
-  ): Promise<void> {
+  public async setCustomOffset(id: string, request: SetCounterCustomOffsetRequest): Promise<void> {
     const [endpoint, versionInfo] = await Promise.all([
       this.resolve({ name: 'counterOffsetsCustom', signalId: id }),
       this.getVersionInfo(),
     ]);
 
-    const canonical: SetCounterCustomOffsetRequest = isLegacyCustomOffsetRequest(request)
-      ? {
-          Timestamp: request.timestamp,
-          Value: request.value,
-          Note: request.note,
-          Source: request.source,
-        }
-      : request;
-
-    await this.ctx.http.post<void>(endpoint.url, customOffsetBodyToWire(canonical, versionInfo));
+    await this.ctx.http.post<void>(endpoint.url, customOffsetBodyToWire(request, versionInfo));
   }
 
   public async deleteCounterOffsets(id: string, timestamps: string[]): Promise<void> {
@@ -371,11 +295,5 @@ export class HistoricalValueService extends BaseHttpService {
     const endpoint = await this.resolve({ name: 'historicalValueImport' });
     const response = await this.ctx.http.post<OperationStartedResponse>(endpoint.url, { Values: importData });
     return response.data;
-  }
-
-  /** Applies the per-version value query mapping (drops `MinMaxInterval` on v5). */
-  private async toValueQueries(requests: HistoricalValueRequest[]): Promise<any[]> {
-    const versionInfo = await this.getVersionInfo();
-    return valueQueriesToWire(requests, versionInfo);
   }
 }

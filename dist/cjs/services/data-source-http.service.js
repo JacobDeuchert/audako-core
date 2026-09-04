@@ -12,9 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DataSourceHttpService = void 0;
 const base_http_service_js_1 = require("./base-http.service.js");
 class DataSourceHttpService extends base_http_service_js_1.BaseHttpService {
-    constructor(httpConfigOrCtx, accessToken) {
-        super(httpConfigOrCtx, accessToken);
-    }
     /**
      * Tells the driver to (re-)configure a data source.
      *

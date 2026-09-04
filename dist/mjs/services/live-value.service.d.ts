@@ -1,9 +1,7 @@
 import { Observable } from 'rxjs';
 import { ApiContext } from '../api/api-context.js';
 import { ApiVersionInfo } from '../api/api-version.js';
-import { HttpConfig } from '../models/http-config.model.js';
 import { Disposable } from '../interfaces/disposable.js';
-import { AsyncValue } from '../utils/async-value-utils.js';
 export type LivePackage = {
     identifier: string;
     timestamp: Date;
@@ -68,11 +66,6 @@ export declare class LiveValueService implements Disposable {
      * @param ctx Context of the target system.
      */
     constructor(ctx: ApiContext);
-    /**
-     * @deprecated Pass an `ApiContext` instead. This form cannot carry version information and
-     * will be removed in a future major.
-     */
-    constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
     /**
      * URL of the live hub for the detected platform version: `{live}/hub` on v4, `{live}/values`
      * on v5. `Services.Live` still carries no `/v1` in the v5 config, so the service path is

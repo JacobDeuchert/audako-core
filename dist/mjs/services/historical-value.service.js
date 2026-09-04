@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { customOffsetBodyToWire, measuredValueFromWire, measuredValuePackageFromWire, valueQueriesToWire, } from '../compat/adapters/historical-value.adapter.v4.js';
+import { customOffsetBodyToWire, measuredValueFromWire, measuredValuePackageFromWire, } from '../compat/adapters/historical-value.adapter.v4.js';
 import { BaseHttpService } from './base-http.service.js';
 export class HistoricalValue {
     static getSignalValues(historicalValuePackage) {
@@ -30,39 +30,19 @@ export class CounterOffset {
 }
 export class HistoricalValueObject {
 }
-/** True for the deprecated camelCase offset body. */
-function isLegacyCustomOffsetRequest(request) {
-    return (request === null || request === void 0 ? void 0 : request.timestamp) !== undefined;
-}
 export class HistoricalValueService extends BaseHttpService {
-    constructor(httpConfigOrCtx, accessToken) {
-        super(httpConfigOrCtx, accessToken);
-    }
     /**
      * Flat-row value query. v4: `POST {historian}/value/manyflat`,
      * v5: `POST {historian}/historical-values/query-many-flat`.
      */
     requestHistoricalValues(requests) {
         return __awaiter(this, void 0, void 0, function* () {
-            const [endpoint, body] = yield Promise.all([
-                this.resolve({ name: 'historicalValuesQueryManyFlat' }),
-                this.toValueQueries(requests),
-            ]);
-            const response = yield this.ctx.http.post(endpoint.url, body);
+            const endpoint = yield this.resolve({ name: 'historicalValuesQueryManyFlat' });
+            const response = yield this.ctx.http.post(endpoint.url, requests);
             if (response.status !== 200) {
                 throw new Error(response.statusText);
             }
             return response.data;
-        });
-    }
-    /**
-     * @deprecated Duplicate of {@link requestHistoricalValues} - same endpoint, only the declared
-     * return type differs. Use `requestHistoricalValues`.
-     */
-    getHistoricalValues(historicalValueRequest) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const rows = yield this.requestHistoricalValues(historicalValueRequest);
-            return rows;
         });
     }
     /**
@@ -71,12 +51,11 @@ export class HistoricalValueService extends BaseHttpService {
      */
     getHistoricalValueObjects(historicalValueRequest) {
         return __awaiter(this, void 0, void 0, function* () {
-            const [endpoint, body, versionInfo] = yield Promise.all([
+            const [endpoint, versionInfo] = yield Promise.all([
                 this.resolve({ name: 'historicalValuesQueryMany' }),
-                this.toValueQueries(historicalValueRequest),
                 this.getVersionInfo(),
             ]);
-            const response = yield this.ctx.http.post(endpoint.url, body);
+            const response = yield this.ctx.http.post(endpoint.url, historicalValueRequest);
             const packages = Array.isArray(response.data) ? response.data : [];
             return packages.map((valuePackage) => measuredValuePackageFromWire(valuePackage, versionInfo));
         });
@@ -94,16 +73,8 @@ export class HistoricalValueService extends BaseHttpService {
                 this.resolve({ name: 'historicalValuesNearest' }),
                 this.getVersionInfo(),
             ]);
-            const response = yield this.ctx.http.post(endpoint.url, valueQueriesToWire([historicalValueRequest], versionInfo)[0]);
+            const response = yield this.ctx.http.post(endpoint.url, historicalValueRequest);
             return measuredValueFromWire(response.data, versionInfo);
-        });
-    }
-    /**
-     * @deprecated Typo alias of {@link getNearestValue}.
-     */
-    getNearesValue(historicalValueRequest) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.getNearestValue(historicalValueRequest);
         });
     }
     getNthHistoricalValue(request) {
@@ -153,9 +124,8 @@ export class HistoricalValueService extends BaseHttpService {
     /**
      * Sets the custom offset of a counter signal.
      *
-     * The body casing differs: v4 read camelCase, v5 PascalCase. Pass the canonical
-     * {@link SetCounterCustomOffsetRequest}; the deprecated camelCase
-     * {@link SetCustomOffsetRequest} is still accepted and converted.
+     * The body casing differs: v4 read camelCase, v5 PascalCase. Pass the canonical PascalCase
+     * {@link SetCounterCustomOffsetRequest}; the v4 adapter re-cases it for the v4 wire.
      */
     setCustomOffset(id, request) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -163,15 +133,7 @@ export class HistoricalValueService extends BaseHttpService {
                 this.resolve({ name: 'counterOffsetsCustom', signalId: id }),
                 this.getVersionInfo(),
             ]);
-            const canonical = isLegacyCustomOffsetRequest(request)
-                ? {
-                    Timestamp: request.timestamp,
-                    Value: request.value,
-                    Note: request.note,
-                    Source: request.source,
-                }
-                : request;
-            yield this.ctx.http.post(endpoint.url, customOffsetBodyToWire(canonical, versionInfo));
+            yield this.ctx.http.post(endpoint.url, customOffsetBodyToWire(request, versionInfo));
         });
     }
     deleteCounterOffsets(id, timestamps) {
@@ -208,13 +170,6 @@ export class HistoricalValueService extends BaseHttpService {
             const endpoint = yield this.resolve({ name: 'historicalValueImport' });
             const response = yield this.ctx.http.post(endpoint.url, { Values: importData });
             return response.data;
-        });
-    }
-    /** Applies the per-version value query mapping (drops `MinMaxInterval` on v5). */
-    toValueQueries(requests) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const versionInfo = yield this.getVersionInfo();
-            return valueQueriesToWire(requests, versionInfo);
         });
     }
 }

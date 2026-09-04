@@ -36,39 +36,19 @@ exports.CounterOffset = CounterOffset;
 class HistoricalValueObject {
 }
 exports.HistoricalValueObject = HistoricalValueObject;
-/** True for the deprecated camelCase offset body. */
-function isLegacyCustomOffsetRequest(request) {
-    return (request === null || request === void 0 ? void 0 : request.timestamp) !== undefined;
-}
 class HistoricalValueService extends base_http_service_js_1.BaseHttpService {
-    constructor(httpConfigOrCtx, accessToken) {
-        super(httpConfigOrCtx, accessToken);
-    }
     /**
      * Flat-row value query. v4: `POST {historian}/value/manyflat`,
      * v5: `POST {historian}/historical-values/query-many-flat`.
      */
     requestHistoricalValues(requests) {
         return __awaiter(this, void 0, void 0, function* () {
-            const [endpoint, body] = yield Promise.all([
-                this.resolve({ name: 'historicalValuesQueryManyFlat' }),
-                this.toValueQueries(requests),
-            ]);
-            const response = yield this.ctx.http.post(endpoint.url, body);
+            const endpoint = yield this.resolve({ name: 'historicalValuesQueryManyFlat' });
+            const response = yield this.ctx.http.post(endpoint.url, requests);
             if (response.status !== 200) {
                 throw new Error(response.statusText);
             }
             return response.data;
-        });
-    }
-    /**
-     * @deprecated Duplicate of {@link requestHistoricalValues} - same endpoint, only the declared
-     * return type differs. Use `requestHistoricalValues`.
-     */
-    getHistoricalValues(historicalValueRequest) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const rows = yield this.requestHistoricalValues(historicalValueRequest);
-            return rows;
         });
     }
     /**
@@ -77,12 +57,11 @@ class HistoricalValueService extends base_http_service_js_1.BaseHttpService {
      */
     getHistoricalValueObjects(historicalValueRequest) {
         return __awaiter(this, void 0, void 0, function* () {
-            const [endpoint, body, versionInfo] = yield Promise.all([
+            const [endpoint, versionInfo] = yield Promise.all([
                 this.resolve({ name: 'historicalValuesQueryMany' }),
-                this.toValueQueries(historicalValueRequest),
                 this.getVersionInfo(),
             ]);
-            const response = yield this.ctx.http.post(endpoint.url, body);
+            const response = yield this.ctx.http.post(endpoint.url, historicalValueRequest);
             const packages = Array.isArray(response.data) ? response.data : [];
             return packages.map((valuePackage) => (0, historical_value_adapter_v4_js_1.measuredValuePackageFromWire)(valuePackage, versionInfo));
         });
@@ -100,16 +79,8 @@ class HistoricalValueService extends base_http_service_js_1.BaseHttpService {
                 this.resolve({ name: 'historicalValuesNearest' }),
                 this.getVersionInfo(),
             ]);
-            const response = yield this.ctx.http.post(endpoint.url, (0, historical_value_adapter_v4_js_1.valueQueriesToWire)([historicalValueRequest], versionInfo)[0]);
+            const response = yield this.ctx.http.post(endpoint.url, historicalValueRequest);
             return (0, historical_value_adapter_v4_js_1.measuredValueFromWire)(response.data, versionInfo);
-        });
-    }
-    /**
-     * @deprecated Typo alias of {@link getNearestValue}.
-     */
-    getNearesValue(historicalValueRequest) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.getNearestValue(historicalValueRequest);
         });
     }
     getNthHistoricalValue(request) {
@@ -159,9 +130,8 @@ class HistoricalValueService extends base_http_service_js_1.BaseHttpService {
     /**
      * Sets the custom offset of a counter signal.
      *
-     * The body casing differs: v4 read camelCase, v5 PascalCase. Pass the canonical
-     * {@link SetCounterCustomOffsetRequest}; the deprecated camelCase
-     * {@link SetCustomOffsetRequest} is still accepted and converted.
+     * The body casing differs: v4 read camelCase, v5 PascalCase. Pass the canonical PascalCase
+     * {@link SetCounterCustomOffsetRequest}; the v4 adapter re-cases it for the v4 wire.
      */
     setCustomOffset(id, request) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -169,15 +139,7 @@ class HistoricalValueService extends base_http_service_js_1.BaseHttpService {
                 this.resolve({ name: 'counterOffsetsCustom', signalId: id }),
                 this.getVersionInfo(),
             ]);
-            const canonical = isLegacyCustomOffsetRequest(request)
-                ? {
-                    Timestamp: request.timestamp,
-                    Value: request.value,
-                    Note: request.note,
-                    Source: request.source,
-                }
-                : request;
-            yield this.ctx.http.post(endpoint.url, (0, historical_value_adapter_v4_js_1.customOffsetBodyToWire)(canonical, versionInfo));
+            yield this.ctx.http.post(endpoint.url, (0, historical_value_adapter_v4_js_1.customOffsetBodyToWire)(request, versionInfo));
         });
     }
     deleteCounterOffsets(id, timestamps) {
@@ -214,13 +176,6 @@ class HistoricalValueService extends base_http_service_js_1.BaseHttpService {
             const endpoint = yield this.resolve({ name: 'historicalValueImport' });
             const response = yield this.ctx.http.post(endpoint.url, { Values: importData });
             return response.data;
-        });
-    }
-    /** Applies the per-version value query mapping (drops `MinMaxInterval` on v5). */
-    toValueQueries(requests) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const versionInfo = yield this.getVersionInfo();
-            return (0, historical_value_adapter_v4_js_1.valueQueriesToWire)(requests, versionInfo);
         });
     }
 }

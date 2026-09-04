@@ -66,13 +66,4 @@ describe('LiveValueService constructors', () => {
     const { ctx, service } = createService('5.0.0');
     expect((service as any).ctx).toBe(ctx);
   });
-
-  it('still accepts the deprecated (httpConfig, accessToken) form', async () => {
-    const service = new LiveValueService(V4_CONFIG, 'token');
-    const ctx = (service as any).ctx as ApiContext;
-
-    expect(ctx).toBeInstanceOf(ApiContext);
-    await expect(ctx.getAccessToken()).resolves.toBe('token');
-    await expect(ctx.getHttpConfig()).resolves.toBe(V4_CONFIG);
-  });
 });

@@ -17,11 +17,11 @@ const axios_1 = __importDefault(require("axios"));
 const api_context_js_1 = require("../api/api-context.js");
 const version_detection_js_1 = require("../api/version-detection.js");
 class BaseHttpService {
-    constructor(httpConfigOrCtx, accessToken) {
-        this.ctx =
-            httpConfigOrCtx instanceof api_context_js_1.ApiContext
-                ? httpConfigOrCtx
-                : new api_context_js_1.ApiContext(httpConfigOrCtx, accessToken);
+    /**
+     * @param ctx Context of the target system.
+     */
+    constructor(ctx) {
+        this.ctx = ctx;
     }
     /** `HttpConfig` of the target system. */
     getHttpConfig() {
@@ -40,22 +40,6 @@ class BaseHttpService {
     }
     getAccessToken() {
         return this.ctx.getAccessToken();
-    }
-    /**
-     * @deprecated Resolve endpoints with {@link resolve} instead: the structure service path
-     * differs per platform version, and only the resolver knows the per-version routes.
-     */
-    getStructureUrl() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const httpConfig = yield this.getHttpConfig();
-            return `${httpConfig.Services.BaseUri}${httpConfig.Services.Structure}`;
-        });
-    }
-    /**
-     * @deprecated Use the `httpConfig` accessor of the `ApiContext` instead.
-     */
-    get httpConfig() {
-        return () => this.ctx.getHttpConfig();
     }
     static requestHttpConfig(systemUrl) {
         return (0, api_context_js_1.requestHttpConfig)(systemUrl);

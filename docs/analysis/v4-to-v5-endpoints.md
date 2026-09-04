@@ -14,8 +14,9 @@ driverUrl    = HttpConfig.Services.BaseUri + HttpConfig.Services.Driver   // NOT
 liveHubUrl   = HttpConfig.Services.BaseUri + HttpConfig.Services.Live + '/hub'
 ```
 
-Entity paths come from `EntityHttpEndpoints` in `lib/models/entities/configuration-entity.model.ts`
-(e.g. `Group: '/base/Group'`, `Signal: '/daq/Signal'`, `Recipient: '/alarming/Recipient'`).
+Entity paths came from `EntityHttpEndpoints` in `lib/models/entities/configuration-entity.model.ts`
+(e.g. `Group: '/base/Group'`, `Signal: '/daq/Signal'`, `Recipient: '/alarming/Recipient'`); as of 2.0 the
+map is `V4_ENTITY_PATHS` in `lib/compat/endpoints/endpoints.v4.ts`.
 
 In v5 the version moved **into the per-service path**: `Services.BaseUri` still ends in `/api`, and
 `Services.Structure` is now `/v1/structure`. So the effective prefix becomes `.../api/v1/structure`.

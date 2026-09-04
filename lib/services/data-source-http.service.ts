@@ -1,6 +1,3 @@
-import { ApiContext } from '../api/api-context.js';
-import { HttpConfig } from '../models/http-config.model.js';
-import { AsyncValue } from '../utils/async-value-utils.js';
 import { BaseHttpService } from './base-http.service.js';
 
 /**
@@ -14,18 +11,6 @@ export interface DriverJobInfo {
 }
 
 export class DataSourceHttpService extends BaseHttpService {
-  /**
-   * @param ctx Context of the target system.
-   */
-  constructor(ctx: ApiContext);
-  /**
-   * @deprecated Pass an `ApiContext` instead.
-   */
-  constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
-  constructor(httpConfigOrCtx: ApiContext | AsyncValue<HttpConfig>, accessToken?: AsyncValue<string>) {
-    super(httpConfigOrCtx as any, accessToken as any);
-  }
-
   /**
    * Tells the driver to (re-)configure a data source.
    *

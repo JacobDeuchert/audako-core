@@ -1,8 +1,5 @@
-import { ApiContext } from '../api/api-context.js';
 import { CompressionInterval, HistoricalValueMap, MeasuredValue, MeasuredValueNote, MeasurementValueSource, ValueObjectType } from '../models/historical-value.model.js';
-import { HttpConfig } from '../models/http-config.model.js';
 import { ValueEntityType } from '../models/widgets/shared.js';
-import { AsyncValue } from '../utils/async-value-utils.js';
 import { BaseHttpService } from './base-http.service.js';
 /**
  * A single historian value query (v5 `ValueQuery`, v4 `HistoricalValueRequest`).
@@ -11,11 +8,6 @@ export type HistoricalValueRequest = {
     ObjectType: ValueObjectType | ValueEntityType | string;
     ObjectId: string;
     IntervalType: CompressionInterval | string;
-    /**
-     * @deprecated Dropped in v5. Use `MinMaxIntervalType`. When only this field is set the
-     * service promotes it to `MinMaxIntervalType` on v5 and strips it from the request.
-     */
-    MinMaxInterval?: CompressionInterval;
     MinMaxIntervalType?: CompressionInterval | string;
     From: Date | string;
     Till: Date | string;
@@ -103,17 +95,6 @@ export interface SetCounterCustomOffsetRequest {
     Note?: string | null;
     Source: OffsetSource;
 }
-/**
- * @deprecated camelCase body of the v4 endpoint. Still accepted by
- * {@link HistoricalValueService.setCustomOffset} and mapped onto
- * {@link SetCounterCustomOffsetRequest}; use the PascalCase form.
- */
-export interface SetCustomOffsetRequest {
-    timestamp: string;
-    value: number;
-    note?: string | null;
-    source: OffsetSource;
-}
 export declare class CounterOffset {
     Date: string;
     Value: number;
@@ -128,23 +109,10 @@ export declare class HistoricalValueObject {
 }
 export declare class HistoricalValueService extends BaseHttpService {
     /**
-     * @param ctx Context of the target system.
-     */
-    constructor(ctx: ApiContext);
-    /**
-     * @deprecated Pass an `ApiContext` instead.
-     */
-    constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
-    /**
      * Flat-row value query. v4: `POST {historian}/value/manyflat`,
      * v5: `POST {historian}/historical-values/query-many-flat`.
      */
     requestHistoricalValues(requests: HistoricalValueRequest[]): Promise<HistoricalValueMap[]>;
-    /**
-     * @deprecated Duplicate of {@link requestHistoricalValues} - same endpoint, only the declared
-     * return type differs. Use `requestHistoricalValues`.
-     */
-    getHistoricalValues(historicalValueRequest: HistoricalValueRequest[]): Promise<HistoricalValue[]>;
     /**
      * Packaged value query. v4: `POST {historian}/value/many`,
      * v5: `POST {historian}/historical-values/query-many`.
@@ -158,10 +126,6 @@ export declare class HistoricalValueService extends BaseHttpService {
      * `Value: number` of the v4 signature is gone - check the type yourself if you need a number.
      */
     getNearestValue(historicalValueRequest: HistoricalValueRequest): Promise<MeasuredValue>;
-    /**
-     * @deprecated Typo alias of {@link getNearestValue}.
-     */
-    getNearesValue(historicalValueRequest: HistoricalValueRequest): Promise<MeasuredValue>;
     getNthHistoricalValue(request: NthHistoricalRequest): Promise<HistoricalValueObject>;
     postManualData(manualDataRequests: ManualDataRequest[]): Promise<void>;
     /** v4: `POST {historian}/value/note`, v5: `POST {historian}/historical-values/notes`. */
@@ -170,11 +134,10 @@ export declare class HistoricalValueService extends BaseHttpService {
     /**
      * Sets the custom offset of a counter signal.
      *
-     * The body casing differs: v4 read camelCase, v5 PascalCase. Pass the canonical
-     * {@link SetCounterCustomOffsetRequest}; the deprecated camelCase
-     * {@link SetCustomOffsetRequest} is still accepted and converted.
+     * The body casing differs: v4 read camelCase, v5 PascalCase. Pass the canonical PascalCase
+     * {@link SetCounterCustomOffsetRequest}; the v4 adapter re-cases it for the v4 wire.
      */
-    setCustomOffset(id: string, request: SetCounterCustomOffsetRequest | SetCustomOffsetRequest): Promise<void>;
+    setCustomOffset(id: string, request: SetCounterCustomOffsetRequest): Promise<void>;
     deleteCounterOffsets(id: string, timestamps: string[]): Promise<void>;
     deleteCustomOffsets(id: string, timestamps: string[]): Promise<boolean>;
     resetCalculatedValuesAndStatistic(signalId: string, resetOffsets: boolean, from?: Date | null, till?: Date | null, resetCustomOffsets?: boolean): Promise<OperationStartedResponse>;
@@ -183,6 +146,4 @@ export declare class HistoricalValueService extends BaseHttpService {
      * v5: `POST {historian}/historical-value-imports`.
      */
     importHistoricalValues(importData: Record<string, any>[]): Promise<OperationStartedResponse>;
-    /** Applies the per-version value query mapping (drops `MinMaxInterval` on v5). */
-    private toValueQueries;
 }

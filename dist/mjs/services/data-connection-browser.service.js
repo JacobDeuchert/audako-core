@@ -9,9 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { BaseHttpService } from './base-http.service.js';
 export class DataConnectionBrowserService extends BaseHttpService {
-    constructor(httpConfigOrCtx, accessToken) {
-        super(httpConfigOrCtx, accessToken);
-    }
     /** `POST {driver}/command/conn/{id}/browse` with `{Path}`. Request identical on v4 and v5. */
     browseConnection(id, path) {
         return __awaiter(this, void 0, void 0, function* () {

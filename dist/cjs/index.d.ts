@@ -4,7 +4,6 @@ export { ConfigurationEntity } from './models/entities/configuration-entity.mode
 export { FieldObjectOrientationAttribute } from './models/entities/configuration-entity.model.js';
 export { EntityObjectOrientationAttribute } from './models/entities/configuration-entity.model.js';
 export { EntityIcons } from './models/entities/configuration-entity.model.js';
-export { EntityHttpEndpoints } from './models/entities/configuration-entity.model.js';
 export { EntityType } from './models/entities/configuration-entity.model.js';
 export * from './models/entities/custom-field-settings.model.js';
 export * from './models/entities/group.model.js';

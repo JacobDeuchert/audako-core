@@ -29,9 +29,6 @@ export declare enum EntityType {
 export declare const EntityIcons: {
     [p in EntityType]?: string;
 };
-export declare const EntityHttpEndpoints: {
-    [p in EntityType]: string;
-};
 export declare enum FieldObjectOrientationAttribute {
     Locked = "Locked",
     Overwritten = "Overwritten",

@@ -1,6 +1,3 @@
-import { ApiContext } from '../api/api-context.js';
-import { HttpConfig } from '../models/http-config.model.js';
-import { AsyncValue } from '../utils/async-value-utils.js';
 import { BaseHttpService } from './base-http.service.js';
 /**
  * Driver job started by a command endpoint. v5 answers the configure command with
@@ -12,14 +9,6 @@ export interface DriverJobInfo {
     Timestamp?: string;
 }
 export declare class DataSourceHttpService extends BaseHttpService {
-    /**
-     * @param ctx Context of the target system.
-     */
-    constructor(ctx: ApiContext);
-    /**
-     * @deprecated Pass an `ApiContext` instead.
-     */
-    constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
     /**
      * Tells the driver to (re-)configure a data source.
      *

@@ -2,18 +2,12 @@ import { ApiContext } from '../api/api-context.js';
 import { ApiVersionInfo } from '../api/api-version.js';
 import { Endpoint, ResolvedEndpoint } from '../compat/endpoints/endpoint-resolver.js';
 import { HttpConfig } from '../models/http-config.model.js';
-import { AsyncValue } from '../utils/async-value-utils.js';
 export declare abstract class BaseHttpService {
     protected ctx: ApiContext;
     /**
      * @param ctx Context of the target system.
      */
     constructor(ctx: ApiContext);
-    /**
-     * @deprecated Pass an `ApiContext` instead. This form cannot carry version information and
-     * will be removed in a future major.
-     */
-    constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
     /** `HttpConfig` of the target system. */
     protected getHttpConfig(): Promise<HttpConfig>;
     /** Detected platform version of the target system. */
@@ -24,15 +18,6 @@ export declare abstract class BaseHttpService {
         [p: string]: string;
     }>;
     protected getAccessToken(): Promise<string>;
-    /**
-     * @deprecated Resolve endpoints with {@link resolve} instead: the structure service path
-     * differs per platform version, and only the resolver knows the per-version routes.
-     */
-    protected getStructureUrl(): Promise<string>;
-    /**
-     * @deprecated Use the `httpConfig` accessor of the `ApiContext` instead.
-     */
-    protected get httpConfig(): AsyncValue<HttpConfig>;
     static requestHttpConfig(systemUrl: string): Promise<HttpConfig>;
     /**
      * Probes the anonymous version endpoint. The v1 path is tried first: with the legacy proxy

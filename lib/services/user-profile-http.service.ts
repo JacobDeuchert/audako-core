@@ -1,22 +1,7 @@
-import { ApiContext } from '../api/api-context.js';
-import { HttpConfig } from '../models/http-config.model.js';
 import { UserProfile } from '../models/user-profile.model.js';
-import { AsyncValue } from '../utils/async-value-utils.js';
 import { BaseHttpService } from './base-http.service.js';
 
 export class UserProfileHttpService extends BaseHttpService {
-  /**
-   * @param ctx Context of the target system.
-   */
-  constructor(ctx: ApiContext);
-  /**
-   * @deprecated Pass an `ApiContext` instead.
-   */
-  constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
-  constructor(httpConfigOrCtx: ApiContext | AsyncValue<HttpConfig>, accessToken?: AsyncValue<string>) {
-    super(httpConfigOrCtx as any, accessToken as any);
-  }
-
   /** `GET {structure}/userprofile` (v4) / `GET {structure}/user-profile` (v5). Same response. */
   public async getUserProfile(): Promise<UserProfile> {
     try {

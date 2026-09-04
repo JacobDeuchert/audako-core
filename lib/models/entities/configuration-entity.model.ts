@@ -38,35 +38,6 @@ export const EntityIcons: { [p in EntityType]?: string } = {
   [EntityType.DataSource]: 'mat storage',
 };
 
-export const EntityHttpEndpoints: { [p in EntityType]: string } = {
-  Group: '/base/Group',
-  Signal: '/daq/Signal',
-  Formula: '/daq/Formula',
-  Dashboard: '/base/Dashboard',
-  DashboardTab: '/base/DashboardTab',
-  DataConnection: '/daq/DataConnection',
-  DataSource: '/daq/DataSource',
-  Connector: '/daq/Connector',
-  EventCondition: '/base/condition',
-  ProcessImage: '/scada/ProcessImage',
-  EventCategory: '/base/EventCategory',
-  EventDefinition: '/base/EventDefinition',
-  BatchDefinition: '/scada/batchdefinition',
-  ReportTemplate: '/scada/ReportTemplate',
-  Report: '/scada/Report',
-  Document: '/base/Document',
-  Camera: '/scada/Camera',
-  SwitchSchedule: '/scada/SwitchSchedule',
-  User: '/base/User',
-  Role: '/base/Role',
-  Recipient: '/alarming/Recipient',
-  RecipientGroup: '/alarming/RecipientGroup',
-  AlarmingPlan: '/alarming/AlarmingPlan',
-  MaintenanceService: '/maintenance/MaintenanceService',
-  TaskDefinition: '/maintenance/TaskDefinition',
-  RuntimeScript: '/runtime/RuntimeScript',
-};
-
 export enum FieldObjectOrientationAttribute {
   Locked = 'Locked',
   Overwritten = 'Overwritten',

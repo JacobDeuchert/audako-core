@@ -7,15 +7,6 @@ import { MeasuredValue, MeasuredValuePackage } from '../../models/historical-val
  * The types here are declared structurally on purpose: the public request/response types live
  * in `lib/services/historical-value.service.ts`, and importing them would create a cycle.
  */
-/** The two fields of a value query that differ between the versions. */
-export interface ValueQueryLike {
-    /**
-     * @deprecated v4 only, dropped in v5.
-     */
-    MinMaxInterval?: any;
-    MinMaxIntervalType?: any;
-    [key: string]: any;
-}
 /**
  * Canonical (v5) `SetCounterCustomOffsetRequest` body. v5 serializes with
  * `PropertyNamingPolicy = null`, so the keys are PascalCase.
@@ -26,17 +17,6 @@ export interface CustomOffsetBody {
     Note?: string | null;
     Source: string;
 }
-/**
- * Prepares a value query for the wire.
- *
- * v5 dropped `MinMaxInterval` from `ValueQuery`; only `MinMaxIntervalType` remains. The field
- * is stripped on v5, and - because both fields carried a `CompressionInterval` - its value is
- * promoted to `MinMaxIntervalType` when the caller did not set that itself, so old call sites
- * keep the min/max behaviour they asked for.
- */
-export declare function valueQueryToWire<T extends ValueQueryLike>(query: T, versionInfo: ApiVersionInfo): any;
-/** {@link valueQueryToWire} for a list of queries. */
-export declare function valueQueriesToWire<T extends ValueQueryLike>(queries: T[], versionInfo: ApiVersionInfo): any[];
 /**
  * Normalizes a single value payload to the canonical `MeasuredValue`.
  *

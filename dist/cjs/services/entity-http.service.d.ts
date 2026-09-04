@@ -1,7 +1,4 @@
-import { ApiContext } from '../api/api-context.js';
 import { ConfigurationEntity, EntityType, TranslatableField } from '../models/entities/configuration-entity.model.js';
-import { HttpConfig } from '../models/http-config.model.js';
-import { AsyncValue } from '../utils/async-value-utils.js';
 import { BaseHttpService } from './base-http.service.js';
 export type PaginationResponse<T> = {
     data: T[];
@@ -61,14 +58,6 @@ export interface EntityInfoOptions<T = any> {
     language?: string;
 }
 export declare class EntityHttpService extends BaseHttpService {
-    /**
-     * @param ctx Context of the target system.
-     */
-    constructor(ctx: ApiContext);
-    /**
-     * @deprecated Pass an `ApiContext` instead.
-     */
-    constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
     getEntityById<T extends ConfigurationEntity>(entityType: EntityType, id: string): Promise<T>;
     /**
      * `GET {entity}/{id}`, optionally projected. `$projection` is a query string parameter on both

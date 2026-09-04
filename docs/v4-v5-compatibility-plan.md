@@ -170,7 +170,7 @@ models the wire shape is unchanged. Differences:
 
 | Entity | Change | Handling |
 |---|---|---|
-| Storage | Removed as ConfigurationEntity in v5; replaced by service-local `DashboardTabStorage` with different fields and endpoints | **Decision (2026-09-02): drop Storage from audako-core entirely.** Remove `storage.model.ts`, `EntityType.Storage`, `EntityHttpEndpoints.Storage` and the `EntityTypeClassMapping` entry in the major bump. No adapter. Apps that need dashboard tab storage on v5 get a dedicated service later if demand exists. |
+| Storage | Removed as ConfigurationEntity in v5; replaced by service-local `DashboardTabStorage` with different fields and endpoints | **Decision (2026-09-02): drop Storage from audako-core entirely.** Remove `storage.model.ts`, `EntityType.Storage`, its v4 endpoint path and the `EntityTypeClassMapping` entry in the major bump. No adapter. Apps that need dashboard tab storage on v5 get a dedicated service later if demand exists. |
 | All entities, query responses | v5 serializes typed objects: every property present (null instead of absent), unknown stored fields dropped, inexpressible projections silently ignored (v4 could 500) | Never branch on key presence. Shared fill-defaults pass in `fromWire`. |
 | All entities, writes | `Path`, `AclAllow`, `AclDeny` are server-owned | Shared `toWire` strips them (harmless on v4 too). |
 | EventCategory | `Acknowledgment: Field<bool>` added next to `RequiresAcknowledgment` | Add to canonical model; strip on v4 `toWire`. |
@@ -293,11 +293,14 @@ commented at the code site.
 
 **Historian**
 
-- `HistoricalValueRequest.MinMaxInterval` is not just dropped on v5: when only it is set, its value
-  is promoted to `MinMaxIntervalType`, so old call sites keep the min/max behaviour they asked for.
+- `HistoricalValueRequest.MinMaxInterval` is removed from the public request type instead of being
+  mapped: v4 accepted `MinMaxIntervalType` as well, so the canonical v5 field alone works on both
+  versions and no adapter is needed.
 - v4 operation status mapping: `Processing -> Pending` (v5 does not distinguish queued from
   running) and `Undone -> Completed` plus `IsRedoable: true` (v5 expresses the undo state through
-  `IsUndoable`/`IsRedoable`, not through the status).
+  `IsUndoable`/`IsRedoable`, not through the status). Both v4-only values, and the v4-only audit
+  fields (`Timezone`, `CreatedOn`, `CreatedBy`, `ChangedOn`, `ChangedBy`), live only in the v4
+  wire type inside the adapter; the adapter drops the old keys from the result.
 - `getCounterOffsets` no longer emits the stray leading `&` after `?` that v4 core produced.
 
 **Endpoints and services**
@@ -308,8 +311,16 @@ commented at the code site.
   assumption; it falls back to the per-id lookups when the request fails.
 - The `version` endpoint exists in both endpoint tables for completeness, but version detection
   uses the two static paths directly: it has to run before there is a version to resolve against.
-- `BaseHttpService.getStructureUrl` is kept (subclasses in apps may use it) and deprecated: only
-  the resolver knows the per-version routes.
+- `BaseHttpService.getStructureUrl` and the protected `httpConfig` accessor are removed: only the
+  resolver knows the per-version routes, and 2.0 ships no compatibility shims.
+- The v4 per-entity path map lives in the endpoint table (`V4_ENTITY_PATHS` in
+  `lib/compat/endpoints/endpoints.v4.ts`, typed `Record<EntityType, string>` like
+  `V5_ENTITY_SEGMENTS`), not in `configuration-entity.model.ts`. It is a wire detail, not a model,
+  and is no longer exported.
+- No compatibility shims: every service takes only `ApiContext`, and the deprecated aliases
+  (`getNearesValue`, `getHistoricalValues`, camelCase `SetCustomOffsetRequest`) are deleted. The
+  owner controls all consumers, so the major carries the full break; see docs/migration-2.0.md
+  section 5.
 - The deprecation logger is installed automatically on every `ApiContext` but, because
   `lib/compat` is not exported, its sink cannot be redirected from an app. If rollout step 4 needs
   app-side logging, core has to grow a small public facade in `lib/api/` for it.

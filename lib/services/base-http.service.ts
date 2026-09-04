@@ -3,7 +3,6 @@ import { ApiContext, requestHttpConfig } from '../api/api-context.js';
 import { ApiVersionInfo } from '../api/api-version.js';
 import { Endpoint, ResolvedEndpoint } from '../compat/endpoints/endpoint-resolver.js';
 import { HttpConfig } from '../models/http-config.model.js';
-import { AsyncValue } from '../utils/async-value-utils.js';
 import { V4_VERSION_PATH, V5_VERSION_PATH } from '../api/version-detection.js';
 
 export abstract class BaseHttpService {
@@ -12,17 +11,8 @@ export abstract class BaseHttpService {
   /**
    * @param ctx Context of the target system.
    */
-  constructor(ctx: ApiContext);
-  /**
-   * @deprecated Pass an `ApiContext` instead. This form cannot carry version information and
-   * will be removed in a future major.
-   */
-  constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
-  constructor(httpConfigOrCtx: ApiContext | AsyncValue<HttpConfig>, accessToken?: AsyncValue<string>) {
-    this.ctx =
-      httpConfigOrCtx instanceof ApiContext
-        ? httpConfigOrCtx
-        : new ApiContext(httpConfigOrCtx as AsyncValue<HttpConfig>, accessToken);
+  constructor(ctx: ApiContext) {
+    this.ctx = ctx;
   }
 
   /** `HttpConfig` of the target system. */
@@ -46,22 +36,6 @@ export abstract class BaseHttpService {
 
   protected getAccessToken(): Promise<string> {
     return this.ctx.getAccessToken();
-  }
-
-  /**
-   * @deprecated Resolve endpoints with {@link resolve} instead: the structure service path
-   * differs per platform version, and only the resolver knows the per-version routes.
-   */
-  protected async getStructureUrl(): Promise<string> {
-    const httpConfig = await this.getHttpConfig();
-    return `${httpConfig.Services.BaseUri}${httpConfig.Services.Structure}`;
-  }
-
-  /**
-   * @deprecated Use the `httpConfig` accessor of the `ApiContext` instead.
-   */
-  protected get httpConfig(): AsyncValue<HttpConfig> {
-    return () => this.ctx.getHttpConfig();
   }
 
   public static requestHttpConfig(systemUrl: string): Promise<HttpConfig> {

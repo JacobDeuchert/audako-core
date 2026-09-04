@@ -1,13 +1,51 @@
-import { EntityHttpEndpoints, EntityType } from '../../models/entities/configuration-entity.model.js';
+import { EntityType } from '../../models/entities/configuration-entity.model.js';
 import type { EndpointTable, ResolvedEndpoint, ServiceUrls } from './endpoint-resolver.js';
+
+/**
+ * v4 domain-prefixed entity paths, appended to the structure service root
+ * (`{structure}/base/Group`). Mirrors `V5_ENTITY_SEGMENTS`; `Record<EntityType, string>` makes a
+ * missing entity type a compile error. `Storage` is intentionally absent: it is no longer a
+ * configuration entity in v5 and was dropped from audako-core.
+ *
+ * The `/alarming/`, `/maintenance/` and `/runtime/` prefixes reproduce exactly what core sent
+ * before 2.0; see open item 2 in docs/migration-2.0.md.
+ */
+export const V4_ENTITY_PATHS: Record<EntityType, string> = {
+  [EntityType.Group]: '/base/Group',
+  [EntityType.Signal]: '/daq/Signal',
+  [EntityType.Formula]: '/daq/Formula',
+  [EntityType.Dashboard]: '/base/Dashboard',
+  [EntityType.DashboardTab]: '/base/DashboardTab',
+  [EntityType.DataConnection]: '/daq/DataConnection',
+  [EntityType.DataSource]: '/daq/DataSource',
+  [EntityType.Connector]: '/daq/Connector',
+  [EntityType.EventCondition]: '/base/condition',
+  [EntityType.EventDefinition]: '/base/EventDefinition',
+  [EntityType.EventCategory]: '/base/EventCategory',
+  [EntityType.ProcessImage]: '/scada/ProcessImage',
+  [EntityType.BatchDefinition]: '/scada/batchdefinition',
+  [EntityType.ReportTemplate]: '/scada/ReportTemplate',
+  [EntityType.Report]: '/scada/Report',
+  [EntityType.Document]: '/base/Document',
+  [EntityType.Camera]: '/scada/Camera',
+  [EntityType.SwitchSchedule]: '/scada/SwitchSchedule',
+  [EntityType.User]: '/base/User',
+  [EntityType.Role]: '/base/Role',
+  [EntityType.Recipient]: '/alarming/Recipient',
+  [EntityType.RecipientGroup]: '/alarming/RecipientGroup',
+  [EntityType.AlarmingPlan]: '/alarming/AlarmingPlan',
+  [EntityType.MaintenanceService]: '/maintenance/MaintenanceService',
+  [EntityType.TaskDefinition]: '/maintenance/TaskDefinition',
+  [EntityType.RuntimeScript]: '/runtime/RuntimeScript',
+};
 
 function get(url: string): ResolvedEndpoint {
   return { url: url, method: 'GET' };
 }
 
-/** v4 entity collection root: `{structure}/{domain}/{Type}` from `EntityHttpEndpoints`. */
+/** v4 entity collection root: `{structure}/{domain}/{Type}` from `V4_ENTITY_PATHS`. */
 function entityRoot(urls: ServiceUrls, entityType: EntityType): string {
-  return `${urls.structure}${EntityHttpEndpoints[entityType]}`;
+  return `${urls.structure}${V4_ENTITY_PATHS[entityType]}`;
 }
 
 /** Historian value group root. All v4 value endpoints hang under `/value`. */

@@ -127,9 +127,9 @@ describe('HistoricalValueOperation v4 adapter', () => {
     expect(operation.StoppedOn).toBeNull();
     expect(operation.IsUndoable).toBe(false);
     expect(operation.IsRedoable).toBe(false);
-    // Legacy fields are kept for apps that still read them.
-    expect(operation.CreatedBy).toBe('user-1');
-    expect(operation.Timezone).toBe('CET');
+    // The v4-only wire keys are dropped: the canonical shape is all callers see.
+    expect((operation as any).CreatedBy).toBeUndefined();
+    expect((operation as any).Timezone).toBeUndefined();
   });
 
   it('derives StoppedOn and IsUndoable for a completed v4 operation', async () => {

@@ -12,9 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DataConnectionBrowserService = void 0;
 const base_http_service_js_1 = require("./base-http.service.js");
 class DataConnectionBrowserService extends base_http_service_js_1.BaseHttpService {
-    constructor(httpConfigOrCtx, accessToken) {
-        super(httpConfigOrCtx, accessToken);
-    }
     /** `POST {driver}/command/conn/{id}/browse` with `{Path}`. Request identical on v4 and v5. */
     browseConnection(id, path) {
         return __awaiter(this, void 0, void 0, function* () {

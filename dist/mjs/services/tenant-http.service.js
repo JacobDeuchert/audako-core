@@ -9,9 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { BaseHttpService } from './base-http.service.js';
 export class TenantHttpService extends BaseHttpService {
-    constructor(httpConfigOrCtx, accessToken) {
-        super(httpConfigOrCtx, accessToken);
-    }
     getTenantViewById(id) {
         return this._get({ name: 'tenantViewById', tenantId: id });
     }

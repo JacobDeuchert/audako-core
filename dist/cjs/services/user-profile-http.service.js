@@ -12,9 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserProfileHttpService = void 0;
 const base_http_service_js_1 = require("./base-http.service.js");
 class UserProfileHttpService extends base_http_service_js_1.BaseHttpService {
-    constructor(httpConfigOrCtx, accessToken) {
-        super(httpConfigOrCtx, accessToken);
-    }
     /** `GET {structure}/userprofile` (v4) / `GET {structure}/user-profile` (v5). Same response. */
     getUserProfile() {
         return __awaiter(this, void 0, void 0, function* () {

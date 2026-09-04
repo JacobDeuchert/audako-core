@@ -1,37 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.customOffsetBodyToWire = exports.measuredValuePackageFromWire = exports.measuredValueFromWire = exports.valueQueriesToWire = exports.valueQueryToWire = void 0;
-/**
- * Prepares a value query for the wire.
- *
- * v5 dropped `MinMaxInterval` from `ValueQuery`; only `MinMaxIntervalType` remains. The field
- * is stripped on v5, and - because both fields carried a `CompressionInterval` - its value is
- * promoted to `MinMaxIntervalType` when the caller did not set that itself, so old call sites
- * keep the min/max behaviour they asked for.
- */
-function valueQueryToWire(query, versionInfo) {
-    if (!query || typeof query !== 'object' || !(versionInfo === null || versionInfo === void 0 ? void 0 : versionInfo.isV5)) {
-        return query;
-    }
-    if (query.MinMaxInterval === undefined) {
-        return query;
-    }
-    const payload = Object.assign({}, query);
-    if (payload.MinMaxIntervalType === undefined || payload.MinMaxIntervalType === null) {
-        payload.MinMaxIntervalType = payload.MinMaxInterval;
-    }
-    delete payload.MinMaxInterval;
-    return payload;
-}
-exports.valueQueryToWire = valueQueryToWire;
-/** {@link valueQueryToWire} for a list of queries. */
-function valueQueriesToWire(queries, versionInfo) {
-    if (!Array.isArray(queries)) {
-        return queries;
-    }
-    return queries.map((query) => valueQueryToWire(query, versionInfo));
-}
-exports.valueQueriesToWire = valueQueriesToWire;
+exports.customOffsetBodyToWire = exports.measuredValuePackageFromWire = exports.measuredValueFromWire = void 0;
 /**
  * Normalizes a single value payload to the canonical `MeasuredValue`.
  *
