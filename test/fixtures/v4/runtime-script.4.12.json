@@ -1,0 +1,16 @@
+{
+  "Id": "6501f0000000000000000031",
+  "Name": { "Value": "Nachtabsenkung", "OOAttributes": [] },
+  "Description": { "Value": null, "OOAttributes": [] },
+  "GroupId": "6501f0000000000000000000",
+  "Version": 0,
+  "AdditionalFields": {},
+  "CreatedBy": "6501f000000000000000000a",
+  "CreatedOn": "2023-10-11T08:00:00Z",
+  "MaintenanceMode": false,
+  "IsTemplate": false,
+  "OOAttributes": [],
+  "Script": { "Value": "return 1;", "OOAttributes": [] },
+  "StaticVariables": [],
+  "Triggers": [{ "_t": "CyclicTrigger", "Interval": { "Value": 60, "OOAttributes": [] } }]
+}

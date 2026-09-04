@@ -1,0 +1,43 @@
+{
+  "Id": "6501f0000000000000000061",
+  "Name": { "Value": "Charge Linie 1", "OOAttributes": [] },
+  "Description": { "Value": null, "OOAttributes": [] },
+  "GroupId": "6501f0000000000000000000",
+  "Version": 0,
+  "AdditionalFields": {},
+  "CreatedBy": "6501f000000000000000000a",
+  "CreatedOn": "2023-10-11T08:00:00Z",
+  "MaintenanceMode": false,
+  "IsTemplate": false,
+  "OOAttributes": [],
+  "ParallelBatchesEnabled": false,
+  "BatchTriggers": [{ "TriggerType": "Manual", "ActionType": "Start", "EntityId": null, "TriggerOn": null }],
+  "MetadataFields": {
+    "chargeNr": {
+      "Name": "Chargennummer",
+      "Type": "TextField",
+      "Source": "Manual",
+      "Optional": false,
+      "ObligatoryAt": "Stop"
+    },
+    "operator": {
+      "Name": "Bediener",
+      "Type": "TextField",
+      "Source": "Manual",
+      "Optional": true,
+      "ObligatoryAt": "Start"
+    },
+    "counter": {
+      "Name": "Zähler",
+      "Type": "NumberField",
+      "Source": "Signal",
+      "SignalId": "6501f0000000000000000051",
+      "Optional": true,
+      "ObligatoryAt": "Stop"
+    }
+  },
+  "BatchValueObjects": [],
+  "ConditionEventEntries": [],
+  "BatchReportIds": [],
+  "BatchReportExportSettings": []
+}

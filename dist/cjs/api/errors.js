@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ApiVersionDetectionError = exports.IncompatibleBackendError = exports.UnsupportedApiVersionError = exports.parseApiError = exports.ApiError = void 0;
+exports.ApiVersionDetectionError = exports.IncompatibleBackendError = exports.UnsupportedApiVersionError = exports.parseApiError = exports.EntityLockedError = exports.ApiError = void 0;
 /**
  * Base error for anything the platform answered with. v5 replies with RFC 7807
  * `application/problem+json` where `title` carries the error code (e.g. `Signal.NotFound`);
@@ -20,6 +20,21 @@ class ApiError extends Error {
 }
 exports.ApiError = ApiError;
 /**
+ * `423 Locked`: the entity or one of its ancestors is part of a locked subtree, so the write was
+ * refused. New in v5 (docs/analysis/v4-to-v5-endpoints.md, `updateEntity` / `deleteEntity`).
+ */
+class EntityLockedError extends ApiError {
+    constructor(init) {
+        super(init);
+        this.name = 'EntityLockedError';
+    }
+}
+exports.EntityLockedError = EntityLockedError;
+/** Picks the most specific {@link ApiError} subclass for a parsed error body. */
+function createApiError(init) {
+    return init.status === 423 ? new EntityLockedError(init) : new ApiError(init);
+}
+/**
  * Normalizes an axios error into an {@link ApiError}. Understands RFC 7807 problem+json (v5),
  * the v4 `{ error: { code, message } }` envelope and plain text/empty bodies (JWT failures return
  * `text/plain`, unhandled v5 exceptions return an empty 500).
@@ -31,7 +46,7 @@ function parseApiError(error) {
     if (data && typeof data === 'object') {
         // v5: RFC 7807 problem+json. `title` is the error code, `detail` the description.
         if (typeof data.title === 'string' || typeof data.detail === 'string') {
-            return new ApiError({
+            return createApiError({
                 status: status,
                 title: data.title,
                 detail: data.detail,
@@ -42,7 +57,7 @@ function parseApiError(error) {
         }
         // v4: { error: { code, message, args } }
         if (data.error && typeof data.error === 'object') {
-            return new ApiError({
+            return createApiError({
                 status: status,
                 title: data.error.code,
                 detail: data.error.message,
@@ -51,9 +66,9 @@ function parseApiError(error) {
         }
     }
     if (typeof data === 'string' && data.length > 0) {
-        return new ApiError({ status: status, detail: data, raw: data });
+        return createApiError({ status: status, detail: data, raw: data });
     }
-    return new ApiError({
+    return createApiError({
         status: status,
         detail: error === null || error === void 0 ? void 0 : error.message,
         raw: data,

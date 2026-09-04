@@ -7,56 +7,59 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import axios from 'axios';
-import { getAsyncValueAsPromise } from '../utils/async-value-utils.js';
+import { historicalValueOperationFromWire, historicalValueOperationsFromWire, } from '../compat/adapters/historical-value-operation.adapter.v4.js';
 import { BaseHttpService } from './base-http.service.js';
+/**
+ * Historian value manipulation (undoable operation scripts).
+ *
+ * v4 served these under `{historian}/historicalvaluemanipulation/operations/...`, v5 under
+ * `{historian}/historical-value-operations/...`, and the response model changed
+ * (docs/analysis/v4-to-v5-endpoints.md). Responses are normalized to the canonical v5 shape by
+ * `lib/compat/adapters/historical-value-operation.adapter.v4.ts`.
+ */
 export class HistoricalValueManipulationHttpService extends BaseHttpService {
-    constructor(httpConfig, accessToken) {
-        super(httpConfig, accessToken);
+    constructor(httpConfigOrCtx, accessToken) {
+        super(httpConfigOrCtx, accessToken);
     }
     getHistoricalValueOperations(signalId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const baseUrl = yield this.getBaseUrl();
-            const headers = yield this.getAuthorizationHeader();
-            const operations = yield axios
-                .get(`${baseUrl}/operations/${signalId}`, { headers })
-                .then((response) => response.data);
-            return operations;
+            const [endpoint, versionInfo] = yield Promise.all([
+                this.resolve({ name: 'historicalValueOperations', signalId: signalId }),
+                this.getVersionInfo(),
+            ]);
+            const response = yield this.ctx.http.get(endpoint.url);
+            return historicalValueOperationsFromWire(response.data, versionInfo);
         });
     }
     startHistoricalValueOperation(signalId, from, till, timezone, operationScript, operationDescription) {
         return __awaiter(this, void 0, void 0, function* () {
-            const baseUrl = yield this.getBaseUrl();
-            const headers = yield this.getAuthorizationHeader();
-            return axios
-                .post(`${baseUrl}/operations/${signalId}/start`, {
+            const [endpoint, versionInfo] = yield Promise.all([
+                this.resolve({ name: 'historicalValueOperationStart', signalId: signalId }),
+                this.getVersionInfo(),
+            ]);
+            // Request body is identical on both versions.
+            const response = yield this.ctx.http.post(endpoint.url, {
                 From: from,
                 Till: till,
                 Timezone: timezone,
                 OperationScript: operationScript,
                 OperationDescription: operationDescription,
-            }, { headers })
-                .then((response) => response.data);
+            });
+            return historicalValueOperationFromWire(response.data, versionInfo);
         });
     }
+    /** v4 accepts `PUT` only; v5 accepts both and prefers `POST`. The verb comes from the resolver. */
     undoHistoricalValueOperation(operationId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const baseUrl = yield this.getBaseUrl();
-            const headers = yield this.getAuthorizationHeader();
-            return axios.put(`${baseUrl}/operations/${operationId}/undo`, null, { headers }).then();
+            const endpoint = yield this.resolve({ name: 'historicalValueOperationUndo', operationId: operationId });
+            yield this.ctx.http.request({ url: endpoint.url, method: endpoint.method, data: null });
         });
     }
+    /** See {@link undoHistoricalValueOperation}. */
     redoHistoricalValueOperation(operationId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const baseUrl = yield this.getBaseUrl();
-            const headers = yield this.getAuthorizationHeader();
-            return axios.put(`${baseUrl}/operations/${operationId}/redo`, null, { headers }).then();
-        });
-    }
-    getBaseUrl() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const httpConfig = yield getAsyncValueAsPromise(this.httpConfig);
-            return `${httpConfig.Services.BaseUri}${httpConfig.Services.Historian}/historicalvaluemanipulation`;
+            const endpoint = yield this.resolve({ name: 'historicalValueOperationRedo', operationId: operationId });
+            yield this.ctx.http.request({ url: endpoint.url, method: endpoint.method, data: null });
         });
     }
 }

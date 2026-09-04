@@ -7,49 +7,31 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import axios from 'axios';
 import { BaseHttpService } from './base-http.service.js';
 export class TenantHttpService extends BaseHttpService {
-    constructor(httpConfig, accessToken) {
-        super(httpConfig, accessToken);
+    constructor(httpConfigOrCtx, accessToken) {
+        super(httpConfigOrCtx, accessToken);
     }
     getTenantViewById(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const url = `${yield this.getStructureUrl()}/tenant/${id}/view`;
-            const headers = yield this.getAuthorizationHeader();
-            const response = yield axios.get(url, { headers: headers });
-            return response.data;
-        });
+        return this._get({ name: 'tenantViewById', tenantId: id });
     }
     getTenantViewForEntityId(entityId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const url = `${yield this.getStructureUrl()}/tenant/entity/${entityId}/view`;
-            const headers = yield this.getAuthorizationHeader();
-            const response = yield axios.get(url, { headers: headers });
-            return response.data;
-        });
+        return this._get({ name: 'tenantViewForEntity', entityId: entityId });
     }
     getTopTenants() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const url = `${yield this.getStructureUrl()}/tenant/top`;
-            const headers = yield this.getAuthorizationHeader();
-            const response = yield axios.get(url, { headers: headers });
-            return response.data;
-        });
+        return this._get({ name: 'tenantsTop' });
     }
     getNextTenants(tenantId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const url = `${yield this.getStructureUrl()}/tenant/${tenantId}/next`;
-            const headers = yield this.getAuthorizationHeader();
-            const response = yield axios.get(url, { headers: headers });
-            return response.data;
-        });
+        return this._get({ name: 'tenantsNext', tenantId: tenantId });
     }
     filterTenantsByName(name) {
+        return this._get({ name: 'tenantsFilter', filter: name });
+    }
+    /** All tenant endpoints are plain reads whose response shape is identical on v4 and v5. */
+    _get(endpoint) {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = `${yield this.getStructureUrl()}/tenant/filter/${name}`;
-            const headers = yield this.getAuthorizationHeader();
-            const response = yield axios.get(url, { headers: headers });
+            const resolved = yield this.resolve(endpoint);
+            const response = yield this.ctx.http.request({ method: resolved.method, url: resolved.url });
             return response.data;
         });
     }

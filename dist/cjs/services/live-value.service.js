@@ -32,10 +32,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LiveValueService = exports.SubscriptionPrefix = exports.LiveHubEvent = exports.LiveHubMethod = exports.OperationStatus = void 0;
+exports.LiveValueService = exports.SubscriptionPrefix = exports.LiveHubEvent = exports.clampLiveInterval = exports.MIN_LIVE_INTERVAL_MS_V5 = exports.DEFAULT_LIVE_INTERVAL_MS = exports.LiveHubMethod = exports.OperationStatus = void 0;
 const rxjs_1 = require("rxjs");
 const signalR = __importStar(require("@microsoft/signalr"));
-const async_value_utils_js_1 = require("../utils/async-value-utils.js");
+const api_context_js_1 = require("../api/api-context.js");
 var OperationStatus;
 (function (OperationStatus) {
     OperationStatus["Running"] = "Running";
@@ -48,6 +48,21 @@ var LiveHubMethod;
     LiveHubMethod["ChangeIntervalAsync"] = "ChangeIntervalAsync";
     LiveHubMethod["SubscribeMany"] = "SubscribeMany";
 })(LiveHubMethod || (exports.LiveHubMethod = LiveHubMethod = {}));
+/** Interval the service asks the hub for after connecting. */
+exports.DEFAULT_LIVE_INTERVAL_MS = 500;
+/**
+ * Smallest interval v5 honours: `ChangeIntervalAsync` is clamped to 250 ms server-side, so
+ * anything below is silently raised. v4 had no lower bound, so values are passed through there.
+ */
+exports.MIN_LIVE_INTERVAL_MS_V5 = 250;
+/** Clamps a requested live interval to what the target version accepts. */
+function clampLiveInterval(intervalMs, versionInfo) {
+    if (versionInfo === null || versionInfo === void 0 ? void 0 : versionInfo.isV5) {
+        return Math.max(intervalMs, exports.MIN_LIVE_INTERVAL_MS_V5);
+    }
+    return intervalMs;
+}
+exports.clampLiveInterval = clampLiveInterval;
 var LiveHubEvent;
 (function (LiveHubEvent) {
     LiveHubEvent["Send"] = "Send";
@@ -61,9 +76,11 @@ var SubscriptionPrefix;
     SubscriptionPrefix["OP"] = "OP";
 })(SubscriptionPrefix || (exports.SubscriptionPrefix = SubscriptionPrefix = {}));
 class LiveValueService {
-    constructor(httpConfig, accessToken) {
-        this.httpConfig = httpConfig;
-        this.accessToken = accessToken;
+    constructor(httpConfigOrCtx, accessToken) {
+        this.ctx =
+            httpConfigOrCtx instanceof api_context_js_1.ApiContext
+                ? httpConfigOrCtx
+                : new api_context_js_1.ApiContext(httpConfigOrCtx, accessToken);
         this._unsub = new rxjs_1.Subject();
         this._connectionEstablished = new rxjs_1.BehaviorSubject(false);
         this._valueCache = {};
@@ -73,11 +90,29 @@ class LiveValueService {
         this._subscribeRequested = new rxjs_1.Subject();
         this._handleSubscriptionQueue();
     }
+    /**
+     * URL of the live hub for the detected platform version: `{live}/hub` on v4, `{live}/values`
+     * on v5. `Services.Live` still carries no `/v1` in the v5 config, so the service path is
+     * always read from the config (docs/analysis/v4-to-v5-endpoints.md section 5).
+     */
+    getHubUrl() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const endpoint = yield this.ctx.resolve({ name: 'liveHub' });
+            return endpoint.url;
+        });
+    }
     connect() {
         return __awaiter(this, void 0, void 0, function* () {
-            const httpConfig = yield (0, async_value_utils_js_1.getAsyncValueAsPromise)(this.httpConfig);
-            return this.connectWithUrl(`${httpConfig.Services.BaseUri}${httpConfig.Services.Live}/hub`);
+            this._versionInfo = yield this.ctx.getVersionInfo();
+            return this.connectWithUrl(yield this.getHubUrl());
         });
+    }
+    /**
+     * Asks the hub for a different update interval. On v5 the value is clamped to
+     * {@link MIN_LIVE_INTERVAL_MS_V5}, which the server enforces anyway.
+     */
+    changeInterval(intervalMs) {
+        this._sendMessage(LiveHubMethod.ChangeIntervalAsync, clampLiveInterval(intervalMs, this._versionInfo));
     }
     connectWithUrl(hubUrl) {
         if (!this.hubConnection) {
@@ -167,7 +202,7 @@ class LiveValueService {
             .start()
             .then(() => {
             this._sendMessage(LiveHubMethod.ChangeModeAsync, true);
-            this._sendMessage(LiveHubMethod.ChangeIntervalAsync, 500);
+            this._sendMessage(LiveHubMethod.ChangeIntervalAsync, clampLiveInterval(exports.DEFAULT_LIVE_INTERVAL_MS, this._versionInfo));
             this.hubConnection.on('Send', (message) => this._handleHubMessage(message));
             console.log('Connected to SignalR');
             this._connectionEstablished.next(true);
@@ -190,7 +225,7 @@ class LiveValueService {
             .build();
     }
     getAccessToken() {
-        return (0, async_value_utils_js_1.getAsyncValueAsPromise)(this.accessToken);
+        return this.ctx.getAccessToken();
     }
 }
 exports.LiveValueService = LiveValueService;

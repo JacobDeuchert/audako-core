@@ -1,47 +1,47 @@
-import axios from 'axios';
-import { Observable } from 'rxjs';
+import { ApiContext } from '../api/api-context.js';
 import { HttpConfig } from '../models/http-config.model.js';
 import { TenantView } from '../models/tenant-view.model.js';
 import { AsyncValue } from '../utils/async-value-utils.js';
+import { Endpoint } from '../compat/endpoints/endpoint-resolver.js';
 import { BaseHttpService } from './base-http.service.js';
 
 export class TenantHttpService extends BaseHttpService {
-  constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>) {
-    super(httpConfig, accessToken);
+  /**
+   * @param ctx Context of the target system.
+   */
+  constructor(ctx: ApiContext);
+  /**
+   * @deprecated Pass an `ApiContext` instead.
+   */
+  constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
+  constructor(httpConfigOrCtx: ApiContext | AsyncValue<HttpConfig>, accessToken?: AsyncValue<string>) {
+    super(httpConfigOrCtx as any, accessToken as any);
   }
 
-  public async getTenantViewById(id: string): Promise<TenantView> {
-    const url = `${await this.getStructureUrl()}/tenant/${id}/view`;
-    const headers = await this.getAuthorizationHeader();
-    const response = await axios.get<TenantView>(url, { headers: headers });
-    return response.data;
+  public getTenantViewById(id: string): Promise<TenantView> {
+    return this._get<TenantView>({ name: 'tenantViewById', tenantId: id });
   }
 
-  public async getTenantViewForEntityId(entityId: string): Promise<TenantView> {
-    const url = `${await this.getStructureUrl()}/tenant/entity/${entityId}/view`;
-    const headers = await this.getAuthorizationHeader();
-    const response = await axios.get<TenantView>(url, { headers: headers });
-    return response.data;
+  public getTenantViewForEntityId(entityId: string): Promise<TenantView> {
+    return this._get<TenantView>({ name: 'tenantViewForEntity', entityId: entityId });
   }
 
-  public async getTopTenants(): Promise<TenantView[]> {
-    const url = `${await this.getStructureUrl()}/tenant/top`;
-    const headers = await this.getAuthorizationHeader();
-    const response = await axios.get<TenantView[]>(url, { headers: headers });
-    return response.data;
+  public getTopTenants(): Promise<TenantView[]> {
+    return this._get<TenantView[]>({ name: 'tenantsTop' });
   }
 
-  public async getNextTenants(tenantId: string): Promise<TenantView[]> {
-    const url = `${await this.getStructureUrl()}/tenant/${tenantId}/next`;
-    const headers = await this.getAuthorizationHeader();
-    const response = await axios.get<TenantView[]>(url, { headers: headers });
-    return response.data;
+  public getNextTenants(tenantId: string): Promise<TenantView[]> {
+    return this._get<TenantView[]>({ name: 'tenantsNext', tenantId: tenantId });
   }
 
-  public async filterTenantsByName(name: string): Promise<TenantView[]> {
-    const url = `${await this.getStructureUrl()}/tenant/filter/${name}`;
-    const headers = await this.getAuthorizationHeader();
-    const response = await axios.get<TenantView[]>(url, { headers: headers });
+  public filterTenantsByName(name: string): Promise<TenantView[]> {
+    return this._get<TenantView[]>({ name: 'tenantsFilter', filter: name });
+  }
+
+  /** All tenant endpoints are plain reads whose response shape is identical on v4 and v5. */
+  private async _get<T>(endpoint: Endpoint): Promise<T> {
+    const resolved = await this.resolve(endpoint);
+    const response = await this.ctx.http.request<T>({ method: resolved.method, url: resolved.url });
     return response.data;
   }
 }

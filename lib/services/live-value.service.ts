@@ -16,10 +16,12 @@ import {
 } from 'rxjs';
 
 import * as signalR from '@microsoft/signalr';
+import { ApiContext } from '../api/api-context.js';
+import { ApiVersionInfo } from '../api/api-version.js';
 import { HttpConfig } from '../models/http-config.model.js';
 import { Disposable } from '../interfaces/disposable.js';
 import { PromiseUtils } from '../utils/promise-utils.js';
-import { AsyncValue, getAsyncValueAsPromise } from '../utils/async-value-utils.js';
+import { AsyncValue } from '../utils/async-value-utils.js';
 export type LivePackage = {
   identifier: string;
   timestamp: Date;
@@ -59,6 +61,23 @@ export enum LiveHubMethod {
   SubscribeMany = 'SubscribeMany',
 }
 
+/** Interval the service asks the hub for after connecting. */
+export const DEFAULT_LIVE_INTERVAL_MS = 500;
+
+/**
+ * Smallest interval v5 honours: `ChangeIntervalAsync` is clamped to 250 ms server-side, so
+ * anything below is silently raised. v4 had no lower bound, so values are passed through there.
+ */
+export const MIN_LIVE_INTERVAL_MS_V5 = 250;
+
+/** Clamps a requested live interval to what the target version accepts. */
+export function clampLiveInterval(intervalMs: number, versionInfo?: ApiVersionInfo): number {
+  if (versionInfo?.isV5) {
+    return Math.max(intervalMs, MIN_LIVE_INTERVAL_MS_V5);
+  }
+  return intervalMs;
+}
+
 export enum LiveHubEvent {
   Send = 'Send',
 }
@@ -87,10 +106,25 @@ export class LiveValueService implements Disposable {
 
   private _unsub: Subject<void>;
 
-  public constructor(
-    private httpConfig: AsyncValue<HttpConfig>,
-    private accessToken: AsyncValue<string>,
-  ) {
+  protected ctx: ApiContext;
+
+  private _versionInfo?: ApiVersionInfo;
+
+  /**
+   * @param ctx Context of the target system.
+   */
+  public constructor(ctx: ApiContext);
+  /**
+   * @deprecated Pass an `ApiContext` instead. This form cannot carry version information and
+   * will be removed in a future major.
+   */
+  public constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
+  public constructor(httpConfigOrCtx: ApiContext | AsyncValue<HttpConfig>, accessToken?: AsyncValue<string>) {
+    this.ctx =
+      httpConfigOrCtx instanceof ApiContext
+        ? httpConfigOrCtx
+        : new ApiContext(httpConfigOrCtx as AsyncValue<HttpConfig>, accessToken);
+
     this._unsub = new Subject<void>();
 
     this._connectionEstablished = new BehaviorSubject<boolean>(false);
@@ -103,9 +137,27 @@ export class LiveValueService implements Disposable {
     this._handleSubscriptionQueue();
   }
 
+  /**
+   * URL of the live hub for the detected platform version: `{live}/hub` on v4, `{live}/values`
+   * on v5. `Services.Live` still carries no `/v1` in the v5 config, so the service path is
+   * always read from the config (docs/analysis/v4-to-v5-endpoints.md section 5).
+   */
+  public async getHubUrl(): Promise<string> {
+    const endpoint = await this.ctx.resolve({ name: 'liveHub' });
+    return endpoint.url;
+  }
+
   public async connect(): Promise<void> {
-    const httpConfig = await getAsyncValueAsPromise(this.httpConfig);
-    return this.connectWithUrl(`${httpConfig.Services.BaseUri}${httpConfig.Services.Live}/hub`);
+    this._versionInfo = await this.ctx.getVersionInfo();
+    return this.connectWithUrl(await this.getHubUrl());
+  }
+
+  /**
+   * Asks the hub for a different update interval. On v5 the value is clamped to
+   * {@link MIN_LIVE_INTERVAL_MS_V5}, which the server enforces anyway.
+   */
+  public changeInterval(intervalMs: number): void {
+    this._sendMessage(LiveHubMethod.ChangeIntervalAsync, clampLiveInterval(intervalMs, this._versionInfo));
   }
 
   public connectWithUrl(hubUrl: string): Promise<void> {
@@ -226,7 +278,10 @@ export class LiveValueService implements Disposable {
       .start()
       .then(() => {
         this._sendMessage(LiveHubMethod.ChangeModeAsync, true);
-        this._sendMessage(LiveHubMethod.ChangeIntervalAsync, 500);
+        this._sendMessage(
+          LiveHubMethod.ChangeIntervalAsync,
+          clampLiveInterval(DEFAULT_LIVE_INTERVAL_MS, this._versionInfo),
+        );
 
         this.hubConnection.on('Send', (message: any) => this._handleHubMessage(message));
         console.log('Connected to SignalR');
@@ -253,6 +308,6 @@ export class LiveValueService implements Disposable {
   }
 
   protected getAccessToken(): Promise<string> {
-    return getAsyncValueAsPromise(this.accessToken);
+    return this.ctx.getAccessToken();
   }
 }

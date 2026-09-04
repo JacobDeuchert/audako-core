@@ -65,8 +65,77 @@ function getDefaultInstance(entityType: EntityType): any {
 }
 
 /**
+ * Prototype-preserving deep copy of a default value. The default instance is cached per entity
+ * type, so handing the very same sub-object to every entity read would let one caller's mutation
+ * leak into the next read.
+ */
+function cloneDefault(value: any): any {
+  if (!value || typeof value !== 'object') {
+    return value;
+  }
+  if (value instanceof Date) {
+    return new Date(value.getTime());
+  }
+  if (Array.isArray(value)) {
+    return value.map(cloneDefault);
+  }
+
+  const clone = Object.create(Object.getPrototypeOf(value));
+  for (const key of Object.keys(value)) {
+    clone[key] = cloneDefault(value[key]);
+  }
+  return clone;
+}
+
+/**
+ * True for a plain settings-style sub-object the default pass may descend into.
+ *
+ * `Field<T>` / `TranslatableField<T>` are excluded on purpose: a `Field` whose `Value` is `null`
+ * means "no value", not "value missing", so it must never be overwritten with a model default.
+ */
+function isFillableSubObject(value: any): boolean {
+  return (
+    !!value && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date) && !('Value' in value)
+  );
+}
+
+/**
+ * Recursive part of {@link baseFromWire}: fills absent/null keys from `defaults` and descends into
+ * nested plain settings objects (`DataSource.PermaLiveModeSettings`, `Formula.*IntervalSettings`,
+ * `BatchDefinition.BatchReviewSettings`/`ReleaseSettings`, ...) where the server may return a
+ * partially populated object - for example `FormulaIntervalSettings.ProvideLastValues` is `null`
+ * in the earliest 4.15 builds (docs/analysis/v4-models-4.13-4.15.md).
+ *
+ * Not covered, by design: `_t`-discriminated sub-settings (`DataConnection.Settings`, so
+ * `OpcUaSettings.TimestampSource` and the MeterBus fields) and array elements
+ * (`Formula.Variables[].TagScope`). Both are `null`/empty on the default instance, so there is no
+ * template to walk; they need the per-entity adapter that knows the concrete class.
+ */
+function fillDefaults(wire: any, defaults: any): any {
+  const entity: any = { ...wire };
+  for (const key of Object.keys(defaults)) {
+    const defaultValue = defaults[key];
+    if (defaultValue === null || defaultValue === undefined) {
+      continue;
+    }
+
+    const value = entity[key];
+    if (value === null || value === undefined) {
+      entity[key] = cloneDefault(defaultValue);
+      continue;
+    }
+
+    if (isFillableSubObject(defaultValue) && isFillableSubObject(value)) {
+      entity[key] = fillDefaults(value, defaultValue);
+    }
+  }
+  return entity;
+}
+
+/**
  * Shared read pass applied to every entity before its adapter runs: treats a present-but-null
- * top-level field as absent whenever the model's constructor defaults it to something non-null.
+ * field as absent whenever the model's constructor defaults it to something non-null, for
+ * top-level fields and for nested plain settings objects.
  * Both platform lines need this - v5 serializes every property (null instead of absent) and v4
  * returns null where the server has no stored default
  * (docs/analysis/v4-to-v5-models.md, "Server-side defaults").
@@ -81,16 +150,7 @@ export function baseFromWire<T = any>(wire: any, entityType: EntityType): T {
     return wire;
   }
 
-  const entity: any = { ...wire };
-  for (const key of Object.keys(defaults)) {
-    const defaultValue = defaults[key];
-    if (defaultValue === null || defaultValue === undefined) {
-      continue;
-    }
-    if (entity[key] === null || entity[key] === undefined) {
-      entity[key] = defaultValue;
-    }
-  }
+  const entity: any = fillDefaults(wire, defaults);
   return entity as T;
 }
 

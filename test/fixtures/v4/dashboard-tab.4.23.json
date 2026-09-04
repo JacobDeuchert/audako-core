@@ -1,0 +1,30 @@
+{
+  "Id": "6501f0000000000000000041",
+  "Name": { "Value": "Übersicht", "OOAttributes": [], "Translations": { "en": "Overview" } },
+  "Alias": { "Value": null, "OOAttributes": [] },
+  "Description": { "Value": null, "OOAttributes": [], "Translations": {} },
+  "Tags": { "Value": [], "OOAttributes": [] },
+  "GroupId": "6501f0000000000000000000",
+  "Version": 0,
+  "AdditionalFields": {},
+  "CreatedBy": "6501f000000000000000000a",
+  "CreatedOn": "2023-10-11T08:00:00Z",
+  "MaintenanceMode": false,
+  "IsTemplate": false,
+  "OOAttributes": [],
+  "DashboardId": { "Value": "6501f0000000000000000040", "OOAttributes": [] },
+  "Content": { "Value": "<audako-dashboard/>", "OOAttributes": [] },
+  "MasterTabId": { "Value": "6501f0000000000000000042", "OOAttributes": [] },
+  "EntityMappings": {
+    "Value": {
+      "signal-a": { "EntityId": "6501f0000000000000000051", "Type": "Signal" },
+      "group-b": { "EntityId": "6501f0000000000000000052", "Type": "Group" }
+    },
+    "OOAttributes": []
+  },
+  "PlaceholderDefinition": {
+    "Value": [{ "Name": "Anlage", "PropertyId": "plant", "DefaultValue": "A1" }],
+    "OOAttributes": []
+  },
+  "PlaceholderValues": { "Value": { "plant": "A2" }, "OOAttributes": [] }
+}

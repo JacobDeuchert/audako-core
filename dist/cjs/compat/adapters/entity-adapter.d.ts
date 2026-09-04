@@ -28,7 +28,8 @@ export declare const SERVER_OWNED_FIELDS: string[];
 export declare function baseToWire<T>(entity: T): any;
 /**
  * Shared read pass applied to every entity before its adapter runs: treats a present-but-null
- * top-level field as absent whenever the model's constructor defaults it to something non-null.
+ * field as absent whenever the model's constructor defaults it to something non-null, for
+ * top-level fields and for nested plain settings objects.
  * Both platform lines need this - v5 serializes every property (null instead of absent) and v4
  * returns null where the server has no stored default
  * (docs/analysis/v4-to-v5-models.md, "Server-side defaults").

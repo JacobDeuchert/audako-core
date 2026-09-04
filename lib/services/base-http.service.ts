@@ -31,7 +31,7 @@ export abstract class BaseHttpService {
   }
 
   /** Detected platform version of the target system. */
-  protected getVersionInfo(): Promise<ApiVersionInfo> {
+  public getVersionInfo(): Promise<ApiVersionInfo> {
     return this.ctx.getVersionInfo();
   }
 

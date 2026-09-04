@@ -35,6 +35,7 @@ export {
 export {
   ApiError,
   ApiVersionDetectionError,
+  EntityLockedError,
   IncompatibleBackendError,
   UnsupportedApiVersionError,
   parseApiError,

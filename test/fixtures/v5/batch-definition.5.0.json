@@ -1,0 +1,55 @@
+{
+  "Id": "6501f0000000000000000061",
+  "Path": ["Root", "Chargen"],
+  "Name": { "Value": "Charge Linie 1", "OOAttributes": [], "Translations": {} },
+  "Alias": { "Value": null, "OOAttributes": [] },
+  "Description": { "Value": null, "OOAttributes": [], "Translations": {} },
+  "Tags": { "Value": [], "OOAttributes": [] },
+  "GroupId": "6501f0000000000000000000",
+  "Version": 1,
+  "AdditionalFields": {},
+  "CreatedBy": "6501f000000000000000000a",
+  "CreatedOn": "2023-10-11T08:00:00Z",
+  "MaintenanceMode": false,
+  "IsInstanceOf": null,
+  "IsTemplate": false,
+  "OOAttributes": [],
+  "ParallelBatchesEnabled": false,
+  "BatchTriggers": [{ "TriggerType": "Manual", "ActionType": "Start", "EntityId": null, "TriggerOn": null }],
+  "ReleaseSettings": { "Enabled": false, "SignalId": null, "ReleaseValue": null },
+  "MetadataFields": {
+    "chargeNr": {
+      "Name": "Chargennummer",
+      "Type": "TextField",
+      "Source": "Manual",
+      "Optional": false,
+      "Editable": true,
+      "OrderSpecific": false,
+      "ObligatoryAt": "Stop"
+    },
+    "operator": {
+      "Name": "Bediener",
+      "Type": "TextField",
+      "Source": "Manual",
+      "Optional": true,
+      "Editable": false,
+      "OrderSpecific": false,
+      "ObligatoryAt": "Start"
+    },
+    "counter": {
+      "Name": "Zähler",
+      "Type": "NumberField",
+      "Source": "Signal",
+      "SignalId": "6501f0000000000000000051",
+      "Optional": true,
+      "Editable": false,
+      "OrderSpecific": false,
+      "ObligatoryAt": "Stop"
+    }
+  },
+  "BatchValueObjects": [],
+  "ConditionEventEntries": [],
+  "BatchReportIds": [],
+  "BatchReportExportSettings": [],
+  "BatchReviewSettings": { "Enabled": false, "Reviews": [], "Ordered": false }
+}

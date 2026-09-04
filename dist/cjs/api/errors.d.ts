@@ -28,6 +28,13 @@ export declare class ApiError extends Error {
     });
 }
 /**
+ * `423 Locked`: the entity or one of its ancestors is part of a locked subtree, so the write was
+ * refused. New in v5 (docs/analysis/v4-to-v5-endpoints.md, `updateEntity` / `deleteEntity`).
+ */
+export declare class EntityLockedError extends ApiError {
+    constructor(init: ConstructorParameters<typeof ApiError>[0]);
+}
+/**
  * Normalizes an axios error into an {@link ApiError}. Understands RFC 7807 problem+json (v5),
  * the v4 `{ error: { code, message } }` envelope and plain text/empty bodies (JWT failures return
  * `text/plain`, unhandled v5 exceptions return an empty 500).

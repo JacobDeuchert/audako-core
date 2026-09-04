@@ -8,7 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { catchError, combineLatest, firstValueFrom, from, map, of, shareReplay } from 'rxjs';
-import { EntityType } from '../models/entities/configuration-entity.model.js';
+import { EntityType, Field } from '../models/entities/configuration-entity.model.js';
+/** Reads the plain name out of an `entity-info` name field, which may be a `Field` or a string. */
+function nameOf(value) {
+    return Field.isField(value) ? value.Value : value;
+}
 export class EntityNameService {
     constructor(httpService) {
         this.httpService = httpService;
@@ -29,15 +33,62 @@ export class EntityNameService {
             if (idPath.length === 0) {
                 return '';
             }
-            return firstValueFrom(combineLatest(idPath.map((id) => this.resolveName(EntityType.Group, id))).pipe(map((names) => names.join(separator))));
+            const names = yield this.resolveNames(EntityType.Group, idPath);
+            return names.join(separator);
         });
     }
     resolveName(entityType, id) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this._nameCache[id]) {
-                this._nameCache[id] = from(this.httpService.getPartialEntityById(entityType, id, { Name: 1 })).pipe(map((x) => x.Name.Value), shareReplay(1), catchError(() => of(id)));
-            }
-            return firstValueFrom(this._nameCache[id]);
+            const names = yield this.resolveNames(entityType, [id]);
+            return names[0];
         });
+    }
+    /**
+     * Names of several entities of one type, in the order of `ids`. Unresolvable ids resolve to the
+     * id itself. Names are cached per id for the lifetime of the service.
+     *
+     * On v5 the uncached ids are fetched with a single `entity-info` request
+     * (`supports('entityInfo')`); on v4 one projected `GET` per id is issued, as before.
+     */
+    resolveNames(entityType, ids) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const missing = ids.filter((id) => !this._nameCache[id]);
+            if (missing.length > 0) {
+                const versionInfo = yield this.httpService.getVersionInfo();
+                if (versionInfo.supports('entityInfo')) {
+                    yield this._cacheFromEntityInfo(entityType, missing);
+                }
+                for (const id of missing) {
+                    this._cacheSingle(entityType, id);
+                }
+            }
+            return firstValueFrom(combineLatest(ids.map((id) => this._nameCache[id])));
+        });
+    }
+    /** Fills the cache from one `entity-info` request. Ids the platform did not return stay uncached. */
+    _cacheFromEntityInfo(entityType, ids) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let infos = [];
+            try {
+                infos = yield this.httpService.getEntityInfosByIds(entityType, ids);
+            }
+            catch (_a) {
+                // Fall through to the per-id lookups below.
+                return;
+            }
+            for (const info of infos) {
+                const name = nameOf(info === null || info === void 0 ? void 0 : info.Name);
+                if ((info === null || info === void 0 ? void 0 : info.Id) && name !== undefined && name !== null) {
+                    this._nameCache[info.Id] = of(name);
+                }
+            }
+        });
+    }
+    /** Legacy path: one projected `GET` per id. */
+    _cacheSingle(entityType, id) {
+        if (this._nameCache[id]) {
+            return;
+        }
+        this._nameCache[id] = from(this.httpService.getPartialEntityById(entityType, id, { Name: 1 })).pipe(map((x) => x.Name.Value), shareReplay(1), catchError(() => of(id)));
     }
 }

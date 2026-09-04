@@ -1,0 +1,21 @@
+{
+  "Id": "6501f0000000000000000001",
+  "Name": { "Value": "Kritischer Alarm", "OOAttributes": [], "Translations": { "en": "Critical alarm" } },
+  "Alias": { "Value": "crit", "OOAttributes": [] },
+  "Description": { "Value": null, "OOAttributes": [], "Translations": {} },
+  "Tags": { "Value": ["alarm"], "OOAttributes": [] },
+  "GroupId": "6501f0000000000000000000",
+  "Version": 0,
+  "AdditionalFields": {},
+  "CreatedBy": "6501f000000000000000000a",
+  "CreatedOn": "2023-10-11T08:00:00Z",
+  "ChangedBy": "6501f000000000000000000a",
+  "ChangedOn": "2026-06-22T08:00:00Z",
+  "MaintenanceMode": false,
+  "IsTemplate": false,
+  "OOAttributes": [],
+  "Class": { "Value": "CriticalAlarm", "OOAttributes": [] },
+  "RequiresAcknowledgment": { "Value": true, "OOAttributes": [] },
+  "NoRepeatUntilAcknowledged": { "Value": false, "OOAttributes": [] },
+  "AlarmOn": { "Value": 1, "OOAttributes": [] }
+}

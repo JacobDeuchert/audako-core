@@ -8,30 +8,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DataConnectionBrowserService = void 0;
-const axios_1 = __importDefault(require("axios"));
-const async_value_utils_js_1 = require("../utils/async-value-utils.js");
 const base_http_service_js_1 = require("./base-http.service.js");
 class DataConnectionBrowserService extends base_http_service_js_1.BaseHttpService {
-    constructor(httpConfig, accessToken) {
-        super(httpConfig, accessToken);
+    constructor(httpConfigOrCtx, accessToken) {
+        super(httpConfigOrCtx, accessToken);
     }
+    /** `POST {driver}/command/conn/{id}/browse` with `{Path}`. Request identical on v4 and v5. */
     browseConnection(id, path) {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = `${yield this._getDriverUrl()}/command/conn/${id}/browse`;
-            const headers = yield this.getAuthorizationHeader();
-            const response = yield axios_1.default.post(url, { Path: path }, { headers: headers });
+            const endpoint = yield this.resolve({ name: 'driverBrowseConnection', dataConnectionId: id });
+            const response = yield this.ctx.http.request({
+                method: endpoint.method,
+                url: endpoint.url,
+                data: { Path: path },
+            });
             return response.data;
-        });
-    }
-    _getDriverUrl() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const httpConfig = yield (0, async_value_utils_js_1.getAsyncValueAsPromise)(this.httpConfig);
-            return `${httpConfig.Services.BaseUri}${httpConfig.Services.Driver}`;
         });
     }
 }

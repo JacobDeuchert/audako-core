@@ -7,25 +7,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import axios from 'axios';
-import { getAsyncValueAsPromise } from '../utils/async-value-utils.js';
 import { BaseHttpService } from './base-http.service.js';
 export class DataSourceHttpService extends BaseHttpService {
-    constructor(httpConfig, accessToken) {
-        super(httpConfig, accessToken);
+    constructor(httpConfigOrCtx, accessToken) {
+        super(httpConfigOrCtx, accessToken);
     }
+    /**
+     * Tells the driver to (re-)configure a data source.
+     *
+     * Returns the started driver job on v5 and `null` on v4, which answers with an empty body.
+     * (Until this change the driver URL was awaited nowhere, so the request went to
+     * `[object Promise]/command/...` and could never work.)
+     */
     sendDatSrcConfiguration(dataSourceId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const url = `${this._getDriverUrl()}/command/source/${dataSourceId}/configure`;
-            const headers = yield this.getAuthorizationHeader();
-            const response = yield axios.get(url, { headers: headers });
-            return response.data;
-        });
-    }
-    _getDriverUrl() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const httpConfig = yield getAsyncValueAsPromise(this.httpConfig);
-            return `${httpConfig.Services.BaseUri}${httpConfig.Services.Driver}`;
+            const endpoint = yield this.resolve({ name: 'driverConfigureDataSource', dataSourceId: dataSourceId });
+            const response = yield this.ctx.http.get(endpoint.url);
+            const data = response.data;
+            if (!data || typeof data !== 'object' || !data.JobId) {
+                return null;
+            }
+            return { JobId: data.JobId, Timestamp: data.Timestamp };
         });
     }
 }

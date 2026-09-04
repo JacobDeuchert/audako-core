@@ -17,7 +17,7 @@ export declare abstract class BaseHttpService {
     /** `HttpConfig` of the target system. */
     protected getHttpConfig(): Promise<HttpConfig>;
     /** Detected platform version of the target system. */
-    protected getVersionInfo(): Promise<ApiVersionInfo>;
+    getVersionInfo(): Promise<ApiVersionInfo>;
     /** Resolves an endpoint for the detected API version. */
     protected resolve(endpoint: Endpoint): Promise<ResolvedEndpoint>;
     protected getAuthorizationHeader(): Promise<{

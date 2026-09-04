@@ -7,35 +7,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import axios from 'axios';
 import { BaseHttpService } from './base-http.service.js';
 export class UserProfileHttpService extends BaseHttpService {
-    constructor(httpConfig, token) {
-        super(httpConfig, token);
+    constructor(httpConfigOrCtx, accessToken) {
+        super(httpConfigOrCtx, accessToken);
     }
+    /** `GET {structure}/userprofile` (v4) / `GET {structure}/user-profile` (v5). Same response. */
     getUserProfile() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const authHeaders = yield this.getAuthorizationHeader();
-                const userProfileResponse = yield axios.get(`${yield this.getStructureUrl()}/userprofile`, {
-                    headers: authHeaders
-                });
-                if (userProfileResponse.status == 200) {
-                    return userProfileResponse.data;
-                }
+                const endpoint = yield this.resolve({ name: 'userProfile' });
+                const response = yield this.ctx.http.request({ method: endpoint.method, url: endpoint.url });
+                return response.data;
             }
             catch (err) {
                 throw new Error('Failed to request user profile with error: ' + (err === null || err === void 0 ? void 0 : err.message));
             }
         });
     }
+    /** `PUT` of the settings dictionary. Answers 200 with an empty body on both versions. */
     updateUserProfileSettings(settings) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const authHeaders = yield this.getAuthorizationHeader();
-                yield axios.put(`${yield this.getStructureUrl()}/userprofile`, settings, {
-                    headers: authHeaders
-                });
+                const endpoint = yield this.resolve({ name: 'userProfile' });
+                yield this.ctx.http.request({ method: 'PUT', url: endpoint.url, data: settings });
             }
             catch (err) {
                 throw new Error('Failed to update user profile with error: ' + (err === null || err === void 0 ? void 0 : err.message));

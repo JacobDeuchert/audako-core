@@ -1,0 +1,26 @@
+{
+  "Id": "6501f0000000000000000041",
+  "Name": { "Value": "Übersicht", "OOAttributes": [] },
+  "Description": { "Value": null, "OOAttributes": [] },
+  "GroupId": "6501f0000000000000000000",
+  "Version": 0,
+  "AdditionalFields": {},
+  "CreatedBy": "6501f000000000000000000a",
+  "CreatedOn": "2024-06-18T08:00:00Z",
+  "MaintenanceMode": false,
+  "IsTemplate": false,
+  "OOAttributes": [],
+  "DashboardId": { "Value": "6501f0000000000000000040", "OOAttributes": [] },
+  "Content": { "Value": "<audako-dashboard/>", "OOAttributes": [] },
+  "MasterTabId": { "Value": "6501f0000000000000000042", "OOAttributes": [] },
+  "EntityMapping": { "signal-a": "6501f0000000000000000051" },
+  "EntityMappings": {
+    "Value": {
+      "signal-a": { "Id": "6501f0000000000000000051", "Type": "Signal" },
+      "group-b": { "Id": "6501f0000000000000000052", "Type": "Group" }
+    },
+    "OOAttributes": []
+  },
+  "PlaceholderDefinition": { "Value": [], "OOAttributes": [] },
+  "PlaceholderValues": { "Value": {}, "OOAttributes": [] }
+}

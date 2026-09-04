@@ -1,0 +1,33 @@
+{
+  "Id": "6501f0000000000000000011",
+  "Name": { "Value": "Kesseldruck zu hoch", "OOAttributes": [] },
+  "Description": { "Value": null, "OOAttributes": [] },
+  "GroupId": "6501f0000000000000000000",
+  "Version": 1,
+  "AdditionalFields": {},
+  "CreatedBy": "6501f000000000000000000a",
+  "CreatedOn": "2023-10-11T08:00:00Z",
+  "MaintenanceMode": false,
+  "IsTemplate": false,
+  "OOAttributes": [],
+  "Enabled": { "Value": true, "OOAttributes": [] },
+  "EventCategoryId": null,
+  "EventExpression": { "Value": "P1 && P2", "OOAttributes": [] },
+  "ExpressionParameters": [
+    {
+      "Type": { "Value": "SignalCondition", "OOAttributes": [] },
+      "ParameterId": { "Value": "P1", "OOAttributes": [] },
+      "ConditionId": { "Value": "6501f0000000000000000021", "OOAttributes": [] }
+    },
+    {
+      "Type": { "Value": "DataSourceFailureCondition", "OOAttributes": [] },
+      "ParameterId": { "Value": "P2", "OOAttributes": [] },
+      "ConditionId": { "Value": "6501f0000000000000000022", "OOAttributes": [] }
+    },
+    {
+      "Type": { "Value": "DataConnectionFailureCondition", "OOAttributes": [] },
+      "ParameterId": { "Value": "P3", "OOAttributes": [] },
+      "ConditionId": { "Value": "6501f0000000000000000023", "OOAttributes": [] }
+    }
+  ]
+}

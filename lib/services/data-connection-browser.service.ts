@@ -1,22 +1,40 @@
-import axios from 'axios';
+import { ApiContext } from '../api/api-context.js';
 import { HttpConfig } from '../models/http-config.model.js';
-import { AsyncValue, getAsyncValueAsPromise } from '../utils/async-value-utils.js';
+import { AsyncValue } from '../utils/async-value-utils.js';
 import { BaseHttpService } from './base-http.service.js';
 
+/**
+ * One node of a data connection browse result. v5 types the response explicitly with lowercased
+ * JSON names; v4 answered with the same shape but was declared `any`.
+ */
+export interface ConnectionBrowseItem {
+  description?: string;
+  address?: string;
+  expandable?: boolean;
+  selectable?: boolean;
+}
+
 export class DataConnectionBrowserService extends BaseHttpService {
-  constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>) {
-    super(httpConfig, accessToken);
+  /**
+   * @param ctx Context of the target system.
+   */
+  constructor(ctx: ApiContext);
+  /**
+   * @deprecated Pass an `ApiContext` instead.
+   */
+  constructor(httpConfig: AsyncValue<HttpConfig>, accessToken: AsyncValue<string>);
+  constructor(httpConfigOrCtx: ApiContext | AsyncValue<HttpConfig>, accessToken?: AsyncValue<string>) {
+    super(httpConfigOrCtx as any, accessToken as any);
   }
 
-  public async browseConnection(id: string, path: string): Promise<any> {
-    const url = `${await this._getDriverUrl()}/command/conn/${id}/browse`;
-    const headers = await this.getAuthorizationHeader();
-    const response = await axios.post(url, { Path: path }, { headers: headers });
+  /** `POST {driver}/command/conn/{id}/browse` with `{Path}`. Request identical on v4 and v5. */
+  public async browseConnection(id: string, path: string): Promise<ConnectionBrowseItem[]> {
+    const endpoint = await this.resolve({ name: 'driverBrowseConnection', dataConnectionId: id });
+    const response = await this.ctx.http.request<ConnectionBrowseItem[]>({
+      method: endpoint.method,
+      url: endpoint.url,
+      data: { Path: path },
+    });
     return response.data;
-  }
-
-  private async _getDriverUrl(): Promise<string> {
-    const httpConfig = await getAsyncValueAsPromise(this.httpConfig);
-    return `${httpConfig.Services.BaseUri}${httpConfig.Services.Driver}`;
   }
 }

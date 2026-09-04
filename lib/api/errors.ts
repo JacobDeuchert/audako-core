@@ -40,6 +40,22 @@ export class ApiError extends Error {
 }
 
 /**
+ * `423 Locked`: the entity or one of its ancestors is part of a locked subtree, so the write was
+ * refused. New in v5 (docs/analysis/v4-to-v5-endpoints.md, `updateEntity` / `deleteEntity`).
+ */
+export class EntityLockedError extends ApiError {
+  constructor(init: ConstructorParameters<typeof ApiError>[0]) {
+    super(init);
+    this.name = 'EntityLockedError';
+  }
+}
+
+/** Picks the most specific {@link ApiError} subclass for a parsed error body. */
+function createApiError(init: ConstructorParameters<typeof ApiError>[0]): ApiError {
+  return init.status === 423 ? new EntityLockedError(init) : new ApiError(init);
+}
+
+/**
  * Normalizes an axios error into an {@link ApiError}. Understands RFC 7807 problem+json (v5),
  * the v4 `{ error: { code, message } }` envelope and plain text/empty bodies (JWT failures return
  * `text/plain`, unhandled v5 exceptions return an empty 500).
@@ -52,7 +68,7 @@ export function parseApiError(error: any): ApiError {
   if (data && typeof data === 'object') {
     // v5: RFC 7807 problem+json. `title` is the error code, `detail` the description.
     if (typeof data.title === 'string' || typeof data.detail === 'string') {
-      return new ApiError({
+      return createApiError({
         status: status,
         title: data.title,
         detail: data.detail,
@@ -64,7 +80,7 @@ export function parseApiError(error: any): ApiError {
 
     // v4: { error: { code, message, args } }
     if (data.error && typeof data.error === 'object') {
-      return new ApiError({
+      return createApiError({
         status: status,
         title: data.error.code,
         detail: data.error.message,
@@ -74,10 +90,10 @@ export function parseApiError(error: any): ApiError {
   }
 
   if (typeof data === 'string' && data.length > 0) {
-    return new ApiError({ status: status, detail: data, raw: data });
+    return createApiError({ status: status, detail: data, raw: data });
   }
 
-  return new ApiError({
+  return createApiError({
     status: status,
     detail: error?.message,
     raw: data,

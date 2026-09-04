@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requestHttpConfig = exports.ApiContext = exports.parseApiError = exports.UnsupportedApiVersionError = exports.IncompatibleBackendError = exports.ApiVersionDetectionError = exports.ApiError = exports.checkCompatibility = exports.assertCompatible = exports.CORE_SUPPORTED_WINDOW = exports.normalizeVersionBody = exports.detectApiVersion = exports.V5_VERSION_PATH = exports.V4_VERSION_PATH = exports.isFeatureSupported = exports.FEATURE_PREDICATES = exports.FEATURE_MIN_VERSIONS = exports.ALL_FEATURES = exports.parseVersion = exports.isAtLeast = exports.createApiVersionInfo = exports.compareVersionStrings = exports.compareVersions = exports.apiVersionOf = exports.ApiVersionInfo = void 0;
+exports.requestHttpConfig = exports.ApiContext = exports.parseApiError = exports.UnsupportedApiVersionError = exports.IncompatibleBackendError = exports.EntityLockedError = exports.ApiVersionDetectionError = exports.ApiError = exports.checkCompatibility = exports.assertCompatible = exports.CORE_SUPPORTED_WINDOW = exports.normalizeVersionBody = exports.detectApiVersion = exports.V5_VERSION_PATH = exports.V4_VERSION_PATH = exports.isFeatureSupported = exports.FEATURE_PREDICATES = exports.FEATURE_MIN_VERSIONS = exports.ALL_FEATURES = exports.parseVersion = exports.isAtLeast = exports.createApiVersionInfo = exports.compareVersionStrings = exports.compareVersions = exports.apiVersionOf = exports.ApiVersionInfo = void 0;
 var api_version_js_1 = require("./api-version.js");
 Object.defineProperty(exports, "ApiVersionInfo", { enumerable: true, get: function () { return api_version_js_1.ApiVersionInfo; } });
 Object.defineProperty(exports, "apiVersionOf", { enumerable: true, get: function () { return api_version_js_1.apiVersionOf; } });
@@ -26,6 +26,7 @@ Object.defineProperty(exports, "checkCompatibility", { enumerable: true, get: fu
 var errors_js_1 = require("./errors.js");
 Object.defineProperty(exports, "ApiError", { enumerable: true, get: function () { return errors_js_1.ApiError; } });
 Object.defineProperty(exports, "ApiVersionDetectionError", { enumerable: true, get: function () { return errors_js_1.ApiVersionDetectionError; } });
+Object.defineProperty(exports, "EntityLockedError", { enumerable: true, get: function () { return errors_js_1.EntityLockedError; } });
 Object.defineProperty(exports, "IncompatibleBackendError", { enumerable: true, get: function () { return errors_js_1.IncompatibleBackendError; } });
 Object.defineProperty(exports, "UnsupportedApiVersionError", { enumerable: true, get: function () { return errors_js_1.UnsupportedApiVersionError; } });
 Object.defineProperty(exports, "parseApiError", { enumerable: true, get: function () { return errors_js_1.parseApiError; } });
