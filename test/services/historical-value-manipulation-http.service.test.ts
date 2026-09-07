@@ -1,20 +1,21 @@
-import { describe, expect, it, vi } from 'vitest';
-import { ApiContext } from '../../lib/api/api-context.js';
-import { createApiVersionInfo } from '../../lib/api/api-version.js';
+import { describe, expect, it } from 'vitest';
 import { HistoricalValueOperationStatus } from '../../lib/models/historical-value-operation.model.js';
 import { HistoricalValueManipulationHttpService } from '../../lib/services/historical-value-manipulation-http.service.js';
-import { V4_CONFIG, V5_CONFIG } from './api-context-stub.js';
+import { stubContext } from './api-context-stub.js';
 
 function createService(version: '4.23.0' | '5.0.0') {
-  const ctx = new ApiContext(version.startsWith('4') ? V4_CONFIG : V5_CONFIG, 'token', createApiVersionInfo(version));
-  const service = new HistoricalValueManipulationHttpService(ctx);
-  return {
-    service: service,
-    get: vi.spyOn(ctx.http, 'get').mockResolvedValue({ status: 200, data: [] } as any),
-    post: vi.spyOn(ctx.http, 'post').mockResolvedValue({ status: 200, data: {} } as any),
-    request: vi.spyOn(ctx.http, 'request').mockResolvedValue({ status: 200, data: null } as any),
-  };
+  const stub = stubContext(version);
+  stub.request.mockResolvedValue({ status: 200, data: null, headers: {} });
+  return { service: new HistoricalValueManipulationHttpService(stub.ctx), request: stub.request };
 }
+
+const startRequest = {
+  From: new Date('2026-01-01T00:00:00Z'),
+  Till: new Date('2026-01-02T00:00:00Z'),
+  Timezone: 'CET',
+  OperationScript: 'value * 2',
+  OperationDescription: 'double',
+};
 
 /** v4 response, as captured from a 4.23 system. */
 const v4Operation = {
@@ -54,68 +55,48 @@ const v5Operation = {
 
 describe('HistoricalValueManipulationHttpService URL resolution', () => {
   it('uses the v4 historicalvaluemanipulation paths and PUT for undo/redo', async () => {
-    const { service, get, post, request } = createService('4.23.0');
+    const { service, request } = createService('4.23.0');
 
     await service.getHistoricalValueOperations('signal-1');
-    await service.startHistoricalValueOperation('signal-1', new Date(0), new Date(0), 'CET', 'x', 'y');
+    await service.startHistoricalValueOperation('signal-1', startRequest);
     await service.undoHistoricalValueOperation('op-1');
     await service.redoHistoricalValueOperation('op-1');
 
-    expect(get.mock.calls[0][0]).toBe('https://host/api/historian/historicalvaluemanipulation/operations/signal-1');
-    expect(post.mock.calls[0][0]).toBe(
-      'https://host/api/historian/historicalvaluemanipulation/operations/signal-1/start',
-    );
-    expect(request.mock.calls.map((call) => call[0])).toEqual([
-      {
-        url: 'https://host/api/historian/historicalvaluemanipulation/operations/op-1/undo',
-        method: 'PUT',
-        data: null,
-      },
-      {
-        url: 'https://host/api/historian/historicalvaluemanipulation/operations/op-1/redo',
-        method: 'PUT',
-        data: null,
-      },
+    expect(request.mock.calls.map((call) => [call[0].method, call[0].url])).toEqual([
+      ['GET', 'https://host/api/historian/historicalvaluemanipulation/operations/signal-1'],
+      ['POST', 'https://host/api/historian/historicalvaluemanipulation/operations/signal-1/start'],
+      ['PUT', 'https://host/api/historian/historicalvaluemanipulation/operations/op-1/undo'],
+      ['PUT', 'https://host/api/historian/historicalvaluemanipulation/operations/op-1/redo'],
     ]);
   });
 
   it('uses the v5 historical-value-operations paths and POST for undo/redo', async () => {
-    const { service, get, post, request } = createService('5.0.0');
+    const { service, request } = createService('5.0.0');
 
     await service.getHistoricalValueOperations('signal-1');
-    await service.startHistoricalValueOperation('signal-1', new Date(0), new Date(0), 'CET', 'x', 'y');
+    await service.startHistoricalValueOperation('signal-1', startRequest);
     await service.undoHistoricalValueOperation('op-1');
 
-    expect(get.mock.calls[0][0]).toBe('https://host/api/v1/historian/historical-value-operations/signal-1');
-    expect(post.mock.calls[0][0]).toBe('https://host/api/v1/historian/historical-value-operations/signal-1/start');
-    expect(request.mock.calls[0][0]).toEqual({
-      url: 'https://host/api/v1/historian/historical-value-operations/op-1/undo',
-      method: 'POST',
-      data: null,
-    });
+    expect(request.mock.calls.map((call) => [call[0].method, call[0].url])).toEqual([
+      ['GET', 'https://host/api/v1/historian/historical-value-operations/signal-1'],
+      ['POST', 'https://host/api/v1/historian/historical-value-operations/signal-1/start'],
+      ['POST', 'https://host/api/v1/historian/historical-value-operations/op-1/undo'],
+    ]);
   });
 
-  it('sends the identical start body on both versions', async () => {
-    const { service, post } = createService('5.0.0');
-    const from = new Date('2026-01-01T00:00:00Z');
-    const till = new Date('2026-01-02T00:00:00Z');
-
-    await service.startHistoricalValueOperation('signal-1', from, till, 'CET', 'value * 2', 'double');
-
-    expect(post.mock.calls[0][1]).toEqual({
-      From: from,
-      Till: till,
-      Timezone: 'CET',
-      OperationScript: 'value * 2',
-      OperationDescription: 'double',
-    });
+  it('sends the start request as the body unchanged on both versions', async () => {
+    for (const version of ['4.23.0', '5.0.0'] as const) {
+      const { service, request } = createService(version);
+      await service.startHistoricalValueOperation('signal-1', startRequest);
+      expect(request.mock.calls[0][0].data).toEqual(startRequest);
+    }
   });
 });
 
 describe('HistoricalValueOperation v4 adapter', () => {
   it('maps the v4 audit fields and status onto the canonical shape', async () => {
-    const { service, get } = createService('4.23.0');
-    get.mockResolvedValue({ status: 200, data: [v4Operation] } as any);
+    const { service, request } = createService('4.23.0');
+    request.mockResolvedValue({ status: 200, data: [v4Operation], headers: {} });
 
     const [operation] = await service.getHistoricalValueOperations('signal-1');
 
@@ -133,8 +114,8 @@ describe('HistoricalValueOperation v4 adapter', () => {
   });
 
   it('derives StoppedOn and IsUndoable for a completed v4 operation', async () => {
-    const { service, get } = createService('4.23.0');
-    get.mockResolvedValue({ status: 200, data: [{ ...v4Operation, Status: 'Completed' }] } as any);
+    const { service, request } = createService('4.23.0');
+    request.mockResolvedValue({ status: 200, data: [{ ...v4Operation, Status: 'Completed' }], headers: {} });
 
     const [operation] = await service.getHistoricalValueOperations('signal-1');
 
@@ -145,8 +126,8 @@ describe('HistoricalValueOperation v4 adapter', () => {
   });
 
   it('maps the v4-only Undone status to Completed + IsRedoable', async () => {
-    const { service, get } = createService('4.23.0');
-    get.mockResolvedValue({ status: 200, data: [{ ...v4Operation, Status: 'Undone' }] } as any);
+    const { service, request } = createService('4.23.0');
+    request.mockResolvedValue({ status: 200, data: [{ ...v4Operation, Status: 'Undone' }], headers: {} });
 
     const [operation] = await service.getHistoricalValueOperations('signal-1');
 
@@ -156,20 +137,20 @@ describe('HistoricalValueOperation v4 adapter', () => {
   });
 
   it('passes v5 payloads through unchanged', async () => {
-    const { service, get, post } = createService('5.0.0');
-    get.mockResolvedValue({ status: 200, data: [v5Operation] } as any);
-    post.mockResolvedValue({ status: 200, data: v5Operation } as any);
+    const { service, request } = createService('5.0.0');
+    request.mockResolvedValueOnce({ status: 200, data: [v5Operation], headers: {} });
+    request.mockResolvedValueOnce({ status: 200, data: v5Operation, headers: {} });
 
     const [operation] = await service.getHistoricalValueOperations('signal-1');
-    const started = await service.startHistoricalValueOperation('signal-1', new Date(0), new Date(0), 'CET', 'x', 'y');
+    const started = await service.startHistoricalValueOperation('signal-1', startRequest);
 
     expect(operation).toEqual(v5Operation);
     expect(started).toEqual(v5Operation);
   });
 
   it('tolerates a non-array response', async () => {
-    const { service, get } = createService('5.0.0');
-    get.mockResolvedValue({ status: 200, data: null } as any);
+    const { service, request } = createService('5.0.0');
+    request.mockResolvedValue({ status: 200, data: null, headers: {} });
 
     await expect(service.getHistoricalValueOperations('signal-1')).resolves.toEqual([]);
   });

@@ -68,8 +68,8 @@ themselves.
 
 - `ApiVersionInfo`: `apiVersion: 'V4' | 'V5'`, `platformVersion: string` (exact semver),
   `supports(feature)`, `isAtLeast(version)`.
-- `detectApiVersion(apiUrl)`: probes `/api/structure/about/version` (already used by
-  `isApiReachable`). Explicit override for tests and proxied systems.
+- `detectApiVersion(apiUrl)`: probes `/api/v1/structure/about/version`, then the legacy path.
+  `isApiReachable(apiUrl)` shares the probe. Explicit override for tests and proxied systems.
 - `checkCompatibility(requirements)`: returns `ok | tooOld | unknownMajor | unsupportedMajor`
   plus detected and required versions. `assertCompatible(requirements)` throws a typed error.
 - Requirements come from two layers: core's own supported window, and the app's own minimum
@@ -96,7 +96,8 @@ lib/
       endpoints.v4.ts
       endpoints.v5.ts
     adapters/
-      entity-adapter.ts       interface, identity default, registry
+      entity-adapter.ts       interface, identity default, shared base passes
+      index.ts                frozen entity type -> adapter map, applyFromWire / applyToWire
       v4/                     one file per entity that differs
       live.adapter.v4.ts
       historical-value.adapter.v4.ts
@@ -208,8 +209,9 @@ Verdict: mostly URL edits plus a few contract changes. Full table in
 - **Live hub.** URL becomes `/api/v1/live/values`. Method names, `Send` event and all five
   prefixes unchanged. SignalR payloads stay camelCase. `SubscribeMany` silently drops
   ACL-denied ids; un-prefixed ids are denied. `ChangeIntervalAsync` clamped to 250 ms.
-- **Driver.** `sendDatSrcConfiguration` now returns `{JobId, Timestamp}`. Pre-existing core
-  bug: `_getDriverUrl()` is not awaited, so this call cannot currently work.
+- **Driver.** `configureDataSource` (was `sendDatSrcConfiguration`) now returns
+  `{JobId, Timestamp}`. Pre-existing core bug: `_getDriverUrl()` was not awaited, so this call
+  could never work.
 - **Version endpoint.** `/api/v1/structure/about/version` exists, anonymous, returns a bare
   string. The legacy path depends on a proxy feature flag and can return HTML 200 when off,
   so `isApiReachable` must probe the v1 path.
@@ -311,16 +313,18 @@ commented at the code site.
   assumption; it falls back to the per-id lookups when the request fails.
 - The `version` endpoint exists in both endpoint tables for completeness, but version detection
   uses the two static paths directly: it has to run before there is a version to resolve against.
-- `BaseHttpService.getStructureUrl` and the protected `httpConfig` accessor are removed: only the
+- `BaseHttpService` is removed: services hold a public `ctx: ApiContext` and call
+  `ctx.request(endpoint, options)`, which resolves the URL, sends and normalizes errors. Only the
   resolver knows the per-version routes, and 2.0 ships no compatibility shims.
-- The v4 per-entity path map lives in the endpoint table (`V4_ENTITY_PATHS` in
-  `lib/compat/endpoints/endpoints.v4.ts`, typed `Record<EntityType, string>` like
-  `V5_ENTITY_SEGMENTS`), not in `configuration-entity.model.ts`. It is a wire detail, not a model,
-  and is no longer exported.
+- The endpoint table is one `{ method?, v4, v5 }` row per endpoint
+  (`lib/compat/endpoints/endpoints.ts`). `method` is omitted where the caller picks the verb
+  (`entityById`, `userProfile`) and given per version where it changed (`entityQuery`, undo/redo).
+  The v4 per-entity path map (`V4_ENTITY_PATHS`) and the v5 segments (`V5_ENTITY_SEGMENTS`) live
+  next to it, typed `Record<EntityType, string>`; both are wire details and are not exported.
 - No compatibility shims: every service takes only `ApiContext`, and the deprecated aliases
   (`getNearesValue`, `getHistoricalValues`, camelCase `SetCustomOffsetRequest`) are deleted. The
   owner controls all consumers, so the major carries the full break; see docs/migration-2.0.md
   section 5.
-- The deprecation logger is installed automatically on every `ApiContext` but, because
-  `lib/compat` is not exported, its sink cannot be redirected from an app. If rollout step 4 needs
-  app-side logging, core has to grow a small public facade in `lib/api/` for it.
+- The deprecation logger is installed automatically on every `ApiContext`. Apps redirect it with
+  `setDeprecationSink` and read `getDeprecatedPaths` from `lib/api/deprecation.ts`; the logger
+  class itself stays in the non-exported `lib/compat`.

@@ -33,3 +33,19 @@ describe('UserProfileHttpService URL resolution', () => {
     expect(request.mock.calls[1][0].url).toBe('https://host/api/v1/structure/user-profile');
   });
 });
+
+describe('UserProfileHttpService errors', () => {
+  it('keeps the status and error code of a failed request', async () => {
+    const stub = stubContext('5.0.0');
+    stub.request.mockRejectedValue({
+      response: { status: 401, data: { title: 'Auth.Unauthorized', detail: 'token expired' } },
+    });
+    const svc = new UserProfileHttpService(stub.ctx);
+
+    await expect(svc.getUserProfile()).rejects.toMatchObject({
+      name: 'ApiError',
+      status: 401,
+      title: 'Auth.Unauthorized',
+    });
+  });
+});

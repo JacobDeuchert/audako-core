@@ -1,9 +1,18 @@
+import { ApiContext } from '../api/api-context.js';
 import {
   historicalValueOperationFromWire,
   historicalValueOperationsFromWire,
 } from '../compat/adapters/historical-value-operation.adapter.v4.js';
 import { HistoricalValueOperation } from '../models/historical-value-operation.model.js';
-import { BaseHttpService } from './base-http.service.js';
+
+/** Arguments of {@link HistoricalValueManipulationHttpService.startHistoricalValueOperation}. */
+export interface StartHistoricalValueOperationRequest {
+  From: Date | string;
+  Till: Date | string;
+  Timezone: string;
+  OperationScript: string;
+  OperationDescription: string;
+}
 
 /**
  * Historian value manipulation (undoable operation scripts).
@@ -13,50 +22,39 @@ import { BaseHttpService } from './base-http.service.js';
  * (docs/analysis/v4-to-v5-endpoints.md). Responses are normalized to the canonical v5 shape by
  * `lib/compat/adapters/historical-value-operation.adapter.v4.ts`.
  */
-export class HistoricalValueManipulationHttpService extends BaseHttpService {
-  public async getHistoricalValueOperations(signalId: string): Promise<HistoricalValueOperation[]> {
-    const [endpoint, versionInfo] = await Promise.all([
-      this.resolve({ name: 'historicalValueOperations', signalId: signalId }),
-      this.getVersionInfo(),
-    ]);
+export class HistoricalValueManipulationHttpService {
+  constructor(public readonly ctx: ApiContext) {}
 
-    const response = await this.ctx.http.get<HistoricalValueOperation[]>(endpoint.url);
+  public async getHistoricalValueOperations(signalId: string): Promise<HistoricalValueOperation[]> {
+    const [response, versionInfo] = await Promise.all([
+      this.ctx.request<HistoricalValueOperation[]>({ name: 'historicalValueOperations', signalId: signalId }),
+      this.ctx.getVersionInfo(),
+    ]);
     return historicalValueOperationsFromWire(response.data, versionInfo);
   }
 
+  /** Request body is identical on both versions. */
   public async startHistoricalValueOperation(
     signalId: string,
-    from: Date,
-    till: Date,
-    timezone: string,
-    operationScript: string,
-    operationDescription: string,
+    request: StartHistoricalValueOperationRequest,
   ): Promise<HistoricalValueOperation> {
-    const [endpoint, versionInfo] = await Promise.all([
-      this.resolve({ name: 'historicalValueOperationStart', signalId: signalId }),
-      this.getVersionInfo(),
+    const [response, versionInfo] = await Promise.all([
+      this.ctx.request<HistoricalValueOperation>(
+        { name: 'historicalValueOperationStart', signalId: signalId },
+        { data: request },
+      ),
+      this.ctx.getVersionInfo(),
     ]);
-
-    // Request body is identical on both versions.
-    const response = await this.ctx.http.post<HistoricalValueOperation>(endpoint.url, {
-      From: from,
-      Till: till,
-      Timezone: timezone,
-      OperationScript: operationScript,
-      OperationDescription: operationDescription,
-    });
     return historicalValueOperationFromWire(response.data, versionInfo);
   }
 
-  /** v4 accepts `PUT` only; v5 accepts both and prefers `POST`. The verb comes from the resolver. */
+  /** v4 accepts `PUT` only; v5 accepts both and prefers `POST`. The verb comes from the endpoint table. */
   public async undoHistoricalValueOperation(operationId: string): Promise<void> {
-    const endpoint = await this.resolve({ name: 'historicalValueOperationUndo', operationId: operationId });
-    await this.ctx.http.request<void>({ url: endpoint.url, method: endpoint.method, data: null });
+    await this.ctx.request<void>({ name: 'historicalValueOperationUndo', operationId: operationId });
   }
 
   /** See {@link undoHistoricalValueOperation}. */
   public async redoHistoricalValueOperation(operationId: string): Promise<void> {
-    const endpoint = await this.resolve({ name: 'historicalValueOperationRedo', operationId: operationId });
-    await this.ctx.http.request<void>({ url: endpoint.url, method: endpoint.method, data: null });
+    await this.ctx.request<void>({ name: 'historicalValueOperationRedo', operationId: operationId });
   }
 }

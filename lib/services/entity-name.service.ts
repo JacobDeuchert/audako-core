@@ -2,9 +2,16 @@ import { catchError, combineLatest, firstValueFrom, from, map, Observable, of, s
 import { EntityType, Field } from '../models/entities/configuration-entity.model.js';
 import { EntityHttpService, EntityInfo } from './entity-http.service.js';
 
-/** Reads the plain name out of an `entity-info` name field, which may be a `Field` or a string. */
-function nameOf(value: EntityInfo['Name']): string {
-  return Field.isField(value) ? (value as Field<string>).Value : (value as string);
+/**
+ * Reads the plain name out of a name field, which may be a `Field`, a string, or missing.
+ * Returns `null` when there is no usable name.
+ */
+function nameOf(value: EntityInfo['Name'] | null | undefined): string | null {
+  if (Field.isField(value)) {
+    const inner = (value as Field<string>).Value;
+    return inner === undefined || inner === null ? null : String(inner);
+  }
+  return typeof value === 'string' ? value : null;
 }
 
 export class EntityNameService {
@@ -14,21 +21,26 @@ export class EntityNameService {
     this._nameCache = {};
   }
 
+  /**
+   * Human readable group path of an entity (`Parent / Child`). With `limit` only the last
+   * `limit` path segments are used; with `includeSelf` the entity's own name is appended.
+   */
   public async resolveEntityPath(
     entityType: EntityType,
     id: string,
     includeSelf: boolean = false,
     limit?: number,
-    separator: string = ' / '
+    separator: string = ' / ',
   ): Promise<string> {
     const entity = await this.httpService.getPartialEntityById(entityType, id, { Name: 1, Path: 1 });
-    let path = await this.resolvePathName(
-      entity.Path.splice(limit ? entity.Path.length - limit : 0, entity.Path.length),
-      separator
-    );
+    const fullPath = Array.isArray(entity.Path) ? entity.Path : [];
+    const idPath = limit ? fullPath.slice(Math.max(fullPath.length - limit, 0)) : fullPath;
+
+    let path = await this.resolvePathName(idPath, separator);
 
     if (includeSelf) {
-      path = path + separator + entity.Name.Value;
+      const ownName = nameOf(entity.Name) ?? id;
+      path = path ? path + separator + ownName : ownName;
     }
 
     return path;
@@ -57,7 +69,7 @@ export class EntityNameService {
   public async resolveNames(entityType: EntityType, ids: string[]): Promise<string[]> {
     const missing = ids.filter((id) => !this._nameCache[id]);
     if (missing.length > 0) {
-      const versionInfo = await this.httpService.getVersionInfo();
+      const versionInfo = await this.httpService.ctx.getVersionInfo();
       if (versionInfo.supports('entityInfo')) {
         await this._cacheFromEntityInfo(entityType, missing);
       }
@@ -81,22 +93,22 @@ export class EntityNameService {
 
     for (const info of infos) {
       const name = nameOf(info?.Name);
-      if (info?.Id && name !== undefined && name !== null) {
+      if (info?.Id && name !== null) {
         this._nameCache[info.Id] = of(name);
       }
     }
   }
 
-  /** Legacy path: one projected `GET` per id. */
+  /** Legacy path: one projected `GET` per id. A missing name falls back to the id. */
   private _cacheSingle(entityType: EntityType, id: string): void {
     if (this._nameCache[id]) {
       return;
     }
 
     this._nameCache[id] = from(this.httpService.getPartialEntityById(entityType, id, { Name: 1 })).pipe(
-      map((x) => x.Name.Value),
+      map((entity) => nameOf(entity?.Name) ?? id),
       shareReplay(1),
-      catchError(() => of(id))
+      catchError(() => of(id)),
     );
   }
 }

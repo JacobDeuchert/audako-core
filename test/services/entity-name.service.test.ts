@@ -55,3 +55,35 @@ describe('EntityNameService branch selection', () => {
     expect(stub.getPartialEntityById).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('EntityNameService robustness', () => {
+  it('resolveEntityPath tolerates a missing Path and a null Name', async () => {
+    const stub = nameService('4.23.0');
+    stub.getPartialEntityById.mockImplementation((_type, id, projection: any) =>
+      Promise.resolve(projection?.Path ? { Id: id, Name: null } : { Name: { Value: `name-${id}` } }) as any,
+    );
+
+    await expect(stub.service.resolveEntityPath(EntityType.Signal, 's1')).resolves.toBe('');
+    await expect(stub.service.resolveEntityPath(EntityType.Signal, 's1', true)).resolves.toBe('s1');
+  });
+
+  it('resolveEntityPath applies the limit without mutating the entity', async () => {
+    const stub = nameService('4.23.0');
+    const entity: any = { Path: ['a', 'b', 'c'], Name: { Value: 'Self' } };
+    stub.getPartialEntityById.mockImplementation((_type, id, projection: any) =>
+      Promise.resolve(projection?.Path ? entity : { Name: { Value: `name-${id}` } }) as any,
+    );
+
+    await expect(stub.service.resolveEntityPath(EntityType.Signal, 's1', true, 2)).resolves.toBe(
+      'name-b / name-c / Self',
+    );
+    expect(entity.Path).toEqual(['a', 'b', 'c']);
+  });
+
+  it('falls back to the id when the single lookup returns no name', async () => {
+    const stub = nameService('4.23.0');
+    stub.getPartialEntityById.mockResolvedValue({ Name: null } as any);
+
+    await expect(stub.service.resolveName(EntityType.Group, 'g1')).resolves.toBe('g1');
+  });
+});

@@ -100,7 +100,6 @@ export * from './models/widgets/widget-entered-event-config.js';
 export * from './models/widgets/widget-entered-alarming-config.js';
 
 // Service exports
-export { BaseHttpService } from './services/base-http.service.js';
 export * from './services/entity-http.service.js';
 
 export { TenantHttpService } from './services/tenant-http.service.js';

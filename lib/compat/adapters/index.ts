@@ -1,15 +1,41 @@
-import { entityAdapters } from './entity-adapter.js';
-import { registerV4Adapters } from './v4/index.js';
+import { ApiVersionInfo } from '../../api/api-version.js';
+import { EntityType } from '../../models/entities/configuration-entity.model.js';
+import { baseFromWire, baseToWire, EntityAdapter, FromWireMode, identityAdapter } from './entity-adapter.js';
+import { V4_ADAPTERS } from './v4/index.js';
 
 export * from './entity-adapter.js';
 export * from './v4/index.js';
 
 /**
- * Entry point for the adapter layer. Importing anything from here (in practice `entityAdapters`,
- * which `EntityHttpService` uses) registers the v4 adapters exactly once, as a module side effect.
- *
- * Import graph: `entity-adapter.ts` (registry, no adapter imports) <- `v4/*` <- `v4/index.ts` <-
- * this file. `entity-adapter.ts` must stay free of imports from `v4/`, otherwise registration
- * would depend on module evaluation order.
+ * Every per-entity adapter audako-core knows, keyed by entity type. Currently only the v4
+ * adapters; a v5-vs-v6 adapter would be merged in here. Unlisted types are identity.
  */
-registerV4Adapters(entityAdapters);
+export const ENTITY_ADAPTERS: Readonly<Partial<Record<EntityType, EntityAdapter<any>>>> = Object.freeze({
+  ...V4_ADAPTERS,
+});
+
+/** Adapter for the type, or {@link identityAdapter} when none is listed. */
+export function getEntityAdapter<T = any>(entityType: EntityType): EntityAdapter<T> {
+  return ENTITY_ADAPTERS[entityType] || identityAdapter;
+}
+
+/**
+ * Wire -> canonical model: `baseFromWire` followed by the per-entity adapter.
+ *
+ * @param mode `projected` for `$projection` results; see {@link FromWireMode}.
+ */
+export function applyFromWire<T = any>(
+  entityType: EntityType,
+  wire: any,
+  ctx: ApiVersionInfo,
+  mode: FromWireMode = 'full',
+): T {
+  const prepared = baseFromWire(wire, entityType, mode);
+  return getEntityAdapter<T>(entityType).fromWire(prepared, ctx, mode);
+}
+
+/** Canonical model -> wire payload: the per-entity adapter followed by `baseToWire`. */
+export function applyToWire<T = any>(entityType: EntityType, entity: T, ctx: ApiVersionInfo): any {
+  const adapted = getEntityAdapter<T>(entityType).toWire(entity, ctx);
+  return baseToWire(adapted);
+}

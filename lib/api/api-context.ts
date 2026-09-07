@@ -1,10 +1,11 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { HttpConfig } from '../models/http-config.model.js';
 import { AsyncValue, getAsyncValueAsPromise } from '../utils/async-value-utils.js';
 import { createDeprecationInterceptor } from '../compat/deprecation-logger.js';
 import { Endpoint, resolveEndpoint, ResolvedEndpoint } from '../compat/endpoints/endpoint-resolver.js';
 import { ApiVersionInfo } from './api-version.js';
 import { assertCompatible, CompatibilityRequirements } from './compatibility.js';
+import { parseApiError } from './errors.js';
 import { detectApiVersion } from './version-detection.js';
 
 /** Plain object form of an {@link ApiContext}, accepted by {@link ApiContext.from}. */
@@ -12,6 +13,23 @@ export interface ApiContextOptions {
   httpConfig: AsyncValue<HttpConfig>;
   accessToken: AsyncValue<string>;
   versionInfo?: AsyncValue<ApiVersionInfo>;
+}
+
+/** Per-request options of {@link ApiContext.request}. */
+export interface RequestOptions {
+  /**
+   * HTTP verb. Required for endpoints whose verb the caller chooses (`entityById`,
+   * `userProfile`); otherwise the endpoint table's verb is used.
+   */
+  method?: string;
+  /** Request body. */
+  data?: any;
+  /**
+   * Query string parameters. Serialized and percent-encoded by axios, so JSON values such as a
+   * `$filter` are safe to pass as-is.
+   */
+  params?: { [p: string]: any };
+  headers?: { [p: string]: string };
 }
 
 /**
@@ -25,8 +43,8 @@ export function requestHttpConfig(systemUrl: string): Promise<HttpConfig> {
 
 /**
  * Everything a service needs to talk to one audako system: its `HttpConfig`, the access token
- * and the detected platform version. Replaces the old `(httpConfig, accessToken)` service
- * constructor arguments.
+ * and the detected platform version, plus {@link ApiContext.request}, the one way services
+ * reach the platform.
  */
 export class ApiContext {
   private _httpConfig: AsyncValue<HttpConfig>;
@@ -120,15 +138,47 @@ export class ApiContext {
     return this._versionInfoPromise;
   }
 
-  /** Resolves an endpoint for the detected API version. */
+  /**
+   * Resolves an endpoint for the detected API version.
+   *
+   * @throws EndpointNotAvailableError when the endpoint does not exist on that version.
+   */
   public async resolve(endpoint: Endpoint): Promise<ResolvedEndpoint> {
     const [httpConfig, versionInfo] = await Promise.all([this.getHttpConfig(), this.getVersionInfo()]);
     return resolveEndpoint(httpConfig, versionInfo.apiVersion, endpoint);
   }
 
   /**
+   * Resolves `endpoint` and runs the request on {@link http}. Every failure, including transport
+   * errors, is normalized to an `ApiError` (or `EntityLockedError` on 423).
+   *
+   * @throws EndpointNotAvailableError when the endpoint does not exist on the detected version.
+   * @throws ApiError for any failed request.
+   */
+  public async request<T = any>(endpoint: Endpoint, options: RequestOptions = {}): Promise<AxiosResponse<T>> {
+    const resolved = await this.resolve(endpoint);
+    const method = options.method || resolved.method;
+    if (!method) {
+      throw new Error(`Endpoint "${endpoint.name}" needs an explicit HTTP method.`);
+    }
+
+    try {
+      return await this.http.request<T, AxiosResponse<T>>({
+        method: method,
+        url: resolved.url,
+        data: options.data,
+        params: options.params,
+        headers: options.headers,
+      });
+    } catch (error) {
+      throw parseApiError(error);
+    }
+  }
+
+  /**
    * Shared axios instance with an `Authorization` request interceptor and the deprecation
-   * response interceptor installed. Services should use this instead of the global `axios`.
+   * response interceptor installed. Prefer {@link request}; use this directly only for requests
+   * outside the endpoint table.
    */
   public get http(): AxiosInstance {
     if (!this._http) {

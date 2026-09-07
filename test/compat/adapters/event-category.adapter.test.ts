@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { entityAdapters } from '../../../lib/compat/adapters/index.js';
+import { applyFromWire, applyToWire } from '../../../lib/compat/adapters/index.js';
 import { eventCategoryAdapterV4 } from '../../../lib/compat/adapters/v4/event-category.adapter.v4.js';
 import { EntityType } from '../../../lib/models/entities/configuration-entity.model.js';
 import { loadFixture, v412, v422, v423, v50 } from './fixtures.js';
@@ -20,7 +20,7 @@ describe('eventCategoryAdapterV4.fromWire', () => {
     wire.Acknowledgment.Value = false;
     // baseFromWire fills RequiresAcknowledgment = Field(true) from the 4.23 model default; the
     // legacy key must still win, otherwise a category read from 4.12 silently flips to true.
-    const entity: any = entityAdapters.applyFromWire(EntityType.EventCategory, wire, v412);
+    const entity: any = applyFromWire(EntityType.EventCategory, wire, v412);
     expect(entity.RequiresAcknowledgment.Value).toBe(false);
     expect(entity).not.toHaveProperty('Acknowledgment');
   });
@@ -76,9 +76,9 @@ describe('eventCategoryAdapterV4.toWire', () => {
     expect(eventCategoryAdapterV4.fromWire(payload, v412)).toEqual(canonical);
   });
 
-  it('round-trips a v5 payload through the registry on v5', () => {
-    const canonical: any = entityAdapters.applyFromWire(EntityType.EventCategory, wire50(), v50);
-    const payload: any = entityAdapters.applyToWire(EntityType.EventCategory, canonical, v50);
+  it('round-trips a v5 payload through the adapter map on v5', () => {
+    const canonical: any = applyFromWire(EntityType.EventCategory, wire50(), v50);
+    const payload: any = applyToWire(EntityType.EventCategory, canonical, v50);
     expect(payload.Acknowledgment).toEqual({ Value: false, OOAttributes: [] });
     expect(payload).not.toHaveProperty('Path');
   });

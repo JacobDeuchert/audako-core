@@ -56,7 +56,8 @@ describe('baseFromWire nested defaults', () => {
   it('keeps the class prototypes of the filled defaults', () => {
     const entity: any = baseFromWire({ Id: 'ds1' }, EntityType.DataSource);
     expect(entity.PermaLiveModeSettings).toBeInstanceOf(PermaLiveModeSettings);
-    expect(entity.CreatedOn).toBeInstanceOf(Date);
+    // Audit fields are never fabricated: the wire had no CreatedOn, so the entity has none.
+    expect(entity.CreatedOn).toBeUndefined();
   });
 
   it('leaves _t discriminated sub-settings alone (no template on the default instance)', () => {

@@ -22,6 +22,7 @@ export {
   V4_VERSION_PATH,
   V5_VERSION_PATH,
   detectApiVersion,
+  isApiReachable,
   normalizeVersionBody,
 } from './version-detection.js';
 export {
@@ -32,12 +33,14 @@ export {
   assertCompatible,
   checkCompatibility,
 } from './compatibility.js';
+export { DeprecationRecord, DeprecationSink, getDeprecatedPaths, setDeprecationSink } from './deprecation.js';
 export {
   ApiError,
+  EndpointNotAvailableError,
   ApiVersionDetectionError,
   EntityLockedError,
   IncompatibleBackendError,
   UnsupportedApiVersionError,
   parseApiError,
 } from './errors.js';
-export { ApiContext, ApiContextOptions, requestHttpConfig } from './api-context.js';
+export { ApiContext, ApiContextOptions, RequestOptions, requestHttpConfig } from './api-context.js';

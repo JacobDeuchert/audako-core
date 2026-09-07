@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { entityAdapters } from '../../../lib/compat/adapters/index.js';
+import { applyFromWire } from '../../../lib/compat/adapters/index.js';
 import { runtimeScriptAdapterV4 } from '../../../lib/compat/adapters/v4/runtime-script.adapter.v4.js';
 import { EntityType } from '../../../lib/models/entities/configuration-entity.model.js';
 import { loadFixture, v412, v413, v423, v50 } from './fixtures.js';
@@ -54,14 +54,14 @@ describe('runtimeScriptAdapterV4.toWire', () => {
   });
 });
 
-describe('RuntimeScript through the registry', () => {
+describe('RuntimeScript through the adapter map', () => {
   it('reads a 4.12 script as enabled', () => {
-    const entity: any = entityAdapters.applyFromWire(EntityType.RuntimeScript, wire412(), v412);
+    const entity: any = applyFromWire(EntityType.RuntimeScript, wire412(), v412);
     expect(entity.Enabled.Value).toBe(true);
   });
 
   it('keeps a disabled 4.23 script disabled', () => {
-    const entity: any = entityAdapters.applyFromWire(EntityType.RuntimeScript, wire423(), v423);
+    const entity: any = applyFromWire(EntityType.RuntimeScript, wire423(), v423);
     expect(entity.Enabled.Value).toBe(false);
   });
 });

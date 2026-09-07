@@ -92,3 +92,25 @@ describe('createDeprecationInterceptor', () => {
     expect(interceptor(input)).toBe(input);
   });
 });
+
+describe('public deprecation facade', () => {
+  it('redirects the process-wide logger and lists the logged paths', async () => {
+    const { getDeprecatedPaths, setDeprecationSink } = await import('../../lib/api/deprecation.js');
+    const { deprecationLogger } = await import('../../lib/compat/deprecation-logger.js');
+    deprecationLogger.reset();
+
+    const seen: string[] = [];
+    setDeprecationSink((message) => seen.push(message));
+    try {
+      createDeprecationInterceptor()({
+        headers: { deprecation: 'true' },
+        config: { url: 'https://host/api/structure/userprofile?x=1', method: 'get' },
+      });
+      expect(seen).toHaveLength(1);
+      expect(getDeprecatedPaths()).toEqual(['https://host/api/structure/userprofile']);
+    } finally {
+      setDeprecationSink(null);
+      deprecationLogger.reset();
+    }
+  });
+});

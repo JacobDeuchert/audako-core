@@ -24,7 +24,16 @@ export enum MeasurementValueSource {
 export type ValueObjectType = EntityType.Signal | EntityType.Formula;
 
 
-export type HistoricalValueMap = {IntervalStart: string}  & {[signalId: string]: number | string | boolean};
+/** One flat query row: the interval start plus one value per signal id. */
+export type HistoricalValueMap = { IntervalStart: string } & { [signalId: string]: number | string | boolean };
+
+/** Splits a flat query row into `{id, value}` pairs, dropping the interval and note bookkeeping keys. */
+export function getSignalValues(row: HistoricalValueMap): { id: string; value: any }[] {
+  const reserved = ['IntervalStart', 'Manual', 'Note', 'Value'];
+  return Object.keys(row || {})
+    .filter((key) => !reserved.includes(key))
+    .map((key) => ({ id: key, value: (row as any)[key] }));
+}
 
 /**
  * One note attached to a measured value. Identical on both platform lines
@@ -72,7 +81,7 @@ export interface MeasuredValue {
 
 /**
  * Canonical shape of a packaged value query result, following the v5 `MeasuredValuePackage`.
- * Maps 1:1 onto the v4 `HistoricalValueObject`.
+ * The v4 `HistoricalValueObject` had the same shape.
  */
 export interface MeasuredValuePackage {
   ObjectType: ValueObjectType | string;

@@ -8,32 +8,32 @@ function createService(version: '4.23.0' | '5.0.0') {
   const ctx = new ApiContext(version.startsWith('4') ? V4_CONFIG : V5_CONFIG, 'token', createApiVersionInfo(version));
   return {
     service: new DataSourceHttpService(ctx),
-    get: vi.spyOn(ctx.http, 'get').mockResolvedValue({ status: 200, data: '' } as any),
+    get: vi.spyOn(ctx.http, 'request').mockResolvedValue({ status: 200, data: '' } as any),
   };
 }
 
-describe('DataSourceHttpService.sendDatSrcConfiguration', () => {
+describe('DataSourceHttpService.configureDataSource', () => {
   it('awaits the driver URL (the URL used to contain [object Promise])', async () => {
     const { service, get } = createService('4.23.0');
 
-    await service.sendDatSrcConfiguration('source-1');
+    await service.configureDataSource('source-1');
 
-    expect(get.mock.calls[0][0]).toBe('https://host/api/driver/command/source/source-1/configure');
-    expect(get.mock.calls[0][0]).not.toContain('Promise');
+    expect(get.mock.calls[0][0].url).toBe('https://host/api/driver/command/source/source-1/configure');
+    expect(get.mock.calls[0][0].url).not.toContain('Promise');
   });
 
   it('uses the v5 driver path', async () => {
     const { service, get } = createService('5.0.0');
 
-    await service.sendDatSrcConfiguration('source-1');
+    await service.configureDataSource('source-1');
 
-    expect(get.mock.calls[0][0]).toBe('https://host/api/v1/driver/command/source/source-1/configure');
+    expect(get.mock.calls[0][0].url).toBe('https://host/api/v1/driver/command/source/source-1/configure');
   });
 
   it('returns null for the empty v4 response', async () => {
     const { service } = createService('4.23.0');
 
-    await expect(service.sendDatSrcConfiguration('source-1')).resolves.toBeNull();
+    await expect(service.configureDataSource('source-1')).resolves.toBeNull();
   });
 
   it('returns the job info from the v5 response', async () => {
@@ -43,7 +43,7 @@ describe('DataSourceHttpService.sendDatSrcConfiguration', () => {
       data: { JobId: 'job-1', Timestamp: '2026-01-01T00:00:00Z' },
     } as any);
 
-    await expect(service.sendDatSrcConfiguration('source-1')).resolves.toEqual({
+    await expect(service.configureDataSource('source-1')).resolves.toEqual({
       JobId: 'job-1',
       Timestamp: '2026-01-01T00:00:00Z',
     });
@@ -53,6 +53,6 @@ describe('DataSourceHttpService.sendDatSrcConfiguration', () => {
     const { service, get } = createService('5.0.0');
     get.mockResolvedValue({ status: 200, data: {} } as any);
 
-    await expect(service.sendDatSrcConfiguration('source-1')).resolves.toBeNull();
+    await expect(service.configureDataSource('source-1')).resolves.toBeNull();
   });
 });

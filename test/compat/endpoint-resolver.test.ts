@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { EntityType } from '../../lib/models/entities/configuration-entity.model.js';
 import { HttpConfig } from '../../lib/models/http-config.model.js';
 import { Endpoint, getServiceUrls, resolveEndpoint } from '../../lib/compat/endpoints/endpoint-resolver.js';
-import { QUERY_METHOD, V5_ENTITY_SEGMENTS } from '../../lib/compat/endpoints/endpoints.v5.js';
-import { UnsupportedApiVersionError } from '../../lib/api/errors.js';
+import { ENDPOINTS, QUERY_METHOD, V5_ENTITY_SEGMENTS } from '../../lib/compat/endpoints/endpoints.js';
+import { EndpointNotAvailableError } from '../../lib/api/errors.js';
 
 const v4Config = {
   Services: {
@@ -49,14 +49,9 @@ describe('getServiceUrls', () => {
 describe('entity endpoints', () => {
   it('uses the v4 domain-prefixed path and the v5 kebab-plural segment', () => {
     const endpoint: Endpoint = { name: 'entityById', entityType: EntityType.Signal, id: 'abc' };
-    expect(v4(endpoint)).toEqual({
-      url: 'https://host/api/structure/daq/Signal/abc',
-      method: 'GET',
-    });
-    expect(v5(endpoint)).toEqual({
-      url: 'https://host/api/v1/structure/signals/abc',
-      method: 'GET',
-    });
+    // The caller picks GET / PUT / DELETE, so the table prescribes no verb.
+    expect(v4(endpoint)).toEqual({ url: 'https://host/api/structure/daq/Signal/abc', method: undefined });
+    expect(v5(endpoint)).toEqual({ url: 'https://host/api/v1/structure/signals/abc', method: undefined });
   });
 
   it('maps every entity type to a v5 segment', () => {
@@ -137,8 +132,13 @@ describe('entity endpoints', () => {
     expect(v5({ name: 'entityInfo', entityType: EntityType.Signal }).url).toBe(
       'https://host/api/v1/structure/signals/entity-info',
     );
-    expect(() => v4({ name: 'entityCount', entityType: EntityType.Signal })).toThrow(UnsupportedApiVersionError);
-    expect(() => v4({ name: 'entityInfo', entityType: EntityType.Signal })).toThrow(UnsupportedApiVersionError);
+    expect(() => v4({ name: 'entityCount', entityType: EntityType.Signal })).toThrow(EndpointNotAvailableError);
+    expect(() => v4({ name: 'entityInfo', entityType: EntityType.Signal })).toThrow(EndpointNotAvailableError);
+    try {
+      v4({ name: 'entityInfo', entityType: EntityType.Signal });
+    } catch (error) {
+      expect(error).toMatchObject({ name: 'EndpointNotAvailableError', endpoint: 'entityInfo', apiVersion: 'V4' });
+    }
   });
 });
 
@@ -260,10 +260,25 @@ describe('driver and live endpoints', () => {
   });
 
   it('renames the live hub segment from hub to values', () => {
-    expect(v4({ name: 'liveHub' })).toEqual({ url: 'https://host/api/live/hub', method: 'HUB' });
-    expect(v5({ name: 'liveHub' })).toEqual({
-      url: 'https://host/api/live/values',
-      method: 'HUB',
-    });
+    expect(v4({ name: 'liveHub' }).url).toBe('https://host/api/live/hub');
+    expect(v5({ name: 'liveHub' }).url).toBe('https://host/api/live/values');
+    expect(v5({ name: 'liveHub' }).method).toBeUndefined();
+  });
+});
+
+describe('endpoint table', () => {
+  it('has a v5 builder for every endpoint and a v4 builder for every non-additive one', () => {
+    for (const name of Object.keys(ENDPOINTS) as (keyof typeof ENDPOINTS)[]) {
+      expect(ENDPOINTS[name].v5, name).toBeTypeOf('function');
+    }
+    const v4Missing = Object.keys(ENDPOINTS).filter((name) => ENDPOINTS[name as keyof typeof ENDPOINTS].v4 === null);
+    expect(v4Missing.sort()).toEqual(['entityCount', 'entityInfo']);
+  });
+
+  it('only leaves the verb to the caller where the same URL serves several verbs', () => {
+    const noMethod = Object.keys(ENDPOINTS).filter(
+      (name) => ENDPOINTS[name as keyof typeof ENDPOINTS].method === undefined,
+    );
+    expect(noMethod.sort()).toEqual(['entityById', 'liveHub', 'userProfile']);
   });
 });

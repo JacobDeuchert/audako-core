@@ -42,10 +42,8 @@ export class EntityUtils {
       }
 
       if (previousPropertyPathPart === 'AdditionalFields') {
-        console.log(propertyValue, propertyPathPart);
         if (propertyValue[propertyPathPart]?.Value) {
           propertyValue = ObjectUtils.tryParseJson(propertyValue[propertyPathPart].Value);
-          console.log('AdditionalValue', propertyValue);
         }
       } else {
         propertyValue = propertyValue[propertyPathPart]; 
@@ -149,8 +147,6 @@ export class EntityUtils {
     if (propertyPath.length === 0) {
       return;
     }
-
-    console.log('AdditionalField', object, propertyPath, value);
 
     const firstKey = propertyPath.shift();
 

@@ -117,6 +117,24 @@ export class UnsupportedApiVersionError extends Error {
 }
 
 /**
+ * Thrown by the endpoint resolver when an endpoint does not exist on the detected API version,
+ * e.g. `entityCount` / `entityInfo` on v4. Gate such calls with `versionInfo.supports(...)`.
+ */
+export class EndpointNotAvailableError extends Error {
+  /** Name of the endpoint that was requested. */
+  public readonly endpoint: string;
+  /** API version the endpoint is missing on. */
+  public readonly apiVersion: string;
+
+  constructor(endpoint: string, apiVersion: string) {
+    super(`Endpoint "${endpoint}" does not exist on audako platform ${apiVersion}.`);
+    this.name = 'EndpointNotAvailableError';
+    this.endpoint = endpoint;
+    this.apiVersion = apiVersion;
+  }
+}
+
+/**
  * Thrown by `assertCompatible` when the detected platform does not satisfy the requirements.
  * Carries the full {@link CompatibilityResult} so apps can render a precise message.
  */

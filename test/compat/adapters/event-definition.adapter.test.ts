@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { EntityType } from '../../../lib/models/entities/configuration-entity.model.js';
-import { entityAdapters } from '../../../lib/compat/adapters/index.js';
+import { applyFromWire, applyToWire } from '../../../lib/compat/adapters/index.js';
 import {
   CANONICAL_EXPRESSION_PARAMETER_TYPES,
   eventDefinitionAdapterV4,
@@ -93,16 +93,16 @@ describe('eventDefinitionAdapterV4.toWire', () => {
   });
 });
 
-describe('EventDefinition through the registry', () => {
+describe('EventDefinition through the adapter map', () => {
   it('applies the base default pass and the adapter', () => {
-    const entity: any = entityAdapters.applyFromWire(EntityType.EventDefinition, wire412(), v412);
+    const entity: any = applyFromWire(EntityType.EventDefinition, wire412(), v412);
     expect(types(entity)[0]).toBe('SignalConditionSettings');
     // filled by baseFromWire, absent on 4.12
     expect(entity.Tags).toEqual({ Value: [], OOAttributes: [] });
   });
 
   it('strips the server-owned fields on write', () => {
-    const payload: any = entityAdapters.applyToWire(EntityType.EventDefinition, wire50(), v412);
+    const payload: any = applyToWire(EntityType.EventDefinition, wire50(), v412);
     expect(payload).not.toHaveProperty('Path');
     expect(types(payload)[0]).toBe('SignalCondition');
   });

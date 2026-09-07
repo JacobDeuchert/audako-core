@@ -1,14 +1,11 @@
-import { AxiosResponse } from 'axios';
+import { ApiContext } from '../api/api-context.js';
 import { ApiVersionInfo } from '../api/api-version.js';
-import { parseApiError } from '../api/errors.js';
-// Imported through the adapter entry point so the v4 adapters register themselves.
-import { entityAdapters, FromWireMode } from '../compat/adapters/index.js';
+import { applyFromWire, applyToWire, FromWireMode } from '../compat/adapters/index.js';
 import {
   ConfigurationEntity,
   EntityType,
   TranslatableField,
 } from '../models/entities/configuration-entity.model.js';
-import { BaseHttpService } from './base-http.service.js';
 
 export type PaginationResponse<T> = {
   data: T[];
@@ -66,12 +63,17 @@ export interface EntityInfoOptions<T = any> {
   language?: string;
 }
 
-/** Appends `key=value` to a URL, keeping the existing query string intact. */
-function withQueryParam(url: string, key: string, value: string): string {
-  return `${url}${url.includes('?') ? '&' : '?'}${key}=${value}`;
+/** `JSON.stringify` that leaves `undefined`/`null` alone, for optional query string parameters. */
+function json(value: any): string | undefined {
+  return value === undefined || value === null ? undefined : JSON.stringify(value);
 }
 
-export class EntityHttpService extends BaseHttpService {
+/**
+ * All errors surface as `ApiError` (`EntityLockedError` on 423), see `ApiContext.request`.
+ */
+export class EntityHttpService {
+  constructor(public readonly ctx: ApiContext) {}
+
   public async getEntityById<T extends ConfigurationEntity>(entityType: EntityType, id: string): Promise<T> {
     return this.getPartialEntityById(entityType, id, null) as Promise<T>;
   }
@@ -85,16 +87,16 @@ export class EntityHttpService extends BaseHttpService {
     id: string,
     projection: Projection<T>,
   ): Promise<Partial<T>> {
-    const endpoint = await this.resolve({ name: 'entityById', entityType: entityType, id: id });
-    const url = projection ? withQueryParam(endpoint.url, '$projection', JSON.stringify(projection)) : endpoint.url;
-
-    const response = await this._request<Partial<T>>({ method: endpoint.method, url: url });
+    const response = await this.ctx.request<Partial<T>>(
+      { name: 'entityById', entityType: entityType, id: id },
+      { method: 'GET', params: { $projection: json(projection) } },
+    );
     // A projected read only carries the requested keys: the shared read pass must not fill the
     // rest from the model defaults, or the result would look like real server state.
     return this._fromWire<Partial<T>>(
       entityType,
       response.data,
-      await this.getVersionInfo(),
+      await this.ctx.getVersionInfo(),
       projection ? 'projected' : 'full',
     );
   }
@@ -118,22 +120,21 @@ export class EntityHttpService extends BaseHttpService {
     projection?: { [p in keyof T]?: number },
     options?: QueryOptions<T>,
   ): Promise<PaginationResponse<Partial<T>>> {
-    const versionInfo = await this.getVersionInfo();
-    const endpoint = await this.resolve({ name: 'entityQuery', entityType: entityType });
+    const versionInfo = await this.ctx.getVersionInfo();
 
     const filter = JSON.stringify(query);
     const pagingValue = paging ? JSON.stringify(paging) : null;
     const projectionValue = projection ? JSON.stringify(projection) : null;
     const sortValue = options?.sort ? JSON.stringify(options.sort) : null;
 
-    let url = endpoint.url;
     let body: { [p: string]: string };
+    let params: { [p: string]: string } | undefined;
     const headers: { [p: string]: string } = {};
 
     if (versionInfo.supports('queryVerb')) {
       body = { $filter: filter, $paging: pagingValue, $sort: sortValue };
       if (projectionValue) {
-        url = withQueryParam(url, '$projection', projectionValue);
+        params = { $projection: projectionValue };
       }
       if (options?.language) {
         headers['Language'] = options.language;
@@ -143,12 +144,10 @@ export class EntityHttpService extends BaseHttpService {
       body = { $filter: filter, $paging: pagingValue, $projection: projectionValue };
     }
 
-    const response = await this._request<Partial<T>[]>({
-      method: endpoint.method,
-      url: url,
-      data: body,
-      headers: headers,
-    });
+    const response = await this.ctx.request<Partial<T>[]>(
+      { name: 'entityQuery', entityType: entityType },
+      { data: body, params: params, headers: headers },
+    );
 
     const mode: FromWireMode = projectionValue ? 'projected' : 'full';
     const data = (response.data || []).map((item) => this._fromWire<Partial<T>>(entityType, item, versionInfo, mode));
@@ -169,19 +168,17 @@ export class EntityHttpService extends BaseHttpService {
   }
 
   public async uploadProcessImage(id: string, svg: string, name: string = 'process-image.svg'): Promise<void> {
-    const endpoint = await this.resolve({ name: 'processImageUpload', id: id });
     const blob = new Blob([svg], { type: 'image/svg+xml' });
     const formData = new FormData();
     formData.append('file', blob, name);
-    await this._request<void>({ method: endpoint.method, url: endpoint.url, data: formData });
+    await this.ctx.request<void>({ name: 'processImageUpload', id: id }, { data: formData });
   }
 
   public async addEntity<T extends ConfigurationEntity>(type: EntityType, entity: T): Promise<T> {
-    const versionInfo = await this.getVersionInfo();
-    const endpoint = await this.resolve({ name: 'entityCollection', entityType: type });
+    const versionInfo = await this.ctx.getVersionInfo();
     const payload = this._toWire(type, entity, versionInfo);
 
-    const response = await this._request<T>({ method: endpoint.method, url: endpoint.url, data: payload });
+    const response = await this.ctx.request<T>({ name: 'entityCollection', entityType: type }, { data: payload });
     return this._fromWire<T>(type, response.data, versionInfo);
   }
 
@@ -197,18 +194,19 @@ export class EntityHttpService extends BaseHttpService {
    * @throws ApiError on 400, e.g. when `entity.Id` does not match the route id (v5).
    */
   public async updateEntity<T extends ConfigurationEntity>(type: EntityType, entity: T): Promise<T> {
-    const versionInfo = await this.getVersionInfo();
-    const endpoint = await this.resolve({ name: 'entityById', entityType: type, id: entity.Id });
+    const versionInfo = await this.ctx.getVersionInfo();
     const payload = this._toWire(type, entity, versionInfo);
 
-    const response = await this._request<T>({ method: 'PUT', url: endpoint.url, data: payload });
+    const response = await this.ctx.request<T>(
+      { name: 'entityById', entityType: type, id: entity.Id },
+      { method: 'PUT', data: payload },
+    );
     return this._fromWire<T>(type, response.data, versionInfo);
   }
 
   /** `DELETE {entity}/{id}`. 204 on both versions. */
   public async deleteEntity(type: EntityType, id: string): Promise<void> {
-    const endpoint = await this.resolve({ name: 'entityById', entityType: type, id: id });
-    await this._request<void>({ method: 'DELETE', url: endpoint.url });
+    await this.ctx.request<void>({ name: 'entityById', entityType: type, id: id }, { method: 'DELETE' });
   }
 
   public async copyTo<T extends ConfigurationEntity>(
@@ -216,14 +214,13 @@ export class EntityHttpService extends BaseHttpService {
     targetGroupId: string,
     type: EntityType,
   ): Promise<T> {
-    const endpoint = await this.resolve({
+    const response = await this.ctx.request<T>({
       name: 'entityCopy',
       entityType: type,
       sourceId: sourceEntityId,
       targetId: targetGroupId,
     });
-    const response = await this._request<T>({ method: endpoint.method, url: endpoint.url });
-    return this._fromWire<T>(type, response.data, await this.getVersionInfo());
+    return this._fromWire<T>(type, response.data, await this.ctx.getVersionInfo());
   }
 
   /**
@@ -231,8 +228,10 @@ export class EntityHttpService extends BaseHttpService {
    * `{"OperationId":"..."}`; both are normalized to the id string.
    */
   public async copyMultipleTo(sourceEntityIds: string[], targetId: string, type: EntityType): Promise<string> {
-    const endpoint = await this.resolve({ name: 'entityCopyMultiple', entityType: type, targetId: targetId });
-    const response = await this._request<any>({ method: endpoint.method, url: endpoint.url, data: sourceEntityIds });
+    const response = await this.ctx.request<any>(
+      { name: 'entityCopyMultiple', entityType: type, targetId: targetId },
+      { data: sourceEntityIds },
+    );
     return this._readOperationId(response.data);
   }
 
@@ -241,34 +240,35 @@ export class EntityHttpService extends BaseHttpService {
     targetGroupId: string,
     type: EntityType,
   ): Promise<T> {
-    const endpoint = await this.resolve({
+    const response = await this.ctx.request<T>({
       name: 'entityMove',
       entityType: type,
       sourceId: sourceEntityId,
       targetId: targetGroupId,
     });
-    const response = await this._request<T>({ method: endpoint.method, url: endpoint.url });
-    return this._fromWire<T>(type, response.data, await this.getVersionInfo());
+    return this._fromWire<T>(type, response.data, await this.ctx.getVersionInfo());
   }
 
   /** Starts a bulk move and returns the operation id. See {@link copyMultipleTo}. */
   public async moveMultipleTo(sourceIds: string[], targetId: string, type: EntityType): Promise<string> {
-    const endpoint = await this.resolve({ name: 'entityMoveMultiple', entityType: type, targetId: targetId });
-    const response = await this._request<any>({ method: endpoint.method, url: endpoint.url, data: sourceIds });
+    const response = await this.ctx.request<any>(
+      { name: 'entityMoveMultiple', entityType: type, targetId: targetId },
+      { data: sourceIds },
+    );
     return this._readOperationId(response.data);
   }
 
   /**
    * `GET {entity}/count?$filter=` - number of entities matching the filter.
    *
-   * v5 only. Gate calls with `(await service.getVersionInfo()).supports('entityCount')`; on v4 this
-   * throws {@link UnsupportedApiVersionError} because the endpoint does not exist.
+   * v5 only. Gate calls with `(await service.ctx.getVersionInfo()).supports('entityCount')`; on v4 this
+   * throws {@link EndpointNotAvailableError} because the endpoint does not exist.
    */
   public async countEntities(entityType: EntityType, filter?: { [p: string]: any }): Promise<number> {
-    const endpoint = await this.resolve({ name: 'entityCount', entityType: entityType });
-    const url = filter ? withQueryParam(endpoint.url, '$filter', JSON.stringify(filter)) : endpoint.url;
-
-    const response = await this._request<number | string>({ method: endpoint.method, url: url });
+    const response = await this.ctx.request<number | string>(
+      { name: 'entityCount', entityType: entityType },
+      { params: { $filter: json(filter) } },
+    );
     return Number(response.data);
   }
 
@@ -276,29 +276,22 @@ export class EntityHttpService extends BaseHttpService {
    * `GET {entity}/entity-info?$filter=&$sort=&$paging=` - `{Id, Name, Description, Type, GroupId,
    * Path}` for a whole filtered set in one request, replacing per-id lookups.
    *
-   * v5 only. Gate calls with `(await service.getVersionInfo()).supports('entityInfo')`; on v4 this
-   * throws {@link UnsupportedApiVersionError}.
+   * v5 only. Gate calls with `(await service.ctx.getVersionInfo()).supports('entityInfo')`; on v4 this
+   * throws {@link EndpointNotAvailableError}.
    */
   public async getEntityInfos(entityType: EntityType, options?: EntityInfoOptions): Promise<EntityInfo[]> {
-    const endpoint = await this.resolve({ name: 'entityInfo', entityType: entityType });
-
-    let url = endpoint.url;
-    if (options?.filter) {
-      url = withQueryParam(url, '$filter', JSON.stringify(options.filter));
-    }
-    if (options?.sort) {
-      url = withQueryParam(url, '$sort', JSON.stringify(options.sort));
-    }
-    if (options?.paging) {
-      url = withQueryParam(url, '$paging', JSON.stringify(options.paging));
-    }
-
     const headers: { [p: string]: string } = {};
     if (options?.language) {
       headers['Language'] = options.language;
     }
 
-    const response = await this._request<EntityInfo[]>({ method: endpoint.method, url: url, headers: headers });
+    const response = await this.ctx.request<EntityInfo[]>(
+      { name: 'entityInfo', entityType: entityType },
+      {
+        params: { $filter: json(options?.filter), $sort: json(options?.sort), $paging: json(options?.paging) },
+        headers: headers,
+      },
+    );
     return response.data || [];
   }
 
@@ -310,25 +303,6 @@ export class EntityHttpService extends BaseHttpService {
    */
   public getEntityInfosByIds(entityType: EntityType, ids: string[], language?: string): Promise<EntityInfo[]> {
     return this.getEntityInfos(entityType, { filter: { Id: { $in: ids } }, language: language });
-  }
-
-  /** Runs a request on the context's axios instance and normalizes failures to `ApiError`. */
-  private async _request<T>(config: {
-    method: string;
-    url: string;
-    data?: any;
-    headers?: { [p: string]: string };
-  }): Promise<AxiosResponse<T>> {
-    try {
-      return await this.ctx.http.request<T, AxiosResponse<T>>({
-        method: config.method,
-        url: config.url,
-        data: config.data,
-        headers: config.headers,
-      });
-    } catch (error) {
-      throw parseApiError(error);
-    }
   }
 
   /**
@@ -343,7 +317,7 @@ export class EntityHttpService extends BaseHttpService {
     versionInfo: ApiVersionInfo,
     mode: FromWireMode = 'full',
   ): T {
-    return entityAdapters.applyFromWire<T>(entityType, wire, versionInfo, mode);
+    return applyFromWire<T>(entityType, wire, versionInfo, mode);
   }
 
   /**
@@ -351,7 +325,7 @@ export class EntityHttpService extends BaseHttpService {
    * `Path`/`AclAllow`/`AclDeny` on a shallow clone, so the caller's instance stays untouched.
    */
   private _toWire<T extends ConfigurationEntity>(type: EntityType, entity: T, versionInfo: ApiVersionInfo): any {
-    const payload = entityAdapters.applyToWire<T>(type, entity, versionInfo);
+    const payload = applyToWire<T>(type, entity, versionInfo);
 
     if (!versionInfo.supports('optimisticConcurrency')) {
       // v4 answers 400 when CreatedBy/CreatedOn are present. v5 restores them server-side and

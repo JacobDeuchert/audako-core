@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { entityAdapters } from '../../../lib/compat/adapters/index.js';
+import { applyFromWire } from '../../../lib/compat/adapters/index.js';
 import { batchDefinitionAdapterV4 } from '../../../lib/compat/adapters/v4/batch-definition.adapter.v4.js';
 import { EntityType } from '../../../lib/models/entities/configuration-entity.model.js';
 import { loadFixture, v412, v416, v417, v423, v50 } from './fixtures.js';
@@ -65,9 +65,9 @@ describe('batchDefinitionAdapterV4.toWire', () => {
   });
 });
 
-describe('BatchDefinition through the registry', () => {
+describe('BatchDefinition through the adapter map', () => {
   it('fills the nested settings objects a 4.12 platform lacks', () => {
-    const entity: any = entityAdapters.applyFromWire(EntityType.BatchDefinition, wire412(), v412);
+    const entity: any = applyFromWire(EntityType.BatchDefinition, wire412(), v412);
     expect(entity.MetadataFields['chargeNr'].Editable).toBe(true);
     expect(entity.ReleaseSettings).toEqual({ Enabled: false, SignalId: null, ReleaseValue: null });
     expect(entity.BatchReviewSettings).toEqual({ Enabled: false, Reviews: [], Ordered: false });

@@ -1,14 +1,23 @@
 import { describe, expect, it } from 'vitest';
-import { AdapterRegistry, identityAdapter } from '../../../lib/compat/adapters/entity-adapter.js';
-import { entityAdapters, registerV4Adapters, V4_ADAPTED_ENTITY_TYPES } from '../../../lib/compat/adapters/index.js';
+import { identityAdapter } from '../../../lib/compat/adapters/entity-adapter.js';
+import {
+  applyFromWire,
+  applyToWire,
+  ENTITY_ADAPTERS,
+  getEntityAdapter,
+  V4_ADAPTED_ENTITY_TYPES,
+  V4_ADAPTERS,
+} from '../../../lib/compat/adapters/index.js';
 import { EntityType } from '../../../lib/models/entities/configuration-entity.model.js';
 import { loadFixture, v412, v50 } from './fixtures.js';
 
-describe('v4 adapter registration', () => {
-  it('registers every adapted entity type by importing the adapters index', () => {
+describe('v4 adapter map', () => {
+  it('lists every adapted entity type', () => {
     for (const entityType of V4_ADAPTED_ENTITY_TYPES) {
-      expect(entityAdapters.has(entityType), entityType).toBe(true);
+      expect(ENTITY_ADAPTERS[entityType], entityType).toBe(V4_ADAPTERS[entityType]);
+      expect(getEntityAdapter(entityType), entityType).not.toBe(identityAdapter);
     }
+    expect(V4_ADAPTED_ENTITY_TYPES.length).toBe(5);
   });
 
   it('leaves every other entity type on the identity adapter', () => {
@@ -17,24 +26,17 @@ describe('v4 adapter registration', () => {
     );
     expect(untouched.length).toBeGreaterThan(0);
     for (const entityType of untouched) {
-      expect(entityAdapters.getAdapter(entityType), entityType).toBe(identityAdapter);
+      expect(getEntityAdapter(entityType), entityType).toBe(identityAdapter);
     }
   });
 
-  it('can register into a separate registry', () => {
-    const registry = registerV4Adapters(new AdapterRegistry());
-    expect(registry.has(EntityType.EventCategory)).toBe(true);
-    expect(registry.getAdapter(EntityType.EventCategory)).toBe(entityAdapters.getAdapter(EntityType.EventCategory));
-  });
-
-  it('is idempotent', () => {
-    const before = entityAdapters.getAdapter(EntityType.EventDefinition);
-    registerV4Adapters();
-    expect(entityAdapters.getAdapter(EntityType.EventDefinition)).toBe(before);
+  it('is frozen', () => {
+    expect(Object.isFrozen(ENTITY_ADAPTERS)).toBe(true);
+    expect(Object.isFrozen(V4_ADAPTERS)).toBe(true);
   });
 });
 
-describe('registered adapters on v5', () => {
+describe('listed adapters on v5', () => {
   const fixtures: [EntityType, string][] = [
     [EntityType.BatchDefinition, 'v5/batch-definition.5.0.json'],
     [EntityType.DashboardTab, 'v5/dashboard-tab.5.0.json'],
@@ -45,21 +47,21 @@ describe('registered adapters on v5', () => {
 
   it.each(fixtures)('%s is identity on reads', (entityType, fixture) => {
     const wire = loadFixture(fixture);
-    expect(entityAdapters.getAdapter(entityType).fromWire(wire, v50)).toBe(wire);
+    expect(getEntityAdapter(entityType).fromWire(wire, v50)).toBe(wire);
   });
 
   it.each(fixtures)('%s only loses the server-owned fields on writes', (entityType, fixture) => {
     const canonical: any = loadFixture(fixture);
-    const payload: any = entityAdapters.applyToWire(entityType, canonical, v50);
+    const payload: any = applyToWire(entityType, canonical, v50);
     const { Path, ...expected } = canonical;
     expect(payload).toEqual(expected);
   });
 
   it.each(fixtures)('%s stays stable across a v4 read/write/read cycle', (entityType, fixture) => {
-    const canonical: any = entityAdapters.applyFromWire(entityType, loadFixture(fixture), v412);
-    const payload = entityAdapters.applyToWire(entityType, canonical, v412);
-    const reread: any = entityAdapters.applyFromWire(entityType, payload, v412);
-    const secondPayload = entityAdapters.applyToWire(entityType, reread, v412);
+    const canonical: any = applyFromWire(entityType, loadFixture(fixture), v412);
+    const payload = applyToWire(entityType, canonical, v412);
+    const reread: any = applyFromWire(entityType, payload, v412);
+    const secondPayload = applyToWire(entityType, reread, v412);
     expect(secondPayload).toEqual(payload);
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { entityAdapters } from '../../../lib/compat/adapters/index.js';
+import { applyFromWire } from '../../../lib/compat/adapters/index.js';
 import { dashboardTabAdapterV4 } from '../../../lib/compat/adapters/v4/dashboard-tab.adapter.v4.js';
 import { EntityType } from '../../../lib/models/entities/configuration-entity.model.js';
 import { loadFixture, v412, v415, v423, v50 } from './fixtures.js';
@@ -80,9 +80,9 @@ describe('dashboardTabAdapterV4.toWire', () => {
   });
 });
 
-describe('DashboardTab through the registry', () => {
+describe('DashboardTab through the adapter map', () => {
   it('fills the fields a 4.12 platform does not have yet', () => {
-    const entity: any = entityAdapters.applyFromWire(EntityType.DashboardTab, wire412(), v412);
+    const entity: any = applyFromWire(EntityType.DashboardTab, wire412(), v412);
     expect(entity.EntityMappings).toEqual({ Value: null, OOAttributes: [] });
     expect(entity.PlaceholderValues).toEqual({ Value: null, OOAttributes: [] });
   });

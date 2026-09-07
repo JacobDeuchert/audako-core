@@ -1,13 +1,15 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createApiVersionInfo } from '../../lib/api/api-version.js';
 import { EntityType } from '../../lib/models/entities/configuration-entity.model.js';
 import {
-  AdapterRegistry,
   baseFromWire,
   baseToWire,
   identityAdapter,
+  NEVER_FILLED_FIELDS,
   SERVER_OWNED_FIELDS,
 } from '../../lib/compat/adapters/entity-adapter.js';
+import { applyFromWire, applyToWire, getEntityAdapter } from '../../lib/compat/adapters/index.js';
+import { eventDefinitionAdapterV4 } from '../../lib/compat/adapters/v4/event-definition.adapter.v4.js';
 import { Group } from '../../lib/models/entities/group.model.js';
 
 const v4 = createApiVersionInfo('4.23.0');
@@ -78,54 +80,32 @@ describe('baseFromWire', () => {
   });
 });
 
-describe('AdapterRegistry', () => {
-  it('returns the identity adapter for unregistered types', () => {
-    const registry = new AdapterRegistry();
-    expect(registry.getAdapter(EntityType.Signal)).toBe(identityAdapter);
-    expect(registry.has(EntityType.Signal)).toBe(false);
-  });
-
-  it('returns a registered adapter and can unregister it again', () => {
-    const registry = new AdapterRegistry();
-    const adapter = { fromWire: (wire: any) => wire, toWire: (entity: any) => entity };
-
-    registry.register(EntityType.EventCategory, adapter);
-    expect(registry.getAdapter(EntityType.EventCategory)).toBe(adapter);
-
-    registry.unregister(EntityType.EventCategory);
-    expect(registry.getAdapter(EntityType.EventCategory)).toBe(identityAdapter);
+describe('adapter map', () => {
+  it('returns the identity adapter for unlisted types', () => {
+    expect(getEntityAdapter(EntityType.Signal)).toBe(identityAdapter);
   });
 
   it('runs baseFromWire before and baseToWire after the per-entity adapter', () => {
-    const registry = new AdapterRegistry();
-    registry.register(EntityType.Group, {
-      fromWire: (wire: any) => ({ ...wire, Marker: 'read' }),
-      // The adapter re-adds a server-owned field; baseToWire must still strip it.
-      toWire: (entity: any) => ({ ...entity, Marker: 'write', Path: ['leaked'] }),
-    });
-
-    const read: any = registry.applyFromWire(EntityType.Group, { Id: 'g1', Name: null }, v4);
-    expect(read.Marker).toBe('read');
+    // EventCategory has a v4 adapter; on v5 it is identity, so only the base passes act.
+    const v5 = createApiVersionInfo('5.0.0');
+    const read: any = applyFromWire(EntityType.EventCategory, { Id: 'c1', Name: null }, v5);
     expect(read.Name).toEqual(new Group().Name);
 
-    const written: any = registry.applyToWire(EntityType.Group, { Id: 'g1' } as any, v4);
-    expect(written.Marker).toBe('write');
+    const written: any = applyToWire(EntityType.EventCategory, { Id: 'c1', Path: ['leaked'] } as any, v5);
     expect(written).not.toHaveProperty('Path');
   });
 
-  it('passes the version info to the adapter', () => {
-    const registry = new AdapterRegistry();
-    let seen: string = null;
-    registry.register(EntityType.Group, {
-      fromWire: (wire: any, ctx) => {
-        seen = ctx.platformVersion;
-        return wire;
-      },
-      toWire: (entity: any) => entity,
-    });
+  it('never fills identity or audit fields from the model defaults', () => {
+    const entity: any = baseFromWire({ Name: { Value: 'g' }, CreatedOn: null, CreatedBy: null }, EntityType.Group);
 
-    registry.applyFromWire(EntityType.Group, { Id: 'g1' }, v4);
-    expect(seen).toBe('4.23.0');
+    expect(entity.Id).toBeUndefined();
+    expect(entity.CreatedOn).toBeNull();
+    expect(entity.CreatedBy).toBeNull();
+    expect(NEVER_FILLED_FIELDS).toContain('CreatedOn');
+  });
+
+  it('does not default CreatedOn on the model either', () => {
+    expect(new Group().CreatedOn).toBeNull();
   });
 });
 
@@ -159,30 +139,24 @@ describe('baseFromWire projected mode', () => {
   });
 
   it('fills nested settings defaults of a sub-object that is present on a projected read', () => {
-    const registry = new AdapterRegistry();
     const wire = { Id: 'g1', Name: { Value: 'g' } };
 
     // Sanity: the same payload read in full mode does get the remaining defaults.
-    const full: any = registry.applyFromWire(EntityType.Group, wire, v4);
-    const projected: any = registry.applyFromWire(EntityType.Group, wire, v4, 'projected');
+    const full: any = applyFromWire(EntityType.Group, wire, v4);
+    const projected: any = applyFromWire(EntityType.Group, wire, v4, 'projected');
 
     expect(Object.keys(full).length).toBeGreaterThan(Object.keys(projected).length);
     expect(Object.keys(projected).sort()).toEqual(['Id', 'Name']);
   });
 
   it('passes the mode on to the per-entity adapter', () => {
-    const registry = new AdapterRegistry();
-    const seen: (string | undefined)[] = [];
-    registry.register(EntityType.Group, {
-      fromWire: (wire: any, _ctx, mode) => {
-        seen.push(mode);
-        return wire;
-      },
-      toWire: (entity: any) => entity,
-    });
-
-    registry.applyFromWire(EntityType.Group, { Id: 'g1' }, v4);
-    registry.applyFromWire(EntityType.Group, { Id: 'g1' }, v4, 'projected');
-    expect(seen).toEqual(['full', 'projected']);
+    const fromWire = vi.spyOn(eventDefinitionAdapterV4, 'fromWire');
+    try {
+      applyFromWire(EntityType.EventDefinition, { Id: 'e1' }, v4);
+      applyFromWire(EntityType.EventDefinition, { Id: 'e1' }, v4, 'projected');
+      expect(fromWire.mock.calls.map((call) => call[2])).toEqual(['full', 'projected']);
+    } finally {
+      fromWire.mockRestore();
+    }
   });
 });

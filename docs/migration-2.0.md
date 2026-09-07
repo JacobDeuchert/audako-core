@@ -38,6 +38,13 @@ const ctx = ApiContext.from({ httpConfig, accessToken });        // plain object
 a token that is refreshed keeps working. Share one context per system: it owns the axios instance
 that adds the `Authorization` header and the deprecation logging.
 
+There is no service base class any more. Every service is `constructor(public readonly ctx:
+ApiContext)` and reaches the platform through `ctx.request(endpoint, options)`, which resolves the
+per-version URL, sends the request and normalizes every failure to an `ApiError`. The context is
+public on the service (`service.ctx`), so the version and the raw axios instance are one step away.
+The former `BaseHttpService` statics moved: `requestHttpConfig(systemUrl)` and
+`isApiReachable(apiUrl)` are plain exported functions.
+
 ## 2. Check compatibility at connect time
 
 `ApiContext.connect` loads `application.config`, detects the version and asserts compatibility
@@ -74,7 +81,7 @@ above the final 4.23).
 ## 3. Feature flags instead of version comparisons
 
 ```ts
-const versionInfo = await service.getVersionInfo();
+const versionInfo = await ctx.getVersionInfo(); // or service.ctx.getVersionInfo()
 if (versionInfo.supports('entityInfo')) { ... }
 ```
 
@@ -98,18 +105,22 @@ used it need a platform-side successor; nothing in core replaces it.
 |---|---|
 | `EntityHttpService.copyMultipleTo` / `moveMultipleTo` | Return `Promise<string>` (the operation id). Previously the raw axios response with a text body. v5 answers `{"OperationId":"..."}`, v4 the bare id; both are normalized. |
 | `EntityHttpService.updateEntity` | No longer mutates the entity you pass in. `CreatedBy`/`CreatedOn` are stripped from the wire copy on v4 only; on v5 they are kept and `ChangedOn` is round-tripped, because it is the optimistic-concurrency token there. Round-trip the entity you got from the GET, or v5 answers `EntityChangedElsewhere`. |
-| `EntityHttpService.getPartialEntityById` / `queryConfiguration` | Unprojected reads get model defaults filled in for absent and `null` fields. Projected reads only get `null` fields filled - keys you did not request stay absent. |
+| `EntityHttpService.getPartialEntityById` / `queryConfiguration` | Unprojected reads get model defaults filled in for absent and `null` fields. Projected reads only get `null` fields filled - keys you did not request stay absent. `Id`, `CreatedBy`, `CreatedOn`, `ChangedBy` and `ChangedOn` are never filled, and `ConfigurationEntity` no longer defaults `CreatedOn` to `new Date()`: a `null` audit field stays `null`. |
+| Query string parameters (`$filter`, `$projection`, `$sort`, `$paging`, `$from`, `$till`) | Sent through axios `params`, so they are percent-encoded. They used to be string-concatenated into the URL, which broke on spaces in Node and silently truncated on `&`/`#` in filter values. |
 | `HistoricalValueService.getNearestValue` | Returns `MeasuredValue`, not `HistoricalValue & {Value: number}`. `Value` is free-form on v5; check the type before using it as a number. |
-| `HistoricalValueService.getHistoricalValueObjects` / `getNthHistoricalValue` | Still `HistoricalValueObject`, but v4 rows are normalized: a flat `Note`/`CreatedBy` pair is lifted into `Notes[]`. The v5 `Min*`/`Max*` fields are undefined on v4. |
+| `HistoricalValueService.queryValues` / `getNthValue` (were `getHistoricalValueObjects` / `getNthHistoricalValue`) | Return `MeasuredValuePackage`; the structurally identical `HistoricalValueObject` and `HistoricalValue` classes are gone. v4 rows are normalized: a flat `Note`/`CreatedBy` pair is lifted into `Notes[]`. The v5 `Min*`/`Max*` fields are undefined on v4. `HistoricalValue.getSignalValues` is now the function `getSignalValues(row)` on a `HistoricalValueMap`. |
+| `HistoricalValueService` method names | One verb scheme: `queryValuesFlat` (was `requestHistoricalValues`), `queryValues`, `getNearestValue`, `getNthValue`, `addManualValues` (was `postManualData`), `addNotes` (was `postNoteEntries`), `getCounterOffsets`, `setCustomOffset`, `deleteCounterOffsets`, `deleteCustomOffsets`, `resetStatistics` (was `resetCalculatedValuesAndStatistic`, now takes `(signalId, { from?, till?, resetOffsets?, resetCustomOffsets? })`), `importValues` (was `importHistoricalValues`). |
+| `HistoricalValueManipulationHttpService.startHistoricalValueOperation` | Takes `(signalId, { From, Till, Timezone, OperationScript, OperationDescription })` instead of six positional arguments. |
 | `HistoricalValueService.setCustomOffset` | Takes the PascalCase `SetCounterCustomOffsetRequest` (`{Timestamp, Value, Note?, Source}`). The service re-cases per version - v5 requires PascalCase, v4 read it camelCase. |
 | `HistoricalValueRequest.MinMaxInterval` | Removed: v5 dropped the field and v4 already accepted `MinMaxIntervalType`. Use `MinMaxIntervalType`. |
 | `HistoricalValueOperation` | Follows the v5 shape: `UserId`, `StartedOn`, `StoppedOn`, `ErrorMessage`, `Progress`, `IsUndoable`, `IsRedoable`, `LiveOperationId`, `Layer`. The v4-only `Timezone`, `CreatedOn`, `CreatedBy`, `ChangedOn`, `ChangedBy` are **not** part of the type any more: the v4 adapter maps them onto the canonical fields and drops the old keys. `Status` is `Pending \| Completed \| Failed`; the v4-only `Processing` and `Undone` values are gone from the enum and mapped on read (see implementation notes in the plan). |
-| `DataSourceHttpService.sendDatSrcConfiguration` | Returns `DriverJobInfo \| null` (`{JobId, Timestamp}` on v5, `null` on v4). This call never worked before: the driver URL was not awaited, so the request went to `[object Promise]/command/...`. |
+| `DataSourceHttpService.configureDataSource` (was `sendDatSrcConfiguration`) | Returns `DriverJobInfo \| null` (`{JobId, Timestamp}` on v5, `null` on v4). This call never worked before: the driver URL was not awaited, so the request went to `[object Promise]/command/...`. |
 | `DataConnectionBrowserService.browseConnection` | Returns `ConnectionBrowseItem[]` instead of `any`. |
 | `EventCategory.Acknowledgment` | New optional field, **v5 only**, and not the same thing as the v4 wire key of that name (which was the old spelling of `RequiresAcknowledgment`). Gate on `supports('acknowledgmentField')`. |
 | `HttpConfig` | New optional keys (`Services.Ticket`/`Manufacturing`/`Runtime`/`ExternalApi`, `Authentication.RequireHttps`, `Configuration`, `ApiVersion`). Never build URLs as `BaseUri + '/v1/...'`; the `/v1` lives in the per-service paths and the migration is per service. |
-| `BaseHttpService.isApiReachable` | Probes the v1 version path first. With the legacy proxy rewrite disabled the old path answers HTML 200, which used to be a false positive. |
-| `BaseHttpService.getStructureUrl` | Removed, together with the protected `httpConfig` accessor. Subclasses resolve endpoints (`this.resolve({ name })`) or read `this.ctx` instead of building URLs. |
+| `isApiReachable(apiUrl)` (was `BaseHttpService.isApiReachable`) | Plain function next to `detectApiVersion`. Probes the v1 version path first. With the legacy proxy rewrite disabled the old path answers HTML 200, which used to be a false positive. |
+| `BaseHttpService` | Removed entirely, including `getStructureUrl`, the protected `httpConfig` accessor and `getVersionInfo()` on the services. Use `service.ctx` / `ctx.getVersionInfo()`. |
+| Errors | Every service normalizes failures to `ApiError` (`EntityLockedError` on 423) through `ctx.request`. Previously only `EntityHttpService` did; the others leaked raw axios errors and `UserProfileHttpService` wrapped them into a plain `Error` that lost the status. A v5-only endpoint called on v4 (`countEntities`, `getEntityInfos`) throws `EndpointNotAvailableError` (`endpoint`, `apiVersion`), not `UnsupportedApiVersionError`. |
 
 New, v5-only and gated:
 
@@ -134,7 +145,10 @@ replacement listed above:
 - `HistoricalValueOperation.Timezone` / `.CreatedOn` / `.CreatedBy` / `.ChangedOn` / `.ChangedBy`
   and `HistoricalValueOperationStatus.Processing` / `.Undone`.
 - `EntityHttpEndpoints` (the v4 per-entity path map). It was a wire detail, not a model, and now
-  lives as `V4_ENTITY_PATHS` in the non-exported `lib/compat/endpoints/endpoints.v4.ts`.
+  lives as `V4_ENTITY_PATHS` in the non-exported `lib/compat/endpoints/endpoints.ts`, next to the
+  v5 segments and the single `{ method, v4, v5 }` endpoint table.
+- `HistoricalValue` and `HistoricalValueObject`; use `MeasuredValue` / `MeasuredValuePackage`.
+- `BaseHttpService` and `EntityHttpService.getVersionInfo()`; see above.
 
 Errors are now parsed: `ApiError` (`status`, `title`, `detail`, `type`, `instance`, `raw`) with
 `EntityLockedError` for the v5 `423 Locked`. `title` carries the platform error code on v5.
@@ -152,11 +166,15 @@ warns once per path:
 Nothing has to be enabled; watch the console of an app running against a v5 system and any warning
 is a core call site still on a legacy URL. There should be none.
 
-The logger itself (`DeprecationLogger`, `deprecationLogger`, `setSink`, `getLoggedPaths`) lives in
-`lib/compat/`, which is deliberately **not** part of the public export surface - it is the
-version-specific layer and disappears with the v4 end of life. That means the sink cannot be
-redirected into an app's own logging yet; if that is needed for rollout, core has to grow a small
-public facade for it (see `docs/v4-v5-compatibility-plan.md`, implementation notes).
+Apps reach the logger through two exported functions:
+
+```ts
+setDeprecationSink((message, record) => log.warn(message, record)); // null restores console.warn
+getDeprecatedPaths(); // every legacy path seen so far, in order
+```
+
+The logger class itself lives in `lib/compat/`, which is deliberately **not** part of the public
+export surface - it is the version-specific layer and disappears with the v4 end of life.
 
 ## 7. Open items that still need a live system
 

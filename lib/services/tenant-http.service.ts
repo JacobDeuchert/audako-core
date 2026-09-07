@@ -1,8 +1,10 @@
-import { TenantView } from '../models/tenant-view.model.js';
+import { ApiContext } from '../api/api-context.js';
 import { Endpoint } from '../compat/endpoints/endpoint-resolver.js';
-import { BaseHttpService } from './base-http.service.js';
+import { TenantView } from '../models/tenant-view.model.js';
 
-export class TenantHttpService extends BaseHttpService {
+export class TenantHttpService {
+  constructor(public readonly ctx: ApiContext) {}
+
   public getTenantViewById(id: string): Promise<TenantView> {
     return this._get<TenantView>({ name: 'tenantViewById', tenantId: id });
   }
@@ -25,8 +27,7 @@ export class TenantHttpService extends BaseHttpService {
 
   /** All tenant endpoints are plain reads whose response shape is identical on v4 and v5. */
   private async _get<T>(endpoint: Endpoint): Promise<T> {
-    const resolved = await this.resolve(endpoint);
-    const response = await this.ctx.http.request<T>({ method: resolved.method, url: resolved.url });
+    const response = await this.ctx.request<T>(endpoint);
     return response.data;
   }
 }

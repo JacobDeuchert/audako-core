@@ -7,10 +7,11 @@ import { EntityTypeClassMapping } from '../../models/entity-type-class-mapping.j
  * wire. Only entities that actually differ get an adapter; everything else uses
  * {@link identityAdapter}.
  *
- * Register a per-entity v4 adapter in `lib/compat/adapters/v4/` as one file per entity, e.g.
- * `event-category.adapter.v4.ts` exporting an `EntityAdapter<EventCategory>`, and add it to
- * {@link AdapterRegistry} for the entity type. `baseFromWire` / `baseToWire` already run around
- * every adapter, so a per-entity adapter only handles its own renames and defaults.
+ * Add a per-entity v4 adapter in `lib/compat/adapters/v4/` as one file per entity, e.g.
+ * `event-category.adapter.v4.ts` exporting an `EntityAdapter<EventCategory>`, and list it in
+ * `V4_ADAPTERS` (`lib/compat/adapters/v4/index.ts`). `baseFromWire` / `baseToWire` already run
+ * around every adapter (see `applyFromWire` / `applyToWire` in `lib/compat/adapters/index.ts`),
+ * so a per-entity adapter only handles its own renames and defaults.
  */
 /**
  * How much of the entity the payload contains, and therefore how far the shared read pass may
@@ -53,6 +54,13 @@ export const identityAdapter: EntityAdapter<any> = {
 
 /** Fields the server owns; they are never sent on a write. */
 export const SERVER_OWNED_FIELDS = ['Path', 'AclAllow', 'AclDeny'];
+
+/**
+ * Identity and audit fields. They are never filled from a model default on read: a `null`
+ * `CreatedOn` from the server means "unknown", and fabricating a timestamp (or an id) would
+ * look like real server state.
+ */
+export const NEVER_FILLED_FIELDS = ['Id', 'CreatedBy', 'CreatedOn', 'ChangedBy', 'ChangedOn'];
 
 /**
  * Shared write pass applied to every entity before its adapter runs: strips the server-owned
@@ -145,7 +153,7 @@ function fillDefaults(wire: any, defaults: any, mode: FromWireMode): any {
   const entity: any = { ...wire };
   for (const key of Object.keys(defaults)) {
     const defaultValue = defaults[key];
-    if (defaultValue === null || defaultValue === undefined) {
+    if (defaultValue === null || defaultValue === undefined || NEVER_FILLED_FIELDS.includes(key)) {
       continue;
     }
 
@@ -188,58 +196,3 @@ export function baseFromWire<T = any>(wire: any, entityType: EntityType, mode: F
   const entity: any = fillDefaults(wire, defaults, mode);
   return entity as T;
 }
-
-/**
- * Entity type -> adapter lookup. Unregistered types resolve to {@link identityAdapter}.
- * `apply*` run the shared base pass around the per-entity adapter, which is what the http
- * services should call.
- */
-export class AdapterRegistry {
-  private _adapters = new Map<EntityType, EntityAdapter<any>>();
-
-  /** Registers (or replaces) the adapter for an entity type. */
-  public register<T>(entityType: EntityType, adapter: EntityAdapter<T>): this {
-    this._adapters.set(entityType, adapter);
-    return this;
-  }
-
-  /** Removes a registration, so the type falls back to the identity adapter. */
-  public unregister(entityType: EntityType): this {
-    this._adapters.delete(entityType);
-    return this;
-  }
-
-  /** True when a per-entity adapter is registered for the type. */
-  public has(entityType: EntityType): boolean {
-    return this._adapters.has(entityType);
-  }
-
-  /** Adapter for the type, or {@link identityAdapter} when none is registered. */
-  public getAdapter<T = any>(entityType: EntityType): EntityAdapter<T> {
-    return this._adapters.get(entityType) || identityAdapter;
-  }
-
-  /**
-   * `baseFromWire` followed by the per-entity adapter.
-   *
-   * @param mode `projected` for `$projection` results; see {@link FromWireMode}.
-   */
-  public applyFromWire<T = any>(
-    entityType: EntityType,
-    wire: any,
-    ctx: ApiVersionInfo,
-    mode: FromWireMode = 'full',
-  ): T {
-    const prepared = baseFromWire(wire, entityType, mode);
-    return this.getAdapter<T>(entityType).fromWire(prepared, ctx, mode);
-  }
-
-  /** The per-entity adapter followed by `baseToWire`. */
-  public applyToWire<T = any>(entityType: EntityType, entity: T, ctx: ApiVersionInfo): any {
-    const adapted = this.getAdapter<T>(entityType).toWire(entity, ctx);
-    return baseToWire(adapted);
-  }
-}
-
-/** Registry used by the http services. v4 adapters register themselves here. */
-export const entityAdapters = new AdapterRegistry();

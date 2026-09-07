@@ -53,7 +53,8 @@ export function normalizeVersionBody(body: unknown): string | null {
   return value;
 }
 
-async function probe(url: string, timeoutMs: number): Promise<string | null> {
+/** One version probe: the HTTP status and, on a 200 with a usable body, the version string. */
+async function probe(url: string, timeoutMs: number): Promise<{ status: number; version: string | null }> {
   const response = await axios.get(url, {
     responseType: 'text',
     transformResponse: [(data: any) => data],
@@ -61,11 +62,10 @@ async function probe(url: string, timeoutMs: number): Promise<string | null> {
     validateStatus: () => true,
   });
 
-  if (response.status !== 200) {
-    return null;
-  }
-
-  return normalizeVersionBody(response.data);
+  return {
+    status: response.status,
+    version: response.status === 200 ? normalizeVersionBody(response.data) : null,
+  };
 }
 
 /**
@@ -90,7 +90,7 @@ export async function detectApiVersion(apiUrl: string, options: DetectApiVersion
 
   for (const path of [V5_VERSION_PATH, V4_VERSION_PATH]) {
     try {
-      const version = await probe(`${base}${path}`, timeoutMs);
+      const { version } = await probe(`${base}${path}`, timeoutMs);
       if (version) {
         return createApiVersionInfo(version);
       }
@@ -100,4 +100,30 @@ export async function detectApiVersion(apiUrl: string, options: DetectApiVersion
   }
 
   throw new ApiVersionDetectionError(base, undefined, lastError);
+}
+
+/**
+ * True when a system answers on one of its version endpoints. A `401` counts as reachable: the
+ * platform is there, it only refuses anonymous access. HTML bodies do not count (see
+ * {@link detectApiVersion}).
+ */
+export async function isApiReachable(
+  apiUrl: string,
+  options: Pick<DetectApiVersionOptions, 'timeoutMs'> = {},
+): Promise<boolean> {
+  const base = (apiUrl || '').replace(/\/+$/, '');
+  const timeoutMs = options.timeoutMs || 10000;
+
+  for (const path of [V5_VERSION_PATH, V4_VERSION_PATH]) {
+    try {
+      const { status, version } = await probe(`${base}${path}`, timeoutMs);
+      if (version || status === 401) {
+        return true;
+      }
+    } catch {
+      // Network error: try the next path.
+    }
+  }
+
+  return false;
 }

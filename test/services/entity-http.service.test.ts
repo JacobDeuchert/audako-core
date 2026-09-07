@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { UnsupportedApiVersionError } from '../../lib/api/errors.js';
+import { EndpointNotAvailableError } from '../../lib/api/errors.js';
 import { EntityType } from '../../lib/models/entities/configuration-entity.model.js';
 import { Group } from '../../lib/models/entities/group.model.js';
 import { EntityHttpService } from '../../lib/services/entity-http.service.js';
@@ -34,7 +34,8 @@ describe('EntityHttpService.getPartialEntityById', () => {
       const stub = service(version);
       stub.request.mockResolvedValue({ data: { Id: 'abc' }, headers: {} });
       await stub.service.getPartialEntityById(EntityType.Group, 'abc', { Name: 1 });
-      expect(stub.request.mock.calls[0][0].url).toContain('?$projection={"Name":1}');
+      expect(stub.request.mock.calls[0][0].url).not.toContain('?');
+      expect(stub.request.mock.calls[0][0].params).toEqual({ $projection: '{"Name":1}' });
     }
   });
 });
@@ -65,7 +66,8 @@ describe('EntityHttpService.queryConfiguration', () => {
 
     const config = request.mock.calls[0][0];
     expect(config.method).toBe('QUERY');
-    expect(config.url).toBe('https://host/api/v1/structure/signals?$projection={"Name":1}');
+    expect(config.url).toBe('https://host/api/v1/structure/signals');
+    expect(config.params).toEqual({ $projection: '{"Name":1}' });
     expect(config.data).toEqual({ $filter: '{"GroupId":"g"}', $paging: null, $sort: '{"Name.Value":1}' });
     expect(config.headers).toMatchObject({ Language: 'de-DE' });
   });
@@ -210,10 +212,13 @@ describe('v5-only entity endpoints', () => {
     const v5 = service('5.0.0');
     v5.request.mockResolvedValue({ data: 7, headers: {} });
     await expect(v5.service.countEntities(EntityType.Signal, { GroupId: 'g' })).resolves.toBe(7);
-    expect(v5.request.mock.calls[0][0].url).toBe('https://host/api/v1/structure/signals/count?$filter={"GroupId":"g"}');
+    expect(v5.request.mock.calls[0][0]).toMatchObject({
+      url: 'https://host/api/v1/structure/signals/count',
+      params: { $filter: '{"GroupId":"g"}' },
+    });
 
     const v4 = service('4.23.0');
-    await expect(v4.service.countEntities(EntityType.Signal)).rejects.toBeInstanceOf(UnsupportedApiVersionError);
+    await expect(v4.service.countEntities(EntityType.Signal)).rejects.toBeInstanceOf(EndpointNotAvailableError);
     expect(v4.request).not.toHaveBeenCalled();
   });
 
@@ -221,12 +226,13 @@ describe('v5-only entity endpoints', () => {
     const v5 = service('5.0.0');
     v5.request.mockResolvedValue({ data: [{ Id: 'a', Name: { Value: 'A' } }], headers: {} });
     await v5.service.getEntityInfosByIds(EntityType.Group, ['a', 'b']);
-    expect(v5.request.mock.calls[0][0].url).toBe(
-      'https://host/api/v1/structure/groups/entity-info?$filter={"Id":{"$in":["a","b"]}}',
-    );
+    expect(v5.request.mock.calls[0][0]).toMatchObject({
+      url: 'https://host/api/v1/structure/groups/entity-info',
+      params: { $filter: '{"Id":{"$in":["a","b"]}}' },
+    });
 
     const v4 = service('4.23.0');
-    await expect(v4.service.getEntityInfos(EntityType.Group)).rejects.toBeInstanceOf(UnsupportedApiVersionError);
+    await expect(v4.service.getEntityInfos(EntityType.Group)).rejects.toBeInstanceOf(EndpointNotAvailableError);
   });
 });
 
@@ -259,6 +265,16 @@ describe('EntityHttpService projected reads', () => {
 
     expect(entity.Name).toEqual(new Group().Name);
     expect(entity).not.toHaveProperty('Tags');
+  });
+
+  it('leaves a null CreatedOn alone instead of fabricating a timestamp', async () => {
+    const { service: svc, request } = service('5.0.0');
+    request.mockResolvedValue({ data: { Id: 'abc', CreatedOn: null, CreatedBy: null }, headers: {} });
+
+    const entity: any = await svc.getEntityById(EntityType.Group, 'abc');
+
+    expect(entity.CreatedOn).toBeNull();
+    expect(entity.CreatedBy).toBeNull();
   });
 
   it('applies the projected mode to query rows as well', async () => {

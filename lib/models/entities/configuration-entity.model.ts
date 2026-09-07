@@ -116,8 +116,9 @@ export abstract class ConfigurationEntity {
     this.Path = [];
     this.GroupId = null;
 
+    // Audit fields are server-owned: never default them, or a missing value would look like real data.
     this.CreatedBy = null;
-    this.CreatedOn = new Date();
+    this.CreatedOn = null;
 
     this.ChangedBy = null;
     this.ChangedOn = null;

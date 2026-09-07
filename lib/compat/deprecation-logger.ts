@@ -28,7 +28,7 @@ export class DeprecationLogger {
   }
 
   /** Replaces the log sink (useful for wiring app logging or tests). */
-  public setSink(sink: DeprecationSink): void {
+  public setSink(sink: DeprecationSink | null): void {
     this._sink = sink || defaultSink;
   }
 
