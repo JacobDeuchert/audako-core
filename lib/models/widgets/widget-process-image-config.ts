@@ -4,13 +4,13 @@ export const WidgetProcessImageConfigVersion = '3';
 
 export class WidgetProcessImageConfig extends BaseWidgetConfig {
   processImageId: string;
-  backgroundColor: string = null;
+  backgroundColor: string | null = null;
 
   basetag: string;
 
   crossTabs: boolean;
   mode: CrossTabMode;
-  transferToken: string;
+  transferToken: string | null;
 
   preloadImages: boolean;
 

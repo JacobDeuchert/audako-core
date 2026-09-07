@@ -26,10 +26,10 @@ export class EntityUtils {
   }
 
   public static setPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string, value: U, isField?: boolean, setOnlyExistingFields?: boolean) {
-    this._setObjectProperty(entity, propertyPath.split('.'), value, null, isField, setOnlyExistingFields);
+    this._setObjectProperty(entity, propertyPath.split('.'), value, '', isField, setOnlyExistingFields);
   }
 
-  public static getPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string, isField?: boolean): U {
+  public static getPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string, isField?: boolean): U | null {
 
     const propertyPathParts = propertyPath.split('.');
 
@@ -111,7 +111,7 @@ export class EntityUtils {
     return deepKeys;
   }
 
-  private static _setObjectProperty<T>(object: object, propertyPath: string[], value: T, previousKey: string, isField?: boolean, setOnlyExistingFields?: boolean): void {
+  private static _setObjectProperty<T>(object: Record<string, any>, propertyPath: string[], value: T, previousKey: string, isField?: boolean, setOnlyExistingFields?: boolean): void {
 
     if (!object || propertyPath.length === 0) {
       return;
@@ -124,7 +124,7 @@ export class EntityUtils {
       return;
     }
 
-    const currentKey = propertyPath.shift();
+    const currentKey = propertyPath.shift() as string;
 
     if (propertyPath.length === 0) {
 
@@ -143,18 +143,18 @@ export class EntityUtils {
     } 
   }
 
-  private static _setAdditionalField<T>(object: object, propertyPath: string[], value: T): void {
+  private static _setAdditionalField<T>(object: Record<string, any>, propertyPath: string[], value: T): void {
     if (propertyPath.length === 0) {
       return;
     }
 
-    const firstKey = propertyPath.shift();
+    const firstKey = propertyPath.shift() as string;
 
     if (propertyPath.length === 0) {
       object[firstKey] = new Field(value?.toString());
       return;
     } else {
-      let obj = object[firstKey] ? ObjectUtils.tryParseJson(object[firstKey].Value, {}) : {};
+      let obj: Record<string, any> = object[firstKey] ? ObjectUtils.tryParseJson<Record<string, any>>(object[firstKey].Value, {}) ?? {} : {};
       for (const key of propertyPath) {
         const isLastKey = propertyPath.indexOf(key) === propertyPath.length - 1;
         if (isLastKey) {

@@ -85,7 +85,7 @@ export class SignalBadge extends Badge {
 
 export class EventBadge extends Badge {
   eventFilter: 'Group' | 'Category' | 'Event';
-  filterId: string | string[];
+  filterId: string | string[] | null;
 
   constructor() {
     super();

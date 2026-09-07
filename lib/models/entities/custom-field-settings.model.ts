@@ -17,7 +17,7 @@ export abstract class CustomFieldSettings {
 
 export class NumberFieldSettings extends CustomFieldSettings {
   public DecimalPlaces: number | null;
-  public Unit: string;
+  public Unit: string | null;
   public Min: number | null;
   public Max: number | null;
   public StepSize: number | null;
@@ -34,7 +34,7 @@ export class NumberFieldSettings extends CustomFieldSettings {
 
 export class TextFieldSettings extends CustomFieldSettings {
   public MaxLength: number | null;
-  public ValidationRegex: string;
+  public ValidationRegex: string | null;
   public Multiline: boolean;
 
   constructor(typeName: string = 'TextFieldSettings') {
@@ -76,7 +76,7 @@ export class SelectFieldSettings extends CustomFieldSettings {
 }
 
 export class EntityFieldSettings extends CustomFieldSettings {
-  public EntityType: string;
+  public EntityType: string | null;
 
   constructor() {
     super('EntityFieldSettings');
@@ -91,7 +91,7 @@ export class UserFieldSettings extends CustomFieldSettings {
 }
 
 export class CustomMappingFieldSettings extends CustomFieldSettings {
-  public CustomMappingId: string;
+  public CustomMappingId: string | null;
 
   constructor() {
     super('CustomMappingFieldSettings');

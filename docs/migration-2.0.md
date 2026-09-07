@@ -150,6 +150,12 @@ replacement listed above:
 - `HistoricalValue` and `HistoricalValueObject`; use `MeasuredValue` / `MeasuredValuePackage`.
 - `BaseHttpService` and `EntityHttpService.getVersionInfo()`; see above.
 
+Types are stricter: core compiles with `noImplicitAny` and `strictNullChecks` and targets ES2020.
+`Field.Value` is `T | null` (a null value on the wire means "no value"), and the nullable
+`ConfigurationEntity` fields (`Id`, `GroupId`, `CreatedBy`, `CreatedOn`, `ChangedBy`, `ChangedOn`,
+`IsInstanceOf`) plus the widget config fields that default to `null` say so in their types. Apps that
+compile without `strictNullChecks` see no difference.
+
 Errors are now parsed: `ApiError` (`status`, `title`, `detail`, `type`, `instance`, `raw`) with
 `EntityLockedError` for the v5 `423 Locked`. `title` carries the platform error code on v5.
 

@@ -7,10 +7,10 @@ export class WidgetDigitalSwitchConfig extends BaseWidgetConfig {
   signalLockId: string;
   lockingValue: any;
   customLockingValue: any;
-  lockingState: number;
+  lockingState: number | null;
   displayStatus: boolean;
-  caption: string;
-  type: string;
+  caption: string | null;
+  type: string | null;
   manageConditions: boolean;
   includeSignalHist: boolean;
 

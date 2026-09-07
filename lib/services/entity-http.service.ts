@@ -127,7 +127,7 @@ export class EntityHttpService {
     const projectionValue = projection ? JSON.stringify(projection) : null;
     const sortValue = options?.sort ? JSON.stringify(options.sort) : null;
 
-    let body: { [p: string]: string };
+    let body: { [p: string]: string | null };
     let params: { [p: string]: string } | undefined;
     const headers: { [p: string]: string } = {};
 
@@ -194,6 +194,9 @@ export class EntityHttpService {
    * @throws ApiError on 400, e.g. when `entity.Id` does not match the route id (v5).
    */
   public async updateEntity<T extends ConfigurationEntity>(type: EntityType, entity: T): Promise<T> {
+    if (!entity.Id) {
+      throw new Error('updateEntity needs an entity with an Id; use addEntity for new entities.');
+    }
     const versionInfo = await this.ctx.getVersionInfo();
     const payload = this._toWire(type, entity, versionInfo);
 

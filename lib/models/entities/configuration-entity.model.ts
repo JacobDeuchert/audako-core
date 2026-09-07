@@ -51,11 +51,11 @@ export enum EntityObjectOrientationAttribute {
 }
 
 export class Field<T> {
-  public Value: T;
+  /** `null` means "no value"; the platform serializes every field, absent values arrive as null. */
+  public Value: T | null;
   public OOAttributes: FieldObjectOrientationAttribute[];
 
-
-  constructor(value: T = null, ooAttributes: FieldObjectOrientationAttribute[] = []) {
+  constructor(value: T | null = null, ooAttributes: FieldObjectOrientationAttribute[] = []) {
     this.Value = value;
     this.OOAttributes = ooAttributes;
   }
@@ -68,14 +68,14 @@ export class Field<T> {
 export class TranslatableField<T> extends Field<T> {
   public Translations: { [language: string]: T };
 
-  constructor(value: T = null, ooAttributes: FieldObjectOrientationAttribute[] = []) {
+  constructor(value: T | null = null, ooAttributes: FieldObjectOrientationAttribute[] = []) {
     super(value, ooAttributes);
     this.Translations = {};
   }
 }
 
 export abstract class ConfigurationEntity {
-  public Id: string;
+  public Id: string | null;
 
   public Path: string[];
 
@@ -89,17 +89,17 @@ export abstract class ConfigurationEntity {
 
   public AdditionalFields: { [p: string]: Field<string> };
 
-  public GroupId: string;
+  public GroupId: string | null;
 
-  public CreatedBy: string;
-  public CreatedOn: Date;
+  public CreatedBy: string | null;
+  public CreatedOn: Date | null;
 
-  public ChangedBy?: string;
-  public ChangedOn?: Date;
+  public ChangedBy?: string | null;
+  public ChangedOn?: Date | null;
 
   public MaintenanceMode: boolean;
 
-  public IsInstanceOf?: string;
+  public IsInstanceOf?: string | null;
   public IsTemplate: boolean;
 
   public OOAttributes: EntityObjectOrientationAttribute[];

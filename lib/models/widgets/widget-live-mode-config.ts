@@ -4,7 +4,7 @@ export const WidgetLiveModeConfigVersion = '2';
 
 export class WidgetLiveModeConfig extends BaseWidgetConfig {
   id: string;
-  queryType: 'Datasource' | 'DataConnection';
+  queryType: 'Datasource' | 'DataConnection' | null;
   title: string;
 
   constructor() {

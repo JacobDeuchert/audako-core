@@ -72,7 +72,7 @@ export const GaugeRange: { [key: string]: Range } = {
   f4: { start: 45, end: 315, rotation: 90, icon: 'fIcon' },
 };
 
-export function GetRangeKey(start: number, end: number): string {
+export function GetRangeKey(start: number, end: number): string | null {
   for (const key in GaugeRange) if (GaugeRange[key].start === start && GaugeRange[key].end === end) return key;
   return null;
 }

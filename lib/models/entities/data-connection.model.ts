@@ -33,7 +33,7 @@ export enum DataConnectionSpecialDeviceProfile {
 export class DataConnection extends ConfigurationEntity {
   public DataSourceId: Field<string>;
   public Type: Field<DataConnectionType>;
-  public Settings: DataConnectionTypedSettings;
+  public Settings: DataConnectionTypedSettings | null;
   public SpecialDeviceProfile: Field<DataConnectionSpecialDeviceProfile>;
   public InactivityTimeout: Field<number | null>;
   public PollingInterval: Field<number | null>;

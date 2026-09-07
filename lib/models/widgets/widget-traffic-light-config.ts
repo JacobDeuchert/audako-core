@@ -10,7 +10,7 @@ export enum TrafficLights {
 export class WidgetTrafficLightConfig extends BaseWidgetConfig {
   mode: TrafficLightModes;
   settings: TrafficLightSetting[];
-  housingColor: string;
+  housingColor: string | null;
 
   constructor() {
     super();

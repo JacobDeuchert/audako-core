@@ -30,7 +30,7 @@ export class SliderEntry {
 }
 
 export class WidgetSliderConfig extends BaseWidgetConfig {
-  sliderGroups: SliderGroup[];
+  sliderGroups: SliderGroup[] | null;
 
   constructor() {
     super();

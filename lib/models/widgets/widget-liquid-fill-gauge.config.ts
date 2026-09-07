@@ -16,7 +16,7 @@ export class WidgetLiquidFillGaugeConfig extends BaseWidgetConfig {
   circleColor: string;
   textColor: string;
   waveTextColor: string;
-  signalId: string;
+  signalId: string | null;
   waveAnimateTime: number;
   waveHeight: number;
   showMinMax: boolean;

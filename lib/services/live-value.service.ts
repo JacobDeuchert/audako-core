@@ -7,7 +7,6 @@ import {
   firstValueFrom,
   isObservable,
   map,
-  mapTo,
   Observable,
   of,
   Subject,
@@ -89,7 +88,7 @@ export enum SubscriptionPrefix {
 }
 
 export class LiveValueService implements Disposable {
-  private hubConnection: signalR.HubConnection;
+  private hubConnection: signalR.HubConnection | null;
 
   private _valueCache: { [key: string]: SignalLiveValue };
 
@@ -158,7 +157,7 @@ export class LiveValueService implements Disposable {
     return firstValueFrom(
       this._connectionEstablished.pipe(
         filter((x) => x),
-        mapTo(null),
+        map(() => undefined),
       ),
     );
   }
@@ -193,7 +192,7 @@ export class LiveValueService implements Disposable {
     const prefixedId = `${SubscriptionPrefix.OP}:${operationId}`;
     return this.subscribeToOperations([operationId]).pipe(
       map((messages) => messages.find((x) => x.id === operationId)),
-      filter((m) => m != null),
+      filter((m): m is OperationMessage => m != null),
       takeWhile((m) => m.status !== OperationStatus.Success && m.status !== OperationStatus.Failed, true),
       finalize(() => this._unsubscribeIds([prefixedId])),
     );
@@ -228,7 +227,7 @@ export class LiveValueService implements Disposable {
     const newIds = ids.filter((id) => !this._queuedIds.includes(id));
     if (newIds.length > 0) {
       this._queuedIds.push(...newIds);
-      this._subscribeRequested.next(null);
+      this._subscribeRequested.next();
     }
   }
 
@@ -272,7 +271,7 @@ export class LiveValueService implements Disposable {
           clampLiveInterval(DEFAULT_LIVE_INTERVAL_MS, this._versionInfo),
         );
 
-        this.hubConnection.on('Send', (message: any) => this._handleHubMessage(message));
+        connection.on('Send', (message: any) => this._handleHubMessage(message));
         console.log('Connected to SignalR');
         this._connectionEstablished.next(true);
       })
@@ -282,7 +281,7 @@ export class LiveValueService implements Disposable {
         console.log('Failed to start connection: ' + e.message);
       });
 
-    this.hubConnection.onclose(() => {
+    connection.onclose(() => {
       console.log('Hub connection closed');
       this.hubConnection = null;
     });

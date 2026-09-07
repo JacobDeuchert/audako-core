@@ -47,7 +47,7 @@ export class WidgetIframeConfig extends BaseWidgetConfig {
    */
   restrictions: string[];
 
-  src: string;
+  src: string | null;
 
   loadingMethod: 'eager' | 'lazy' | 'auto';
 

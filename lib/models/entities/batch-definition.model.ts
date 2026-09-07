@@ -78,7 +78,7 @@ export class TriggerDefinition {
 
 export class BatchReleaseSettings {
   public Enabled: boolean = false;
-  public SignalId: string = null;
+  public SignalId: string | null = null;
   public ReleaseValue: any = null;
 }
 
