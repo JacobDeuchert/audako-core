@@ -21,7 +21,6 @@ const jsToTs = {
 export default defineConfig({
   plugins: [jsToTs],
   test: {
-    // Only the vitest suites; test/index.ts is a manual scratch project and stays untouched.
     include: ['test/**/*.test.ts'],
     environment: 'node',
   },
