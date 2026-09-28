@@ -4,16 +4,6 @@
 // `BaseWidgetConfig`. The base class always contributes `version`, `title`, and
 // `headerExpanded` (default `false`). The types below are the non-base shapes that
 // recur across several widget configs.
-//
-// Mirrors the audako-ui sources:
-//   - src/app/shared/widgets/base-widget-config.ts
-//   - src/app/shared/widgets/widget-entity.ts
-//   - src/app/shared/components/audako-time-management-config/AudakoTimeManagement.model.ts
-//   - src/app/shared/utils/time/time-util.ts
-//   - src/app/apps/application/shared/services/historical-values.service.ts
-//   - src/app/shared/components/audako-chart-modules/audako-xy-chart/chart.interface.ts
-//   - src/app/shared/components/audako-chart-modules/core/AudakoXYChart/audako-xy-chart.options.ts
-
 import { CompressionInterval } from '../historical-value.model.js';
 
 // ---------------------------------------------------------------------------
