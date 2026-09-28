@@ -7,7 +7,7 @@ export class TenantView {
   public Locked: boolean;
   public Public: boolean;
   public ApplicationSettings: { [p: string]: any };
-  /** Sort position among the tenant's siblings. Sent from 4.16 on, undefined before. */
+  public IncludesSelf?: boolean;
   public Position?: number;
 
   constructor(options?: Partial<TenantView>) {

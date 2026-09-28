@@ -145,7 +145,7 @@ all keyed on the exact 4.x minor:
 | 4.13 | RuntimeScript | `Enabled` added, absent docs read as disabled | Treat undefined as true on 4.12 reads. |
 | 4.15 | DashboardTab | `DashboardTabEntity.Id -> EntityId` renamed inside the window; short-lived `EntityMapping` (string dict) vs final `EntityMappings` (object dict) | Read both spellings, write `EntityId`. Do not map `EntityMapping` onto `EntityMappings`. |
 | 4.16 | TranslatableField | `Translations` first appears on the wire | Feature flag `translations`; below 4.16 translations are unsupported, not empty. |
-| 4.16 | TenantView | `PublicTenantView` collapsed into `TenantView` (superset), `IncludesSelf` added | None; core model is the superset already. |
+| 4.16 | TenantView | `PublicTenantView` collapsed into `TenantView` (superset), `IncludesSelf` added | Optional `IncludesSelf` and `Position` in the model, undefined below 4.16. |
 | 4.17 | EventDefinition | `EventCategoryId` arrives as bare `null` instead of `{Value:null}` | Coerce null to empty Field on read below 4.17. |
 | 4.17 | BatchDefinition | `MetadataField.Editable` added; migrator derives it from `ObligatoryAt == Stop` | Below 4.17 derive the same way on read. |
 | 4.23 | EventCategory | `Acknowledgment -> RequiresAcknowledgment` rename, no server migrator | Read either, write legacy name below 4.23. |
