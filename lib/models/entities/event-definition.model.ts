@@ -5,7 +5,7 @@ export class EventDefinition extends ConfigurationEntity {
   public EventCategoryId: Field<string>;
   public ExpressionParameters: ExpressionParameter[];
   public EventExpression: Field<string>;
-  /** Blockly workspace the expression was built with, at most 1 MB. */
+  /** At most 1 MB. */
   public BlocklyXml: Field<string>;
 
   constructor() {

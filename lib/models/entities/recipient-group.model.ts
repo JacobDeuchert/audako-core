@@ -4,7 +4,7 @@ export class RecipientGroup extends ConfigurationEntity {
   public Enabled: Field<boolean>;
   public Loops: Field<number>;
   public Members: RecipientGroupMember[];
-  /** `#RRGGBB` or `#RRGGBBAA`. */
+  /** `#RRGGBB` or `#RRGGBBAA` */
   public Color: Field<string>;
 
   constructor() {

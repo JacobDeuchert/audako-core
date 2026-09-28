@@ -1,11 +1,9 @@
 import { ConfigurationEntity, Field } from './configuration-entity.model.js';
 
 export class Dashboard extends ConfigurationEntity {
-  /** Icon name, at most 64 characters. */
+  /** At most 64 characters. */
   public Icon: Field<string>;
-  /** Sort key, ascending; `null` sorts last (then by `Name`). */
   public Order: Field<number | null>;
-  /** Id of one of the dashboard's own tabs. */
   public StartTabId: Field<string>;
 
   constructor() {

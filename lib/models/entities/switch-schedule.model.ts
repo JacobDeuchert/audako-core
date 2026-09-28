@@ -2,7 +2,7 @@ import { ConfigurationEntity, Field } from './configuration-entity.model.js';
 
 export class SwitchSchedule extends ConfigurationEntity {
   public Rules: Field<SwitchRule[]>;
-  /** Icon name, at most 64 characters. */
+  /** At most 64 characters. */
   public Icon: Field<string>;
 
   constructor() {
@@ -34,7 +34,7 @@ export class SwitchOperation extends ConfigurationEntity {
   public Enabled: Field<boolean>;
   public StartValue: Field<number>;
   public EndValue: Field<number>;
-  /** `#RRGGBB` or `#RRGGBBAA`. */
+  /** `#RRGGBB` or `#RRGGBBAA` */
   public Color: Field<string>;
 
   constructor() {

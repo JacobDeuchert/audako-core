@@ -12,17 +12,12 @@ export class Group extends ConfigurationEntity {
 
   public TemplateVariables: TemplateVariable[];
 
-  /** Icon name, at most 64 characters. */
+  /** At most 64 characters. */
   public Icon: Field<string>;
-  /** Sort key, ascending; `null` sorts last (then by `Name`). */
   public Order: Field<number | null>;
   public Position: Field<GeoPosition>;
-  /** `File(<id>)`. Upload and delete go through the picture endpoints, not a `PUT`. */
+  /** `File(<id>)` */
   public Picture: Field<string>;
-  /**
-   * Start dashboard of an entry point. v5 only (feature `entryPointStartDashboard`): v4 flags the
-   * dashboards instead, which a per-entity adapter cannot resolve. Undefined on v4.
-   */
   public StartDashboardId?: Field<string>;
 
   constructor() {

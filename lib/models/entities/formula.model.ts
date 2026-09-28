@@ -19,7 +19,6 @@ export class Formula extends ConfigurationEntity {
 
   public Variables: FormulaVariable[];
 
-  /** One formula is edited for all intervals. */
   public SameFormulaForAllIntervals: Field<boolean>;
 
   constructor() {

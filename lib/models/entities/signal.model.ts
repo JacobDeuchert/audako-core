@@ -25,9 +25,8 @@ export class Signal extends ConfigurationEntity {
 
   public CompressionSettings: SignalCompressionSettings;
 
-  /** `#RRGGBB` or `#RRGGBBAA`. */
+  /** `#RRGGBB` or `#RRGGBBAA` */
   public Color: Field<string>;
-  /** The address is edited in the multi-line editor. */
   public MultiLineAddress: Field<boolean>;
 
   constructor() {
@@ -104,7 +103,6 @@ export class SignalAnalogSettings extends SignalSettings {
   public Factor: Field<number>;
   public Offset: Field<number>;
 
-  /** Last state of the UI's scaling calculator. */
   public ScalingCalculatorState: Field<ScalingCalculatorState>;
 
   constructor() {
@@ -122,7 +120,7 @@ export class SignalAnalogSettings extends SignalSettings {
 }
 
 export class ScalingCalculatorState {
-  /** `"0"`, `"1"` or `"-1"`. */
+  /** `"0"`, `"1"` or `"-1"` */
   public DeviceType: string | null;
   public RealValueFrom: number | null;
   public RealValueTo: number | null;
@@ -146,7 +144,6 @@ export class SignalCounterSettings extends SignalSettings {
   public Factor: Field<number>;
   public Offset: Field<number>;
 
-  /** A falling input value is treated as an overflow. */
   public EnforceMonotonicInput: Field<boolean>;
 
   constructor() {

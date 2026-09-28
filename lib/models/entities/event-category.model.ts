@@ -29,9 +29,9 @@ export class EventCategory extends ConfigurationEntity {
   public Acknowledgment?: Field<boolean>;
   public NoRepeatUntilAcknowledged: Field<boolean>;
   public AlarmOn: Field<AlarmTrigger>;
-  /** Icon name, at most 64 characters. */
+  /** At most 64 characters. */
   public Icon: Field<string>;
-  /** `#RRGGBB` or `#RRGGBBAA`. */
+  /** `#RRGGBB` or `#RRGGBBAA` */
   public Color: Field<string>;
 
   constructor() {
