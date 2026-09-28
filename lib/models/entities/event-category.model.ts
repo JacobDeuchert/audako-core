@@ -29,6 +29,10 @@ export class EventCategory extends ConfigurationEntity {
   public Acknowledgment?: Field<boolean>;
   public NoRepeatUntilAcknowledged: Field<boolean>;
   public AlarmOn: Field<AlarmTrigger>;
+  /** Icon name, at most 64 characters. */
+  public Icon: Field<string>;
+  /** `#RRGGBB` or `#RRGGBBAA`. */
+  public Color: Field<string>;
 
   constructor() {
     super();
@@ -36,5 +40,7 @@ export class EventCategory extends ConfigurationEntity {
     this.RequiresAcknowledgment = new Field<boolean>(true);
     this.NoRepeatUntilAcknowledged = new Field<boolean>(false);
     this.AlarmOn = new Field<AlarmTrigger>(AlarmTrigger.OnRaised);
+    this.Icon = new Field<string>();
+    this.Color = new Field<string>();
   }
 }

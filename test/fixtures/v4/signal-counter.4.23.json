@@ -1,0 +1,30 @@
+{
+  "Id": "6501f0000000000000000030",
+  "Name": { "Value": "Zählerstand", "OOAttributes": [], "Translations": {} },
+  "GroupId": "6501f0000000000000000010",
+  "Version": 1,
+  "AdditionalFields": {
+    "Color": { "Value": "#FF8800", "OOAttributes": [] },
+    "MultiLine": { "Value": "false", "OOAttributes": [] },
+    "CounterChecked": { "Value": "false", "OOAttributes": [] },
+    "ScalingCalculatorFormState": { "Value": "null", "OOAttributes": [] }
+  },
+  "CreatedBy": "6501f000000000000000000a",
+  "CreatedOn": "2026-06-22T08:00:00Z",
+  "MaintenanceMode": false,
+  "IsTemplate": false,
+  "OOAttributes": [],
+  "Type": { "Value": "Counter", "OOAttributes": [] },
+  "DataConnectionId": { "Value": "6501f0000000000000000040", "OOAttributes": [] },
+  "Address": { "Value": "40001", "OOAttributes": [] },
+  "Settings": {
+    "_t": "SignalCounterSettings",
+    "MaxValue": { "Value": 99999, "OOAttributes": [] },
+    "OffsetAutomatic": { "Value": true, "OOAttributes": [] },
+    "OffsetDetection": { "Value": true, "OOAttributes": [] },
+    "DecimalPlaces": { "Value": 0, "OOAttributes": [] },
+    "Unit": { "Value": "m³", "OOAttributes": [] },
+    "Factor": { "Value": 1, "OOAttributes": [] },
+    "Offset": { "Value": 0, "OOAttributes": [] }
+  }
+}

@@ -12,6 +12,9 @@ import { isAtLeast, SemVer } from './api-version.js';
  * - `historicalValueOperationsV2` `historical-value-operations` shape with `UserId`/`StartedOn` (>= 5.0).
  * - `requiresAcknowledgmentField` `EventCategory.RequiresAcknowledgment` is the wire name (>= 4.23).
  * - `acknowledgmentField` `EventCategory.Acknowledgment` exists next to `RequiresAcknowledgment` (>= 5.0).
+ * - `dashboardTabOrder` `DashboardTab.Order` exists; v4 orders tabs on the dashboard (>= 5.0).
+ * - `entryPointStartDashboard` `Group.StartDashboardId` exists; v4 flags dashboards (>= 5.0).
+ * - `managedBy`        `ConfigurationEntity.ManagedBy` names the maintenance manager (>= 5.0).
  */
 export type Feature =
   | 'translations'
@@ -22,7 +25,10 @@ export type Feature =
   | 'optimisticConcurrency'
   | 'historicalValueOperationsV2'
   | 'requiresAcknowledgmentField'
-  | 'acknowledgmentField';
+  | 'acknowledgmentField'
+  | 'dashboardTabOrder'
+  | 'entryPointStartDashboard'
+  | 'managedBy';
 
 /**
  * Minimum platform version per feature. Add an entry here to add a feature; only use
@@ -38,6 +44,9 @@ export const FEATURE_MIN_VERSIONS: Record<Feature, string> = {
   historicalValueOperationsV2: '5.0',
   requiresAcknowledgmentField: '4.23',
   acknowledgmentField: '5.0',
+  dashboardTabOrder: '5.0',
+  entryPointStartDashboard: '5.0',
+  managedBy: '5.0',
 };
 
 /** Predicate on a parsed platform version. `null` means the version could not be parsed. */

@@ -104,6 +104,18 @@ export abstract class ConfigurationEntity {
 
   public OOAttributes: EntityObjectOrientationAttribute[];
 
+  /**
+   * Server-owned: id of the maintenance manager configuration that created and owns the entity.
+   * Never sent on writes. v5 only (feature `managedBy`); v4 only stores an unresolvable
+   * `CreatedWithManager` flag in `AdditionalFields`, so this stays `null` there.
+   */
+  public ManagedBy?: string | null;
+  /**
+   * Server-owned: id of the synchronization partner the entity came from, `"unknown"` for
+   * entities that only carry the old `Synchronized` flag. Never sent on writes.
+   */
+  public SynchronizedFrom?: string | null;
+
   constructor(options?: Partial<ConfigurationEntity>) {
     this.Name = new TranslatableField<string>();
     this.Alias = new Field<string>();
@@ -129,6 +141,9 @@ export abstract class ConfigurationEntity {
     this.IsTemplate = false;
 
     this.OOAttributes = [];
+
+    this.ManagedBy = null;
+    this.SynchronizedFrom = null;
 
 
     Object.assign(this, options);

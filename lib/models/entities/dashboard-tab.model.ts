@@ -7,6 +7,11 @@ export class DashboardTab extends ConfigurationEntity {
   public EntityMappings: Field<{ [key: string]: DashboardTabEntity }>;
   public PlaceholderDefinition: Field<DashboardTabPlaceholder[]>;
   public PlaceholderValues: Field<{ [key: string]: string }>;
+  /**
+   * Position within the dashboard, ascending. v5 only (feature `dashboardTabOrder`): v4 keeps the
+   * order as an id list on the dashboard. Undefined on v4.
+   */
+  public Order?: Field<number>;
 
   constructor() {
     super();

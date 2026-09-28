@@ -1,0 +1,27 @@
+{
+  "Id": "6501f0000000000000000010",
+  "Path": ["6501f0000000000000000000"],
+  "Name": { "Value": "Kläranlage Nord", "OOAttributes": [], "Translations": {} },
+  "Description": { "Value": null, "OOAttributes": [], "Translations": {} },
+  "GroupId": "6501f0000000000000000000",
+  "Version": 3,
+  "AdditionalFields": {
+    "Position": { "Value": "{\"lat\":48.1371,\"lng\":11.5754}", "OOAttributes": [] },
+    "Icon": { "Value": "adk-factory", "OOAttributes": ["Overwritten"] },
+    "Order": { "Value": "2", "OOAttributes": [] },
+    "Picture": { "Value": "File(6501f00000000000000000f1)", "OOAttributes": [] },
+    "Synchronized": { "Value": "true", "OOAttributes": [] },
+    "ThirdParty": { "Value": "keep me", "OOAttributes": [] }
+  },
+  "CreatedBy": "6501f000000000000000000a",
+  "CreatedOn": "2026-06-22T08:00:00Z",
+  "MaintenanceMode": false,
+  "IsTemplate": false,
+  "OOAttributes": [],
+  "Type": "Default",
+  "IsEntryPoint": true,
+  "PartGroups": [],
+  "PropertyGroups": [],
+  "OOVariables": {},
+  "TemplateVariables": []
+}

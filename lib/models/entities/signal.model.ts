@@ -25,6 +25,11 @@ export class Signal extends ConfigurationEntity {
 
   public CompressionSettings: SignalCompressionSettings;
 
+  /** `#RRGGBB` or `#RRGGBBAA`. */
+  public Color: Field<string>;
+  /** The address is edited in the multi-line editor. */
+  public MultiLineAddress: Field<boolean>;
+
   constructor() {
     super();
     this.Type = new Field<SignalType>(SignalType.AnalogInput);
@@ -34,6 +39,8 @@ export class Signal extends ConfigurationEntity {
     this.OutputSettings = new SignalOutputSettings();
     this.RecordingSettings = new SignalRecordingSettings();
     this.CompressionSettings = new SignalCompressionSettings();
+    this.Color = new Field<string>();
+    this.MultiLineAddress = new Field<boolean>(false);
   }
 }
 
@@ -97,6 +104,9 @@ export class SignalAnalogSettings extends SignalSettings {
   public Factor: Field<number>;
   public Offset: Field<number>;
 
+  /** Last state of the UI's scaling calculator. */
+  public ScalingCalculatorState: Field<ScalingCalculatorState>;
+
   constructor() {
     super('SignalAnalogSettings')
 
@@ -107,7 +117,21 @@ export class SignalAnalogSettings extends SignalSettings {
     this.Unit = new Field<string>();
     this.Factor = new Field<number>(1);
     this.Offset = new Field<number>(0);
+    this.ScalingCalculatorState = new Field<ScalingCalculatorState>();
   }
+}
+
+export class ScalingCalculatorState {
+  /** `"0"`, `"1"` or `"-1"`. */
+  public DeviceType: string | null;
+  public RealValueFrom: number | null;
+  public RealValueTo: number | null;
+  public TargetFrom: number | null;
+  public TargetTo: number | null;
+  public ReadingFrom: number | null;
+  public ReadingTo: number | null;
+  public CheckResult: number | null;
+  public ReadingUnit: string | null;
 }
 
 export class SignalCounterSettings extends SignalSettings {
@@ -122,6 +146,8 @@ export class SignalCounterSettings extends SignalSettings {
   public Factor: Field<number>;
   public Offset: Field<number>;
 
+  /** A falling input value is treated as an overflow. */
+  public EnforceMonotonicInput: Field<boolean>;
 
   constructor() {
     super('SignalCounterSettings')
@@ -133,6 +159,7 @@ export class SignalCounterSettings extends SignalSettings {
     this.Unit = new Field<string>();
     this.Factor = new Field<number>(1);
     this.Offset = new Field<number>(0);
+    this.EnforceMonotonicInput = new Field<boolean>(true);
   }
 }
 

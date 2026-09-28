@@ -82,7 +82,7 @@ describe('baseFromWire', () => {
 
 describe('adapter map', () => {
   it('returns the identity adapter for unlisted types', () => {
-    expect(getEntityAdapter(EntityType.Signal)).toBe(identityAdapter);
+    expect(getEntityAdapter(EntityType.DataSource)).toBe(identityAdapter);
   });
 
   it('runs baseFromWire before and baseToWire after the per-entity adapter', () => {

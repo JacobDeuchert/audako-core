@@ -1,0 +1,43 @@
+{
+  "Id": "6501f0000000000000000031",
+  "Name": { "Value": "Füllstand", "OOAttributes": [], "Translations": {} },
+  "GroupId": "6501f0000000000000000010",
+  "Version": 1,
+  "AdditionalFields": {},
+  "CreatedBy": "6501f000000000000000000a",
+  "CreatedOn": "2026-09-02T08:00:00Z",
+  "MaintenanceMode": false,
+  "IsTemplate": false,
+  "OOAttributes": [],
+  "ManagedBy": null,
+  "SynchronizedFrom": null,
+  "Type": { "Value": "AnalogInput", "OOAttributes": [] },
+  "DataConnectionId": { "Value": "6501f0000000000000000040", "OOAttributes": [] },
+  "Address": { "Value": "40002", "OOAttributes": [] },
+  "Color": { "Value": null, "OOAttributes": [] },
+  "MultiLineAddress": { "Value": true, "OOAttributes": [] },
+  "Settings": {
+    "_t": "SignalAnalogSettings",
+    "MinValue": { "Value": 0, "OOAttributes": [] },
+    "MaxValue": { "Value": 10, "OOAttributes": [] },
+    "DefaultValue": { "Value": null, "OOAttributes": [] },
+    "DecimalPlaces": { "Value": 2, "OOAttributes": [] },
+    "Unit": { "Value": "m", "OOAttributes": [] },
+    "Factor": { "Value": 1, "OOAttributes": [] },
+    "Offset": { "Value": 0, "OOAttributes": [] },
+    "ScalingCalculatorState": {
+      "Value": {
+        "DeviceType": "1",
+        "RealValueFrom": 0,
+        "RealValueTo": 10,
+        "TargetFrom": 4,
+        "TargetTo": 20,
+        "ReadingFrom": 0,
+        "ReadingTo": 27648,
+        "CheckResult": null,
+        "ReadingUnit": "mA"
+      },
+      "OOAttributes": []
+    }
+  }
+}

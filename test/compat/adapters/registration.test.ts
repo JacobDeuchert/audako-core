@@ -17,7 +17,7 @@ describe('v4 adapter map', () => {
       expect(ENTITY_ADAPTERS[entityType], entityType).toBe(V4_ADAPTERS[entityType]);
       expect(getEntityAdapter(entityType), entityType).not.toBe(identityAdapter);
     }
-    expect(V4_ADAPTED_ENTITY_TYPES.length).toBe(5);
+    expect(V4_ADAPTED_ENTITY_TYPES.length).toBe(12);
   });
 
   it('leaves every other entity type on the identity adapter', () => {
@@ -42,6 +42,7 @@ describe('listed adapters on v5', () => {
     [EntityType.DashboardTab, 'v5/dashboard-tab.5.0.json'],
     [EntityType.EventCategory, 'v5/event-category.5.0.json'],
     [EntityType.EventDefinition, 'v5/event-definition.5.0.json'],
+    [EntityType.Group, 'v5/group.5.0.json'],
     [EntityType.RuntimeScript, 'v5/runtime-script.5.0.json'],
   ];
 

@@ -52,8 +52,11 @@ export const identityAdapter: EntityAdapter<any> = {
   toWire: (entity) => entity,
 };
 
-/** Fields the server owns; they are never sent on a write. */
-export const SERVER_OWNED_FIELDS = ['Path', 'AclAllow', 'AclDeny'];
+/**
+ * Fields the server owns; they are never sent on a write. v5 preserves `ManagedBy` and
+ * `SynchronizedFrom` from the stored entity on a `PUT`, like the ACLs.
+ */
+export const SERVER_OWNED_FIELDS = ['Path', 'AclAllow', 'AclDeny', 'ManagedBy', 'SynchronizedFrom'];
 
 /**
  * Identity and audit fields. They are never filled from a model default on read: a `null`
@@ -63,8 +66,8 @@ export const SERVER_OWNED_FIELDS = ['Path', 'AclAllow', 'AclDeny'];
 export const NEVER_FILLED_FIELDS = ['Id', 'CreatedBy', 'CreatedOn', 'ChangedBy', 'ChangedOn'];
 
 /**
- * Shared write pass applied to every entity before its adapter runs: strips the server-owned
- * `Path`, `AclAllow` and `AclDeny`. Harmless on v4, required on v5 where they are discarded
+ * Shared write pass applied to every entity after its adapter runs: strips the server-owned
+ * {@link SERVER_OWNED_FIELDS}. Harmless on v4, required on v5 where they are discarded
  * anyway (docs/analysis/v4-to-v5-models.md).
  */
 export function baseToWire<T>(entity: T): any {
@@ -134,6 +137,15 @@ function isFillableSubObject(value: any): boolean {
 }
 
 /**
+ * True when `value` is another `_t`-discriminated class than `defaultValue`. `Signal.Settings`
+ * defaults to `SignalAnalogSettings`; descending into a counter's or digital signal's settings
+ * would fill them with the analog fields.
+ */
+function isOtherSubType(value: any, defaultValue: any): boolean {
+  return '_t' in defaultValue && value._t !== defaultValue._t;
+}
+
+/**
  * Top-level part of {@link baseFromWire}: fills absent/null keys from `defaults` and descends into
  * nested plain settings objects (`DataSource.PermaLiveModeSettings`, `Formula.*IntervalSettings`,
  * `BatchDefinition.BatchReviewSettings`/`ReleaseSettings`, ...) where the server may return a
@@ -165,7 +177,7 @@ function fillDefaults(wire: any, defaults: any, mode: FromWireMode): any {
       continue;
     }
 
-    if (isFillableSubObject(defaultValue) && isFillableSubObject(value)) {
+    if (isFillableSubObject(defaultValue) && isFillableSubObject(value) && !isOtherSubType(value, defaultValue)) {
       entity[key] = fillDefaults(value, defaultValue, 'full');
     }
   }

@@ -87,7 +87,8 @@ if (versionInfo.supports('entityInfo')) { ... }
 
 Available features: `translations` (>= 4.16), `entityMappings` (>= 4.15), `queryVerb`,
 `entityCount`, `entityInfo`, `optimisticConcurrency`, `historicalValueOperationsV2`,
-`acknowledgmentField` (all >= 5.0), `requiresAcknowledgmentField` (>= 4.23).
+`acknowledgmentField`, `dashboardTabOrder`, `entryPointStartDashboard`, `managedBy` (all >= 5.0),
+`requiresAcknowledgmentField` (>= 4.23).
 `ApiVersionInfo` also exposes `apiVersion`, `platformVersion`, `isV4`, `isV5` and
 `isAtLeast('4.17')`. Prefer `supports()`; version comparisons in app code are what 2.0 exists to
 remove.
@@ -158,6 +159,34 @@ compile without `strictNullChecks` see no difference.
 
 Errors are now parsed: `ApiError` (`status`, `title`, `detail`, `type`, `instance`, `raw`) with
 `EntityLockedError` for the v5 `423 Locked`. `title` carries the platform error code on v5.
+
+### Typed `AdditionalFields` keys
+
+v5 promoted the `AdditionalFields` keys the platform interprets to typed properties and removed
+them from the map. Core models the typed properties and maps them to the legacy keys on v4, so
+read and write the properties on both versions:
+
+| Legacy key | Property |
+|---|---|
+| `Group` `Position` / `Icon` / `Order` / `Picture` | `Position` (`{Latitude, Longitude}`), `Icon`, `Order`, `Picture` |
+| `Dashboard` `Icon` / `Order` / `StartTab` | `Icon`, `Order`, `StartTabId` |
+| `Role` `StartDashboard` | `StartDashboardId` |
+| `Signal` `Color` / `MultiLine` | `Color`, `MultiLineAddress` |
+| `Signal` `CounterChecked` (counters) | `Settings.EnforceMonotonicInput` (default `true`) |
+| `Signal` `ScalingCalculatorFormState` (analog) | `Settings.ScalingCalculatorState` (no `Control` suffix) |
+| `Formula` `Global` | `SameFormulaForAllIntervals` |
+| `EventDefinition` `BlocklyXML` | `BlocklyXml` |
+| `EventCategory` `Icon` / `Color`, `SwitchSchedule` `Icon`, `RecipientGroup` `Color` | `Icon`, `Color` |
+| `Synchronized` (every entity) | `SynchronizedFrom` (read-only, `"unknown"` from v4) |
+
+- A legacy value core cannot convert (a non-integer `Order`, a malformed colour) stays in
+  `AdditionalFields` and the property keeps its default, as after the v5 migration.
+- `ManagedBy` and `SynchronizedFrom` are server-owned and never sent.
+- v5 only: `DashboardTab.Order`, `Group.StartDashboardId`, `ManagedBy` (features
+  `dashboardTabOrder`, `entryPointStartDashboard`, `managedBy`). On v4 they are undefined.
+- `$filter`, `$sort` and `$projection` keys are not rewritten: `AdditionalFields.Icon.Value` on v4,
+  `Icon.Value` on v5. A v4 projection needs `AdditionalFields` to see any of these values.
+  Sorting by `Order` on the server works on v5 only.
 
 ## 6. Deprecation logger
 

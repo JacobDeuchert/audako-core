@@ -2,6 +2,18 @@ import { ApiVersionInfo } from '../../../api/api-version.js';
 import { Field } from '../../../models/entities/configuration-entity.model.js';
 import { EventDefinition } from '../../../models/entities/event-definition.model.js';
 import { canFillFromDefault, EntityAdapter, FromWireMode } from '../entity-adapter.js';
+import {
+  BLOCKLY_XML_MAX_LENGTH,
+  demoteAdditionalFields,
+  promoteAdditionalFields,
+  PromotedKey,
+  textCodec,
+} from './additional-fields.v4.js';
+
+/** Promoted `EventDefinition` keys (v5 `EventDefinitionMigrator_V3`). */
+export const EVENT_DEFINITION_PROMOTED_KEYS: PromotedKey[] = [
+  { key: 'BlocklyXML', path: ['BlocklyXml'], codec: textCodec(BLOCKLY_XML_MAX_LENGTH) },
+];
 
 /**
  * 4.12 `ExpressionParameters[].Type` values -> the `*Settings` names `EventDefinitionMigrator_V2`
@@ -60,6 +72,7 @@ function mapExpressionParameterTypes(entity: any, map: { [from: string]: string 
  * Plan, "v4 window 4.12 -> 4.23: models":
  * - 4.13 `ExpressionParameters[].Type` values rewritten by the migrator -> value map on 4.12 only.
  * - 4.17 `EventCategoryId` arrives as bare `null` instead of `{Value:null}` -> coerce below 4.17.
+ * - every 4.x: `BlocklyXml` lives in `AdditionalFields`, see {@link EVENT_DEFINITION_PROMOTED_KEYS}.
  */
 export const eventDefinitionAdapterV4: EntityAdapter<EventDefinition> = {
   fromWire(wire: any, ctx: ApiVersionInfo, mode?: FromWireMode): EventDefinition {
@@ -67,7 +80,7 @@ export const eventDefinitionAdapterV4: EntityAdapter<EventDefinition> = {
       return wire;
     }
 
-    let entity: any = wire;
+    let entity: any = promoteAdditionalFields(wire, EVENT_DEFINITION_PROMOTED_KEYS);
 
     // Below 4.17 the server sends `EventCategoryId: null`; apps dereference `.Value`.
     // (`baseFromWire` covers this too, but the adapter must be correct on its own.) A key that is
@@ -93,11 +106,13 @@ export const eventDefinitionAdapterV4: EntityAdapter<EventDefinition> = {
       return entity;
     }
 
+    const payload = demoteAdditionalFields(entity, EVENT_DEFINITION_PROMOTED_KEYS);
+
     // Write the pre-4.13 short names back, so a 4.12 platform keeps values it understands.
     if (!ctx.isAtLeast('4.13')) {
-      return mapExpressionParameterTypes(entity, CANONICAL_EXPRESSION_PARAMETER_TYPES);
+      return mapExpressionParameterTypes(payload, CANONICAL_EXPRESSION_PARAMETER_TYPES);
     }
 
-    return entity;
+    return payload;
   },
 };

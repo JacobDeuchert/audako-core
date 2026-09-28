@@ -1,6 +1,20 @@
 import { ApiVersionInfo } from '../../../api/api-version.js';
 import { EventCategory } from '../../../models/entities/event-category.model.js';
 import { EntityAdapter } from '../entity-adapter.js';
+import {
+  demoteAdditionalFields,
+  hexColorCodec,
+  ICON_MAX_LENGTH,
+  promoteAdditionalFields,
+  PromotedKey,
+  textCodec,
+} from './additional-fields.v4.js';
+
+/** Promoted `EventCategory` keys (v5 `EventCategoryMigrator_V1`). */
+export const EVENT_CATEGORY_PROMOTED_KEYS: PromotedKey[] = [
+  { key: 'Icon', path: ['Icon'], codec: textCodec(ICON_MAX_LENGTH) },
+  { key: 'Color', path: ['Color'], codec: hexColorCodec },
+];
 
 /**
  * v4 adapter for `EventCategory`.
@@ -16,6 +30,8 @@ import { EntityAdapter } from '../entity-adapter.js';
  *
  * Consequence: `Acknowledgment` is the legacy alias on v4 and a distinct field on v5. The adapter
  * only ever touches it on v4; v5 is identity.
+ *
+ * On every 4.x `Icon` and `Color` live in `AdditionalFields`, see {@link EVENT_CATEGORY_PROMOTED_KEYS}.
  */
 export const eventCategoryAdapterV4: EntityAdapter<EventCategory> = {
   fromWire(wire: any, ctx: ApiVersionInfo): EventCategory {
@@ -23,11 +39,12 @@ export const eventCategoryAdapterV4: EntityAdapter<EventCategory> = {
       return wire;
     }
 
-    if (!('Acknowledgment' in wire)) {
-      return wire as EventCategory;
+    const promoted = promoteAdditionalFields(wire, EVENT_CATEGORY_PROMOTED_KEYS);
+    if (!('Acknowledgment' in promoted)) {
+      return promoted as EventCategory;
     }
 
-    const { Acknowledgment, ...entity } = wire;
+    const { Acknowledgment, ...entity } = promoted;
 
     // Below 4.23 the legacy key is authoritative and wins over anything `baseFromWire` filled in
     // from the model default (`RequiresAcknowledgment = true`), which would otherwise mask it.
@@ -46,7 +63,7 @@ export const eventCategoryAdapterV4: EntityAdapter<EventCategory> = {
     }
 
     // Strip the v5-only field in every case (see the class comment).
-    const { Acknowledgment, ...payload } = entity;
+    const { Acknowledgment, ...payload } = demoteAdditionalFields(entity, EVENT_CATEGORY_PROMOTED_KEYS);
 
     if (ctx.isAtLeast('4.23')) {
       return payload;

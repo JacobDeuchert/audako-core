@@ -1,6 +1,7 @@
 import { ApiVersionInfo } from '../../api/api-version.js';
 import { EntityType } from '../../models/entities/configuration-entity.model.js';
 import { baseFromWire, baseToWire, EntityAdapter, FromWireMode, identityAdapter } from './entity-adapter.js';
+import { synchronizedFromWireV4, synchronizedToWireV4 } from './v4/additional-fields.v4.js';
 import { V4_ADAPTERS } from './v4/index.js';
 
 export * from './entity-adapter.js';
@@ -20,7 +21,8 @@ export function getEntityAdapter<T = any>(entityType: EntityType): EntityAdapter
 }
 
 /**
- * Wire -> canonical model: `baseFromWire` followed by the per-entity adapter.
+ * Wire -> canonical model: `baseFromWire`, the shared v4 `Synchronized` pass, then the per-entity
+ * adapter.
  *
  * @param mode `projected` for `$projection` results; see {@link FromWireMode}.
  */
@@ -30,12 +32,21 @@ export function applyFromWire<T = any>(
   ctx: ApiVersionInfo,
   mode: FromWireMode = 'full',
 ): T {
-  const prepared = baseFromWire(wire, entityType, mode);
+  let prepared = baseFromWire(wire, entityType, mode);
+  if (ctx.isV4) {
+    prepared = synchronizedFromWireV4(prepared);
+  }
   return getEntityAdapter<T>(entityType).fromWire(prepared, ctx, mode);
 }
 
-/** Canonical model -> wire payload: the per-entity adapter followed by `baseToWire`. */
+/**
+ * Canonical model -> wire payload: the per-entity adapter, the shared v4 `Synchronized` pass, then
+ * `baseToWire`.
+ */
 export function applyToWire<T = any>(entityType: EntityType, entity: T, ctx: ApiVersionInfo): any {
-  const adapted = getEntityAdapter<T>(entityType).toWire(entity, ctx);
+  let adapted = getEntityAdapter<T>(entityType).toWire(entity, ctx);
+  if (ctx.isV4) {
+    adapted = synchronizedToWireV4(adapted);
+  }
   return baseToWire(adapted);
 }

@@ -12,6 +12,19 @@ export class Group extends ConfigurationEntity {
 
   public TemplateVariables: TemplateVariable[];
 
+  /** Icon name, at most 64 characters. */
+  public Icon: Field<string>;
+  /** Sort key, ascending; `null` sorts last (then by `Name`). */
+  public Order: Field<number | null>;
+  public Position: Field<GeoPosition>;
+  /** `File(<id>)`. Upload and delete go through the picture endpoints, not a `PUT`. */
+  public Picture: Field<string>;
+  /**
+   * Start dashboard of an entry point. v5 only (feature `entryPointStartDashboard`): v4 flags the
+   * dashboards instead, which a per-entity adapter cannot resolve. Undefined on v4.
+   */
+  public StartDashboardId?: Field<string>;
+
   constructor() {
     super();
     this.Type = 'Default';
@@ -20,7 +33,18 @@ export class Group extends ConfigurationEntity {
     this.PropertyGroups = [];
     this.OOVariables = {};
     this.TemplateVariables = [];
+    this.Icon = new Field<string>();
+    this.Order = new Field<number | null>();
+    this.Position = new Field<GeoPosition>();
+    this.Picture = new Field<string>();
   }
+}
+
+export class GeoPosition {
+  /** -90..90 */
+  public Latitude: number;
+  /** -180..180 */
+  public Longitude: number;
 }
 
 export class PartList {

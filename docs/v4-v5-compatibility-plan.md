@@ -173,7 +173,9 @@ models the wire shape is unchanged. Differences:
 |---|---|---|
 | Storage | Removed as ConfigurationEntity in v5; replaced by service-local `DashboardTabStorage` with different fields and endpoints | **Decision (2026-09-02): drop Storage from audako-core entirely.** Remove `storage.model.ts`, `EntityType.Storage`, its v4 endpoint path and the `EntityTypeClassMapping` entry in the major bump. No adapter. Apps that need dashboard tab storage on v5 get a dedicated service later if demand exists. |
 | All entities, query responses | v5 serializes typed objects: every property present (null instead of absent), unknown stored fields dropped, inexpressible projections silently ignored (v4 could 500) | Never branch on key presence. Shared fill-defaults pass in `fromWire`. |
-| All entities, writes | `Path`, `AclAllow`, `AclDeny` are server-owned | Shared `toWire` strips them (harmless on v4 too). |
+| All entities, writes | `Path`, `AclAllow`, `AclDeny`, `ManagedBy`, `SynchronizedFrom` are server-owned | Shared `toWire` strips them (harmless on v4 too). |
+| Group, Dashboard, Role, Signal, Formula, EventDefinition, EventCategory, SwitchSchedule, SwitchOperation, RecipientGroup (platform #3482, 2026-09-25) | Application-owned `AdditionalFields` keys promoted to typed properties; v5 migrates stored data once and ignores the keys afterwards. v4 still stores them as strings in the map | Canonical models carry the typed properties. v4 adapters (`lib/compat/adapters/v4/additional-fields.v4.ts`) map key <-> property with the migrator's parsers, unconvertible values stay in the map. `Synchronized` -> `SynchronizedFrom: "unknown"` is a shared v4 pass. |
+| DashboardTab, Group, all entities (platform #3482) | `DashboardTab.Order`, `Group.StartDashboardId`, `ManagedBy` replace data held on *other* entities in v4 (`Dashboard.AdditionalFields.Tabs` / `StartDashboard`) or not recorded (`CreatedWithManager` flag) | Optional in the model, undefined on v4; features `dashboardTabOrder`, `entryPointStartDashboard`, `managedBy`. Tab reorder and start-dashboard resolution need service methods (open). |
 | EventCategory | `Acknowledgment: Field<bool>` added next to `RequiresAcknowledgment` | Add to canonical model; strip on v4 `toWire`. |
 | AuditLog | `OperationId`, `RestoreEntryPoint`, `IsInternal` added | None, not modelled. |
 | Removed | `SearchEntry` (full-text search), `FormulaTemplate`, `TenantManagement` ACL constant | Not modelled. Feature-gate if ever needed. |
@@ -282,6 +284,15 @@ commented at the code site.
   (`DataConnection.Settings`, so `OpcUaSettings.TimestampSource` and the MeterBus fields) or into
   array elements (`Formula.Variables[].TagScope`). They are `null`/empty on the default instance,
   so there is no template to walk; they need a per-entity adapter that knows the concrete class.
+- `baseFromWire` skips a sub-object whose `_t` differs from the default instance's. `Signal.Settings`
+  defaults to `SignalAnalogSettings`, and the pass used to fill counter and digital settings with
+  the analog fields (`MinValue`, `DefaultValue`, later `ScalingCalculatorState`).
+- Promoted `AdditionalFields` keys (platform #3482): a v4 read moves a convertible key onto its
+  property and removes it from the map, keeping `OOAttributes`; a v4 write writes it back and
+  merges into the map, so third-party keys survive. `null` removes the key, except a stored value
+  the read could not convert. `CounterChecked` absent on a counter reads as `true` like after the
+  v5 migration; writes to a counter always carry an explicit `"true"`/`"false"`. Query keys are
+  not rewritten (decision 7): `AdditionalFields.Icon.Value` on v4, `Icon.Value` on v5.
 - `baseFromWire` runs in one of two modes. A full read fills absent *and* present-but-null keys
   from the model constructor defaults; a `$projection` read only fills present-but-null keys,
   because filling absent ones would fabricate server state for keys the caller never asked for.

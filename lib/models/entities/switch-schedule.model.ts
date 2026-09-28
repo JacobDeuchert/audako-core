@@ -2,10 +2,13 @@ import { ConfigurationEntity, Field } from './configuration-entity.model.js';
 
 export class SwitchSchedule extends ConfigurationEntity {
   public Rules: Field<SwitchRule[]>;
+  /** Icon name, at most 64 characters. */
+  public Icon: Field<string>;
 
   constructor() {
     super();
     this.Rules = new Field<SwitchRule[]>([]);
+    this.Icon = new Field<string>();
   }
 }
 
@@ -31,6 +34,8 @@ export class SwitchOperation extends ConfigurationEntity {
   public Enabled: Field<boolean>;
   public StartValue: Field<number>;
   public EndValue: Field<number>;
+  /** `#RRGGBB` or `#RRGGBBAA`. */
+  public Color: Field<string>;
 
   constructor() {
     super();
@@ -39,6 +44,7 @@ export class SwitchOperation extends ConfigurationEntity {
     this.Enabled = new Field<boolean>();
     this.StartValue = new Field<number>();
     this.EndValue = new Field<number>();
+    this.Color = new Field<string>();
   }
 }
 

@@ -19,6 +19,9 @@ export class Formula extends ConfigurationEntity {
 
   public Variables: FormulaVariable[];
 
+  /** One formula is edited for all intervals. */
+  public SameFormulaForAllIntervals: Field<boolean>;
+
   constructor() {
     super();
 
@@ -36,6 +39,7 @@ export class Formula extends ConfigurationEntity {
     this.MonthIntervalSettings = new FormulaIntervalSettings();
     this.QuarterIntervalSettings = new FormulaIntervalSettings();
     this.YearIntervalSettings = new FormulaIntervalSettings();
+    this.SameFormulaForAllIntervals = new Field<boolean>(false);
   }
 }
 
