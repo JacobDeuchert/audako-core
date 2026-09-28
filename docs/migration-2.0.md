@@ -7,6 +7,25 @@ wire boundary. Apps see one set of models and never branch on the platform versi
 See `docs/v4-v5-compatibility-plan.md` for the design and `docs/analysis/` for the underlying
 platform diffs.
 
+## 0. Package name: `@audako/core`
+
+2.0 is published as `@audako/core` to the audako Gitea registry; 1.x was only installable from
+GitHub as `audako-core`. Map the scope once (company machines usually have this already):
+
+```
+@audako:registry=https://git.dev.audako.net/api/packages/audako/npm/
+```
+
+Then replace the dependency and every import:
+
+```ts
+// before
+import { EntityHttpService } from 'audako-core';
+
+// after
+import { EntityHttpService } from '@audako/core';
+```
+
 ## 1. New constructor: `ApiContext`
 
 Every service took `(httpConfig, accessToken)`. It now takes a single `ApiContext`, which also
