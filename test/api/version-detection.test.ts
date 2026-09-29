@@ -90,6 +90,55 @@ describe('detectApiVersion', () => {
     });
   });
 
+  it('sends the access token on the v4 probe only', async () => {
+    // A v4 system: the v1 path hits the CORS-less UI fallback, the legacy path wants a login.
+    get.mockImplementation((url: string, config: any) => {
+      if (url.endsWith(V5_VERSION_PATH)) {
+        return Promise.reject(new Error('Network Error'));
+      }
+      return config?.headers?.Authorization === 'Bearer token'
+        ? Promise.resolve({ status: 200, data: '4.23.20260622-abcdef' })
+        : Promise.resolve({ status: 401, data: '' });
+    });
+
+    const info = await detectApiVersion('https://host', { accessToken: () => Promise.resolve('token') });
+
+    expect(info.apiVersion).toBe('V4');
+    expect(info.platformVersion).toBe('4.23.20260622-abcdef');
+    expect(get.mock.calls[0][1].headers).toBeUndefined();
+  });
+
+  it('throws when the v4 probe is refused without a token', async () => {
+    get.mockImplementation((url: string) =>
+      url.endsWith(V5_VERSION_PATH)
+        ? Promise.reject(new Error('Network Error'))
+        : Promise.resolve({ status: 401, data: '' }),
+    );
+
+    await expect(detectApiVersion('https://host')).rejects.toBeInstanceOf(ApiVersionDetectionError);
+  });
+
+  it('does not resolve the access token when the v1 probe succeeds', async () => {
+    respondOn(V5_VERSION_PATH, '5.1.0');
+    const accessToken = vi.fn(() => Promise.resolve('token'));
+
+    await detectApiVersion('https://host', { accessToken });
+
+    expect(accessToken).not.toHaveBeenCalled();
+  });
+
+  it('reports a failing token getter as the detection cause', async () => {
+    get.mockResolvedValue({ status: 404, data: '' });
+    const failure = new Error('login required');
+
+    const error = await detectApiVersion('https://host', { accessToken: () => Promise.reject(failure) }).catch(
+      (e) => e,
+    );
+
+    expect(error).toBeInstanceOf(ApiVersionDetectionError);
+    expect(error.cause).toBe(failure);
+  });
+
   it('rejects an HTML 200 body from the proxy fallback page', async () => {
     get.mockResolvedValue({ status: 200, data: '<!DOCTYPE html><html>ui</html>' });
 

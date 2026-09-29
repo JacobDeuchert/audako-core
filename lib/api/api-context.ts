@@ -82,6 +82,7 @@ export class ApiContext {
     const httpConfig = await requestHttpConfig(systemUrl);
     const versionInfo = await detectApiVersion(ApiContext.getApiRootUrl(httpConfig, systemUrl), {
       httpConfig: httpConfig,
+      accessToken: accessToken,
     });
     assertCompatible(versionInfo, requirements);
     return new ApiContext(httpConfig, accessToken, versionInfo);
@@ -126,7 +127,12 @@ export class ApiContext {
 
     if (!this._versionInfoPromise) {
       this._versionInfoPromise = this.getHttpConfig()
-        .then((httpConfig) => detectApiVersion(ApiContext.getApiRootUrl(httpConfig), { httpConfig: httpConfig }))
+        .then((httpConfig) =>
+          detectApiVersion(ApiContext.getApiRootUrl(httpConfig), {
+            httpConfig: httpConfig,
+            accessToken: () => this.getAccessToken(),
+          }),
+        )
         .catch((error) => {
           // Do not cache a failure: a transient network error during detection would otherwise
           // break every later request on this context.

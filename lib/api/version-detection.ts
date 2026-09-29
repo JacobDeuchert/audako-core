@@ -2,10 +2,14 @@ import axios from 'axios';
 import { ApiVersionInfo, createApiVersionInfo } from './api-version.js';
 import { ApiVersionDetectionError } from './errors.js';
 import { HttpConfig } from '../models/http-config.model.js';
+import { AsyncValue, getAsyncValueAsPromise } from '../utils/async-value-utils.js';
 
 /** The v5 version endpoint. Anonymous, returns a bare string. */
 export const V5_VERSION_PATH = '/api/v1/structure/about/version';
-/** The pre-v1 version endpoint. Only reachable while the legacy proxy rewrite is enabled. */
+/**
+ * The pre-v1 version endpoint. Only reachable while the legacy proxy rewrite is enabled. On v4
+ * systems it requires a login and answers `401` to anonymous requests.
+ */
 export const V4_VERSION_PATH = '/api/structure/about/version';
 
 export interface DetectApiVersionOptions {
@@ -19,6 +23,11 @@ export interface DetectApiVersionOptions {
    * probing (see plan open item 3).
    */
   httpConfig?: HttpConfig;
+  /**
+   * Access token for the v4 probe. v4 only reports its version to logged-in users, so without a
+   * token a v4 system cannot be detected. Resolved only when the anonymous v5 probe fails.
+   */
+  accessToken?: AsyncValue<string>;
   /** Request timeout per probe in milliseconds. Defaults to 10000. */
   timeoutMs?: number;
 }
@@ -54,8 +63,13 @@ export function normalizeVersionBody(body: unknown): string | null {
 }
 
 /** One version probe: the HTTP status and, on a 200 with a usable body, the version string. */
-async function probe(url: string, timeoutMs: number): Promise<{ status: number; version: string | null }> {
+async function probe(
+  url: string,
+  timeoutMs: number,
+  headers?: { [p: string]: string },
+): Promise<{ status: number; version: string | null }> {
   const response = await axios.get(url, {
+    headers: headers,
     responseType: 'text',
     transformResponse: [(data: any) => data],
     timeout: timeoutMs,
@@ -71,8 +85,11 @@ async function probe(url: string, timeoutMs: number): Promise<{ status: number; 
 /**
  * Detects the platform version of a system.
  *
- * Probes `{apiUrl}/api/v1/structure/about/version` (v5) first and falls back to the pre-v1
- * path (v4). HTML bodies are rejected, because the legacy path can return the UI's fallback
+ * Probes `{apiUrl}/api/v1/structure/about/version` (v5) anonymously first. When that yields no
+ * version, the pre-v1 path (v4) is probed with `options.accessToken`, because v4 only reports
+ * its exact version, which feature gating depends on, to logged-in users. A failed v5 probe alone
+ * is not taken as v4: in a browser, a v4 system's CORS-less fallback page and an unreachable v5
+ * system fail the same way. HTML bodies are rejected, because the legacy path can return the UI's fallback
  * page with status 200. An explicit `platformVersion` option, or an `ApiVersion` key in a
  * supplied `HttpConfig`, short-circuits the probing.
  *
@@ -88,15 +105,25 @@ export async function detectApiVersion(apiUrl: string, options: DetectApiVersion
   const timeoutMs = options.timeoutMs || 10000;
   let lastError: any = null;
 
-  for (const path of [V5_VERSION_PATH, V4_VERSION_PATH]) {
-    try {
-      const { version } = await probe(`${base}${path}`, timeoutMs);
-      if (version) {
-        return createApiVersionInfo(version);
-      }
-    } catch (error) {
-      lastError = error;
+  try {
+    const { version } = await probe(`${base}${V5_VERSION_PATH}`, timeoutMs);
+    if (version) {
+      return createApiVersionInfo(version);
     }
+  } catch (error) {
+    lastError = error;
+  }
+
+  try {
+    const headers = options.accessToken
+      ? { Authorization: `Bearer ${await getAsyncValueAsPromise(options.accessToken)}` }
+      : undefined;
+    const { version } = await probe(`${base}${V4_VERSION_PATH}`, timeoutMs, headers);
+    if (version) {
+      return createApiVersionInfo(version);
+    }
+  } catch (error) {
+    lastError = error;
   }
 
   throw new ApiVersionDetectionError(base, undefined, lastError);

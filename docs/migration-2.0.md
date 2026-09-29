@@ -85,7 +85,7 @@ try {
 
 The pieces are public and usable separately:
 
-- `detectApiVersion(apiUrl, { platformVersion?, httpConfig?, timeoutMs? })` -> `ApiVersionInfo`.
+- `detectApiVersion(apiUrl, { platformVersion?, httpConfig?, accessToken?, timeoutMs? })` -> `ApiVersionInfo`.
   Probes `/api/v1/structure/about/version` first, then the pre-v1 path. Throws
   `ApiVersionDetectionError`.
 - `checkCompatibility(versionInfo, requirements)` -> `CompatibilityResult`
