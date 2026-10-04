@@ -169,4 +169,13 @@ describe('detectApiVersion', () => {
     expect(info.platformVersion).toBe('5.2.0');
     expect(get).not.toHaveBeenCalled();
   });
+
+  it('runs both probes through the given adapter', async () => {
+    get.mockResolvedValue({ status: 404, data: '' });
+    const adapter = vi.fn();
+
+    await expect(detectApiVersion('https://host', { adapter })).rejects.toBeInstanceOf(ApiVersionDetectionError);
+
+    expect(get.mock.calls.map((call: any[]) => call[1].adapter)).toEqual([adapter, adapter]);
+  });
 });

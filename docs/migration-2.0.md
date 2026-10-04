@@ -57,6 +57,14 @@ const ctx = ApiContext.from({ httpConfig, accessToken });        // plain object
 a token that is refreshed keeps working. Share one context per system: it owns the axios instance
 that adds the `Authorization` header and the deprecation logging.
 
+A host with its own transport passes an axios `adapter`, e.g. a desktop app that sends requests
+through native code to accept self-signed certificates. The context uses it for its own requests
+and for the version detection:
+
+```ts
+const ctx = ApiContext.from({ httpConfig, accessToken, adapter: nativeAdapter });
+```
+
 There is no service base class any more. Every service is `constructor(public readonly ctx:
 ApiContext)` and reaches the platform through `ctx.request(endpoint, options)`, which resolves the
 per-version URL, sends the request and normalizes every failure to an `ApiError`. The context is
@@ -85,7 +93,7 @@ try {
 
 The pieces are public and usable separately:
 
-- `detectApiVersion(apiUrl, { platformVersion?, httpConfig?, accessToken?, timeoutMs? })` -> `ApiVersionInfo`.
+- `detectApiVersion(apiUrl, { platformVersion?, httpConfig?, accessToken?, timeoutMs?, adapter? })` -> `ApiVersionInfo`.
   Probes `/api/v1/structure/about/version` first, then the pre-v1 path. Throws
   `ApiVersionDetectionError`.
 - `checkCompatibility(versionInfo, requirements)` -> `CompatibilityResult`

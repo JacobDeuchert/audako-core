@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosAdapter } from 'axios';
 import { ApiVersionInfo, createApiVersionInfo } from './api-version.js';
 import { ApiVersionDetectionError } from './errors.js';
 import { HttpConfig } from '../models/http-config.model.js';
@@ -30,6 +30,11 @@ export interface DetectApiVersionOptions {
   accessToken?: AsyncValue<string>;
   /** Request timeout per probe in milliseconds. Defaults to 10000. */
   timeoutMs?: number;
+  /**
+   * Transport for the probes, e.g. a native one in a desktop host that accepts self-signed
+   * certificates. Defaults to axios' own.
+   */
+  adapter?: AxiosAdapter;
 }
 
 /**
@@ -66,6 +71,7 @@ export function normalizeVersionBody(body: unknown): string | null {
 async function probe(
   url: string,
   timeoutMs: number,
+  adapter?: AxiosAdapter,
   headers?: { [p: string]: string },
 ): Promise<{ status: number; version: string | null }> {
   const response = await axios.get(url, {
@@ -74,6 +80,7 @@ async function probe(
     transformResponse: [(data: any) => data],
     timeout: timeoutMs,
     validateStatus: () => true,
+    adapter: adapter,
   });
 
   return {
@@ -106,7 +113,7 @@ export async function detectApiVersion(apiUrl: string, options: DetectApiVersion
   let lastError: any = null;
 
   try {
-    const { version } = await probe(`${base}${V5_VERSION_PATH}`, timeoutMs);
+    const { version } = await probe(`${base}${V5_VERSION_PATH}`, timeoutMs, options.adapter);
     if (version) {
       return createApiVersionInfo(version);
     }
@@ -118,7 +125,7 @@ export async function detectApiVersion(apiUrl: string, options: DetectApiVersion
     const headers = options.accessToken
       ? { Authorization: `Bearer ${await getAsyncValueAsPromise(options.accessToken)}` }
       : undefined;
-    const { version } = await probe(`${base}${V4_VERSION_PATH}`, timeoutMs, headers);
+    const { version } = await probe(`${base}${V4_VERSION_PATH}`, timeoutMs, options.adapter, headers);
     if (version) {
       return createApiVersionInfo(version);
     }
@@ -136,14 +143,14 @@ export async function detectApiVersion(apiUrl: string, options: DetectApiVersion
  */
 export async function isApiReachable(
   apiUrl: string,
-  options: Pick<DetectApiVersionOptions, 'timeoutMs'> = {},
+  options: Pick<DetectApiVersionOptions, 'timeoutMs' | 'adapter'> = {},
 ): Promise<boolean> {
   const base = (apiUrl || '').replace(/\/+$/, '');
   const timeoutMs = options.timeoutMs || 10000;
 
   for (const path of [V5_VERSION_PATH, V4_VERSION_PATH]) {
     try {
-      const { status, version } = await probe(`${base}${path}`, timeoutMs);
+      const { status, version } = await probe(`${base}${path}`, timeoutMs, options.adapter);
       if (version || status === 401) {
         return true;
       }

@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosAdapter, AxiosInstance, AxiosResponse } from 'axios';
 import { HttpConfig } from '../models/http-config.model.js';
 import { AsyncValue, getAsyncValueAsPromise } from '../utils/async-value-utils.js';
 import { createDeprecationInterceptor } from '../compat/deprecation-logger.js';
@@ -13,6 +13,11 @@ export interface ApiContextOptions {
   httpConfig: AsyncValue<HttpConfig>;
   accessToken: AsyncValue<string>;
   versionInfo?: AsyncValue<ApiVersionInfo>;
+  /**
+   * Transport for every request of the context, the version detection included, e.g. a native
+   * one in a desktop host that accepts self-signed certificates. Defaults to axios' own.
+   */
+  adapter?: AxiosAdapter;
 }
 
 /** Per-request options of {@link ApiContext.request}. */
@@ -52,20 +57,23 @@ export class ApiContext {
   private _versionInfo?: AsyncValue<ApiVersionInfo>;
   private _versionInfoPromise?: Promise<ApiVersionInfo>;
   private _http?: AxiosInstance;
+  private _adapter?: AxiosAdapter;
 
   constructor(
     httpConfig: AsyncValue<HttpConfig>,
     accessToken: AsyncValue<string>,
     versionInfo?: AsyncValue<ApiVersionInfo>,
+    adapter?: AxiosAdapter,
   ) {
     this._httpConfig = httpConfig;
     this._accessToken = accessToken;
     this._versionInfo = versionInfo;
+    this._adapter = adapter;
   }
 
   /** Builds a context from a plain object. */
   public static from(options: ApiContextOptions): ApiContext {
-    return new ApiContext(options.httpConfig, options.accessToken, options.versionInfo);
+    return new ApiContext(options.httpConfig, options.accessToken, options.versionInfo, options.adapter);
   }
 
   /**
@@ -131,6 +139,7 @@ export class ApiContext {
           detectApiVersion(ApiContext.getApiRootUrl(httpConfig), {
             httpConfig: httpConfig,
             accessToken: () => this.getAccessToken(),
+            adapter: this._adapter,
           }),
         )
         .catch((error) => {
@@ -188,7 +197,7 @@ export class ApiContext {
    */
   public get http(): AxiosInstance {
     if (!this._http) {
-      const instance = axios.create();
+      const instance = axios.create({ adapter: this._adapter });
       instance.interceptors.request.use(async (config) => {
         const token = await this.getAccessToken();
         if (token) {
