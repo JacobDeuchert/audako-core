@@ -115,13 +115,14 @@ describe('entity endpoints', () => {
     });
   });
 
-  it('drops the /file segment from the process image upload on v5', () => {
-    expect(v4({ name: 'processImageUpload', id: 'p1' }).url).toBe(
-      'https://host/api/structure/scada/ProcessImage/p1/file/image',
-    );
+  it('uploads process images through the rendering route', () => {
+    expect(v4({ name: 'processImageUpload', id: 'p1' })).toEqual({
+      url: 'https://host/api/structure/processimagerender/upload/p1',
+      method: 'PUT',
+    });
     expect(v5({ name: 'processImageUpload', id: 'p1' })).toEqual({
-      url: 'https://host/api/v1/structure/process-images/p1/image',
-      method: 'POST',
+      url: 'https://host/api/v1/structure/process-image-rendering/upload/p1',
+      method: 'PUT',
     });
   });
 

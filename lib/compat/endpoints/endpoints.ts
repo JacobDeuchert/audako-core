@@ -165,11 +165,12 @@ export const ENDPOINTS: EndpointTable = {
     'PUT',
     (urls, p, v) => `${entityRoot(urls, p.entityType, v)}/move/multiple/${p.targetId}`,
   ),
-  // v4 carries an extra `/file` segment that v5 dropped.
+  // The rendering route, not the generic entity file upload: it stores the raw image and renders
+  // it (v5 also fills in block instances).
   processImageUpload: {
-    method: 'POST',
-    v4: (urls, p) => `${entityRoot(urls, EntityType.ProcessImage, 'v4')}/${p.id}/file/image`,
-    v5: (urls, p) => `${entityRoot(urls, EntityType.ProcessImage, 'v5')}/${p.id}/image`,
+    method: 'PUT',
+    v4: (urls, p) => `${urls.structure}/processimagerender/upload/${p.id}`,
+    v5: (urls, p) => `${urls.structure}/process-image-rendering/upload/${p.id}`,
   },
 
   // v4 tenant routes are singular (`/tenant/...`), v5 plural, and `tenant/entity` became
