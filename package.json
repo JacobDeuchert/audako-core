@@ -20,7 +20,9 @@
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc -p ./lib/tsconfig.json --noEmit",
-    "prettier": "npx prettier --write .",
+    "lint": "oxlint",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "build": "rm -rf dist && tsc -p ./lib/tsconfig.json && tsc -p ./lib/tsconfig-cjs.json && echo '{\"type\": \"module\"}' > dist/mjs/package.json && echo '{\"type\": \"commonjs\"}' > dist/cjs/package.json",
     "prepublishOnly": "npm test && npm run build"
   },
@@ -32,6 +34,8 @@
     "rxjs": "^7.5.5"
   },
   "devDependencies": {
+    "oxfmt": "^0.72.0",
+    "oxlint": "^1.87.0",
     "typescript": "^5.3.2",
     "vitest": "^5.0.0"
   },

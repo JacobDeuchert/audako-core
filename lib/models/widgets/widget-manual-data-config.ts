@@ -9,7 +9,7 @@ export class WidgetManualDataConfig extends BaseWidgetConfig {
 
   manualDataSignalMasks: ManualDataSignalMask[];
 
-  additionalOptions: Object;
+  additionalOptions: object;
 
   /**
    * The amount of previous values to show when a text field is active

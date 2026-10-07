@@ -1,5 +1,3 @@
-import { Type } from '../../interfaces/type.js';
-
 export enum EntityType {
   Group = 'Group',
   Signal = 'Signal',
@@ -136,8 +134,6 @@ export abstract class ConfigurationEntity {
     this.ManagedBy = null;
     this.SynchronizedFrom = null;
 
-
     Object.assign(this, options);
-
   }
 }

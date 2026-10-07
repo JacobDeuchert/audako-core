@@ -5,7 +5,6 @@ import {
   filter,
   finalize,
   firstValueFrom,
-  isObservable,
   map,
   Observable,
   of,
@@ -18,7 +17,6 @@ import * as signalR from '@microsoft/signalr';
 import { ApiContext } from '../api/api-context.js';
 import { ApiVersionInfo } from '../api/api-version.js';
 import { Disposable } from '../interfaces/disposable.js';
-import { PromiseUtils } from '../utils/promise-utils.js';
 export type LivePackage = {
   identifier: string;
   timestamp: Date;
