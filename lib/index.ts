@@ -41,7 +41,7 @@ export { HttpConfig } from './models/http-config.model.js';
 export * from './models/historical-value.model.js';
 export * from './models/historical-value-operation.model.js';
 export { EntityTypeClassMapping } from './models/entity-type-class-mapping.js';
-export { EntityUtils, ObjectKey} from './utils/entity-utils.js';
+export { EntityUtils, ObjectKey } from './utils/entity-utils.js';
 export { ObjectUtils } from './utils/object-utils.js';
 export * from './utils/global-utils.js';
 export { AsyncValue, getAsyncValueAsPromise } from './utils/async-value-utils.js';

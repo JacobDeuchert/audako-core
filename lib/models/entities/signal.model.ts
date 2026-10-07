@@ -63,7 +63,6 @@ export enum BitSelectConversionTypes {
 }
 
 export class SignalSettings {
-
   constructor(public _t: string) {}
 }
 
@@ -80,7 +79,7 @@ export class SignalDigitalSettings extends SignalSettings {
   public BitSelectConversion: Field<BitSelectConversionTypes>;
 
   constructor() {
-    super('SignalDigitalSettings')
+    super('SignalDigitalSettings');
 
     this.DigitalTrueColor = new Field<string>();
     this.DigitalTrueCaption = new Field<string>();
@@ -106,7 +105,7 @@ export class SignalAnalogSettings extends SignalSettings {
   public ScalingCalculatorState: Field<ScalingCalculatorState>;
 
   constructor() {
-    super('SignalAnalogSettings')
+    super('SignalAnalogSettings');
 
     this.MinValue = new Field<number>(0);
     this.MaxValue = new Field<number>(100);
@@ -147,7 +146,7 @@ export class SignalCounterSettings extends SignalSettings {
   public EnforceMonotonicInput: Field<boolean>;
 
   constructor() {
-    super('SignalCounterSettings')
+    super('SignalCounterSettings');
 
     this.MaxValue = new Field<number>(100);
     this.OffsetAutomatic = new Field<boolean>(true);
@@ -167,19 +166,18 @@ export const SignalTypeSettingsMap: Record<SignalType, Type<SignalSettings> | nu
   DigitalInOut: SignalDigitalSettings,
   Counter: SignalCounterSettings,
   UniversalInput: null,
-  UniversalInOut: null
-}
+  UniversalInOut: null,
+};
 
 export enum RecordingSpecialProcessingType {
   None = 'None',
   LiveFlowMeter = 'LiveFlowMeter',
-  Watchdog = 'Watchdog'
+  Watchdog = 'Watchdog',
 }
 export enum RecordingType {
   MeanValue = 'MeanValue',
-  LastValue = 'LastValue'
+  LastValue = 'LastValue',
 }
-
 
 export class SignalRecordingSettings {
   SpecialProcessingType: Field<RecordingSpecialProcessingType>;
@@ -211,11 +209,11 @@ export enum SignalCompressionType {
   Difference = 'Difference',
   Sum = 'Sum',
   Time = 'Time',
-  Text = 'Text'
+  Text = 'Text',
 }
 
 export class SignalCompressionSettings {
-  Timezones: Field<string[]>  = new Field<string[]>();
+  Timezones: Field<string[]> = new Field<string[]>();
   SubIntervalCompressionType: Field<SignalCompressionType>;
   HourIntervalCompressionType: Field<SignalCompressionType>;
   TwoHourIntervalCompressionType: Field<SignalCompressionType>;

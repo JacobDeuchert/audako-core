@@ -31,7 +31,7 @@ export class MapConfig extends BaseWidgetConfig {
 }
 
 export enum LiveRequestType {
-  'Live' = 'Live',
+  Live = 'Live',
 }
 
 export const MapRequestTypes = {

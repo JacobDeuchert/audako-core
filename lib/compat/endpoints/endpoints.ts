@@ -272,10 +272,7 @@ export const ENDPOINTS: EndpointTable = {
 
   // `/historicalvaluemanipulation/operations` -> `/historical-value-operations`.
   historicalValueOperations: sameShape('GET', (urls, p, v) => `${operationsRoot(urls, v)}/${p.signalId}`),
-  historicalValueOperationStart: sameShape(
-    'POST',
-    (urls, p, v) => `${operationsRoot(urls, v)}/${p.signalId}/start`,
-  ),
+  historicalValueOperationStart: sameShape('POST', (urls, p, v) => `${operationsRoot(urls, v)}/${p.signalId}/start`),
   // v4 accepts only PUT for undo/redo; v5 prefers POST (PUT is kept as a legacy alias).
   historicalValueOperationUndo: {
     method: { v4: 'PUT', v5: 'POST' },
@@ -288,10 +285,7 @@ export const ENDPOINTS: EndpointTable = {
     v5: (urls, p) => `${operationsRoot(urls, 'v5')}/${p.operationId}/redo`,
   },
 
-  driverConfigureDataSource: sameShape(
-    'GET',
-    (urls, p) => `${urls.driver}/command/source/${p.dataSourceId}/configure`,
-  ),
+  driverConfigureDataSource: sameShape('GET', (urls, p) => `${urls.driver}/command/source/${p.dataSourceId}/configure`),
   driverBrowseConnection: sameShape('POST', (urls, p) => `${urls.driver}/command/conn/${p.dataConnectionId}/browse`),
 
   // SignalR hub, not an HTTP endpoint: `hub` -> `values`. `Services.Live` has no `/v1` yet, so

@@ -9,7 +9,7 @@ export enum CompressionInterval {
   WeekInterval = 'WeekInterval',
   MonthInterval = 'MonthInterval',
   QuarterInterval = 'QuarterInterval',
-  YearInterval = 'YearInterval'
+  YearInterval = 'YearInterval',
 }
 
 export enum MeasurementValueSource {
@@ -22,7 +22,6 @@ export enum MeasurementValueSource {
 }
 
 export type ValueObjectType = EntityType.Signal | EntityType.Formula;
-
 
 /** One flat query row: the interval start plus one value per signal id. */
 export type HistoricalValueMap = { IntervalStart: string } & { [signalId: string]: number | string | boolean };

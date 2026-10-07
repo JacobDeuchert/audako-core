@@ -39,7 +39,12 @@ export interface CompatibilityRequirements {
  * - `invalidVersion`   version string unparseable, or a 4.x above the final 4.23.
  */
 export type CompatibilityStatus =
-  'ok' | 'tooOld' | 'unknownMajor' | 'unsupportedMajor' | 'newerThanKnown' | 'invalidVersion';
+  | 'ok'
+  | 'tooOld'
+  | 'unknownMajor'
+  | 'unsupportedMajor'
+  | 'newerThanKnown'
+  | 'invalidVersion';
 
 export interface CompatibilityResult {
   status: CompatibilityStatus;

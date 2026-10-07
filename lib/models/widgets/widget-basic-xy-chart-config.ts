@@ -1,9 +1,4 @@
-import {
-  BaseWidgetConfig,
-  IntervalSettings,
-  TimeManagementSettings,
-  XYChartConfig,
-} from './shared.js';
+import { BaseWidgetConfig, IntervalSettings, TimeManagementSettings, XYChartConfig } from './shared.js';
 import { CompressionInterval } from '../historical-value.model.js';
 
 export const WidgetBasicXyChartConfigVersion = '7';

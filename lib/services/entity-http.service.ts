@@ -1,11 +1,7 @@
 import { ApiContext } from '../api/api-context.js';
 import { ApiVersionInfo } from '../api/api-version.js';
 import { applyFromWire, applyToWire, FromWireMode } from '../compat/adapters/index.js';
-import {
-  ConfigurationEntity,
-  EntityType,
-  TranslatableField,
-} from '../models/entities/configuration-entity.model.js';
+import { ConfigurationEntity, EntityType, TranslatableField } from '../models/entities/configuration-entity.model.js';
 import { ProcessImageHttpService } from './process-image-http.service.js';
 
 export type PaginationResponse<T> = {
@@ -313,12 +309,7 @@ export class EntityHttpService {
    * `mode` is `projected` for `$projection` results, where the shared read pass may only fill
    * keys that are on the wire (see {@link FromWireMode}).
    */
-  private _fromWire<T>(
-    entityType: EntityType,
-    wire: any,
-    versionInfo: ApiVersionInfo,
-    mode: FromWireMode = 'full',
-  ): T {
+  private _fromWire<T>(entityType: EntityType, wire: any, versionInfo: ApiVersionInfo, mode: FromWireMode = 'full'): T {
     return applyFromWire<T>(entityType, wire, versionInfo, mode);
   }
 

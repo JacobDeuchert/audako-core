@@ -59,8 +59,9 @@ describe('EntityNameService branch selection', () => {
 describe('EntityNameService robustness', () => {
   it('resolveEntityPath tolerates a missing Path and a null Name', async () => {
     const stub = nameService('4.23.0');
-    stub.getPartialEntityById.mockImplementation((_type, id, projection: any) =>
-      Promise.resolve(projection?.Path ? { Id: id, Name: null } : { Name: { Value: `name-${id}` } }) as any,
+    stub.getPartialEntityById.mockImplementation(
+      (_type, id, projection: any) =>
+        Promise.resolve(projection?.Path ? { Id: id, Name: null } : { Name: { Value: `name-${id}` } }) as any,
     );
 
     await expect(stub.service.resolveEntityPath(EntityType.Signal, 's1')).resolves.toBe('');
@@ -70,8 +71,9 @@ describe('EntityNameService robustness', () => {
   it('resolveEntityPath applies the limit without mutating the entity', async () => {
     const stub = nameService('4.23.0');
     const entity: any = { Path: ['a', 'b', 'c'], Name: { Value: 'Self' } };
-    stub.getPartialEntityById.mockImplementation((_type, id, projection: any) =>
-      Promise.resolve(projection?.Path ? entity : { Name: { Value: `name-${id}` } }) as any,
+    stub.getPartialEntityById.mockImplementation(
+      (_type, id, projection: any) =>
+        Promise.resolve(projection?.Path ? entity : { Name: { Value: `name-${id}` } }) as any,
     );
 
     await expect(stub.service.resolveEntityPath(EntityType.Signal, 's1', true, 2)).resolves.toBe(

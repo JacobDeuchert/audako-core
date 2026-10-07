@@ -132,7 +132,9 @@ export class DataConnectionOpcUaSettings extends DataConnectionTypedSettings {
     this.Url = new Field<string>(null);
     this.SecurityPolicy = new Field<DataConnectionOpcUaSecurityPolicy>(DataConnectionOpcUaSecurityPolicy.None);
     this.SecurityMode = new Field<DataConnectionOpcUaSecurityMode>(DataConnectionOpcUaSecurityMode.None);
-    this.SecurityAuthentication = new Field<DataConnectionOpcUaSecurityAuthentication>(DataConnectionOpcUaSecurityAuthentication.Anonymous);
+    this.SecurityAuthentication = new Field<DataConnectionOpcUaSecurityAuthentication>(
+      DataConnectionOpcUaSecurityAuthentication.Anonymous,
+    );
     this.Username = new Field<string>(null);
     this.Password = new Field<string>(null);
     this.Certificate = new Field<string>(null);

@@ -6,10 +6,9 @@ export type ObjectKey = {
   keys: ObjectKey[];
   name: string;
   type: string;
-}
+};
 
 export class EntityUtils {
-
   public static isEntityType(type: string): type is EntityType {
     return Object.keys(EntityType).includes(type);
   }
@@ -21,16 +20,25 @@ export class EntityUtils {
       throw new Error(`Entity type ${type} is not supported`);
     }
 
-    const entity = new typeClass()
+    const entity = new typeClass();
     return this._getObjectKeys(entity, deep);
   }
 
-  public static setPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string, value: U, isField?: boolean, setOnlyExistingFields?: boolean) {
+  public static setPropertyValue<T extends ConfigurationEntity, U>(
+    entity: T,
+    propertyPath: string,
+    value: U,
+    isField?: boolean,
+    setOnlyExistingFields?: boolean,
+  ) {
     this._setObjectProperty(entity, propertyPath.split('.'), value, '', isField, setOnlyExistingFields);
   }
 
-  public static getPropertyValue<T extends ConfigurationEntity, U>(entity: T, propertyPath: string, isField?: boolean): U | null {
-
+  public static getPropertyValue<T extends ConfigurationEntity, U>(
+    entity: T,
+    propertyPath: string,
+    isField?: boolean,
+  ): U | null {
     const propertyPathParts = propertyPath.split('.');
 
     let propertyValue: any = entity;
@@ -46,7 +54,7 @@ export class EntityUtils {
           propertyValue = ObjectUtils.tryParseJson(propertyValue[propertyPathPart].Value);
         }
       } else {
-        propertyValue = propertyValue[propertyPathPart]; 
+        propertyValue = propertyValue[propertyPathPart];
       }
 
       previousPropertyPathPart = propertyPathPart;
@@ -54,25 +62,24 @@ export class EntityUtils {
 
     if (isField || Field.isField(propertyValue)) {
       return propertyValue?.Value as U;
-    } 
+    }
     return propertyValue as U;
   }
 
   private static _getObjectKeys(object: any, deep: boolean): ObjectKey[] {
-
     if (!object) {
       return [];
     }
-    
+
     const keys = Object.keys(object);
 
     if (!deep) {
-      return keys.map(key => {
+      return keys.map((key) => {
         return {
           keys: [],
           name: key,
-          type: typeof object[key]
-        }
+          type: typeof object[key],
+        };
       });
     }
 
@@ -85,25 +92,25 @@ export class EntityUtils {
         deepKeys.push({
           keys: [],
           name: key,
-          type: 'Field'
+          type: 'Field',
         });
       } else if (value == null) {
         deepKeys.push({
           keys: [],
           name: key,
-          type: 'null'
+          type: 'null',
         });
       } else if (typeof value === 'object') {
         deepKeys.push({
           keys: this._getObjectKeys(value, deep),
           name: key,
-          type: typeof value
+          type: typeof value,
         });
       } else {
         deepKeys.push({
           keys: [],
           name: key,
-          type: typeof value
+          type: typeof value,
         });
       }
     }
@@ -111,8 +118,14 @@ export class EntityUtils {
     return deepKeys;
   }
 
-  private static _setObjectProperty<T>(object: Record<string, any>, propertyPath: string[], value: T, previousKey: string, isField?: boolean, setOnlyExistingFields?: boolean): void {
-
+  private static _setObjectProperty<T>(
+    object: Record<string, any>,
+    propertyPath: string[],
+    value: T,
+    previousKey: string,
+    isField?: boolean,
+    setOnlyExistingFields?: boolean,
+  ): void {
     if (!object || propertyPath.length === 0) {
       return;
     }
@@ -127,8 +140,7 @@ export class EntityUtils {
     const currentKey = propertyPath.shift() as string;
 
     if (propertyPath.length === 0) {
-
-      if ((setOnlyExistingFields && !objectKeys.includes(currentKey))) {
+      if (setOnlyExistingFields && !objectKeys.includes(currentKey)) {
         return;
       }
       if (isField || Field.isField(object[currentKey])) {
@@ -139,8 +151,8 @@ export class EntityUtils {
       return;
     } else if (objectKeys.includes(currentKey) && typeof object[currentKey] === 'object') {
       const nextObject = object[currentKey];
-      this._setObjectProperty(nextObject, propertyPath, value, currentKey, isField , setOnlyExistingFields);
-    } 
+      this._setObjectProperty(nextObject, propertyPath, value, currentKey, isField, setOnlyExistingFields);
+    }
   }
 
   private static _setAdditionalField<T>(object: Record<string, any>, propertyPath: string[], value: T): void {
@@ -154,7 +166,9 @@ export class EntityUtils {
       object[firstKey] = new Field(value?.toString());
       return;
     } else {
-      let obj: Record<string, any> = object[firstKey] ? ObjectUtils.tryParseJson<Record<string, any>>(object[firstKey].Value, {}) ?? {} : {};
+      let obj: Record<string, any> = object[firstKey]
+        ? (ObjectUtils.tryParseJson<Record<string, any>>(object[firstKey].Value, {}) ?? {})
+        : {};
       for (const key of propertyPath) {
         const isLastKey = propertyPath.indexOf(key) === propertyPath.length - 1;
         if (isLastKey) {
