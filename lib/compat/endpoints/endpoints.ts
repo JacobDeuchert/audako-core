@@ -172,6 +172,19 @@ export const ENDPOINTS: EndpointTable = {
     v4: (urls, p) => `${urls.structure}/processimagerender/upload/${p.id}`,
     v5: (urls, p) => `${urls.structure}/process-image-rendering/upload/${p.id}`,
   },
+  // The uploaded SVG (`ImageFile`), not the rendered one. v4 only has the generic entity file
+  // download; v5 stores the upload with block instances filled in.
+  processImageFile: {
+    method: 'GET',
+    v4: (urls, p) => `${entityRoot(urls, EntityType.ProcessImage, 'v4')}/${p.id}/file/image`,
+    v5: (urls, p) => `${entityRoot(urls, EntityType.ProcessImage, 'v5')}/${p.id}/image`,
+  },
+  // PUT because the optional basetag travels in the body.
+  processImageRendered: {
+    method: 'PUT',
+    v4: (urls, p) => `${urls.structure}/processimagerender/download/${p.id}`,
+    v5: (urls, p) => `${urls.structure}/process-image-rendering/download/${p.id}`,
+  },
 
   // v4 tenant routes are singular (`/tenant/...`), v5 plural, and `tenant/entity` became
   // `tenants/entities`.

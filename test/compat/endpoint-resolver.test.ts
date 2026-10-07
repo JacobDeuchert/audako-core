@@ -126,6 +126,28 @@ describe('entity endpoints', () => {
     });
   });
 
+  it('downloads the uploaded process image through the native routes', () => {
+    expect(v4({ name: 'processImageFile', id: 'p1' })).toEqual({
+      url: 'https://host/api/structure/scada/ProcessImage/p1/file/image',
+      method: 'GET',
+    });
+    expect(v5({ name: 'processImageFile', id: 'p1' })).toEqual({
+      url: 'https://host/api/v1/structure/process-images/p1/image',
+      method: 'GET',
+    });
+  });
+
+  it('downloads rendered process images through the rendering route', () => {
+    expect(v4({ name: 'processImageRendered', id: 'p1' })).toEqual({
+      url: 'https://host/api/structure/processimagerender/download/p1',
+      method: 'PUT',
+    });
+    expect(v5({ name: 'processImageRendered', id: 'p1' })).toEqual({
+      url: 'https://host/api/v1/structure/process-image-rendering/download/p1',
+      method: 'PUT',
+    });
+  });
+
   it('exposes count and entity-info on v5 only', () => {
     expect(v5({ name: 'entityCount', entityType: EntityType.Signal }).url).toBe(
       'https://host/api/v1/structure/signals/count',

@@ -6,6 +6,7 @@ import {
   EntityType,
   TranslatableField,
 } from '../models/entities/configuration-entity.model.js';
+import { ProcessImageHttpService } from './process-image-http.service.js';
 
 export type PaginationResponse<T> = {
   data: T[];
@@ -167,11 +168,9 @@ export class EntityHttpService {
     };
   }
 
+  /** @deprecated Use {@link ProcessImageHttpService.uploadProcessImage}. */
   public async uploadProcessImage(id: string, svg: string, name: string = 'process-image.svg'): Promise<void> {
-    const blob = new Blob([svg], { type: 'image/svg+xml' });
-    const formData = new FormData();
-    formData.append('file', blob, name);
-    await this.ctx.request<void>({ name: 'processImageUpload', id: id }, { data: formData });
+    await new ProcessImageHttpService(this.ctx).uploadProcessImage(id, svg, name);
   }
 
   public async addEntity<T extends ConfigurationEntity>(type: EntityType, entity: T): Promise<T> {

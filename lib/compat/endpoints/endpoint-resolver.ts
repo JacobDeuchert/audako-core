@@ -55,6 +55,10 @@ export interface EndpointParams {
   entityMoveMultiple: { entityType: EntityType; targetId: string };
   /** Multipart process image upload, form field `file`. */
   processImageUpload: { id: string };
+  /** The uploaded, unrendered process image file. */
+  processImageFile: { id: string };
+  /** Rendered process image, body `{Basetag}`. */
+  processImageRendered: { id: string };
   tenantViewById: { tenantId: string };
   tenantViewForEntity: { entityId: string };
   tenantsTop: {};

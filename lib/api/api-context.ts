@@ -1,4 +1,4 @@
-import axios, { AxiosAdapter, AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosAdapter, AxiosInstance, AxiosResponse, ResponseType } from 'axios';
 import { HttpConfig } from '../models/http-config.model.js';
 import { AsyncValue, getAsyncValueAsPromise } from '../utils/async-value-utils.js';
 import { createDeprecationInterceptor } from '../compat/deprecation-logger.js';
@@ -35,6 +35,8 @@ export interface RequestOptions {
    */
   params?: { [p: string]: any };
   headers?: { [p: string]: string };
+  /** axios response type, e.g. `'text'` for file downloads that must not be JSON-parsed. */
+  responseType?: ResponseType;
 }
 
 /**
@@ -184,6 +186,7 @@ export class ApiContext {
         data: options.data,
         params: options.params,
         headers: options.headers,
+        responseType: options.responseType,
       });
     } catch (error) {
       throw parseApiError(error);

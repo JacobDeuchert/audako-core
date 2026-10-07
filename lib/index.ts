@@ -105,6 +105,7 @@ export * from './services/entity-http.service.js';
 export { TenantHttpService } from './services/tenant-http.service.js';
 export { EntityNameService } from './services/entity-name.service.js';
 export { UserProfileHttpService } from './services/user-profile-http.service.js';
+export { ProcessImageHttpService } from './services/process-image-http.service.js';
 export { DataSourceHttpService, DriverJobInfo } from './services/data-source-http.service.js';
 export { ConnectionBrowseItem, DataConnectionBrowserService } from './services/data-connection-browser.service.js';
 export * from './services/live-value.service.js';
