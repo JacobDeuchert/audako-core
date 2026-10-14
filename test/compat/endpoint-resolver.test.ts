@@ -165,6 +165,19 @@ describe('entity endpoints', () => {
   });
 });
 
+describe('process image block endpoints', () => {
+  it('exist on v5 only', () => {
+    expect(v5({ name: 'processImageBlockPreviews' })).toEqual({
+      url: 'https://host/api/v1/structure/process-image-blocks/previews',
+      method: 'POST',
+    });
+    expect(v5({ name: 'processImageBlockMaterialization', blockId: 'b1' }).url).toBe(
+      'https://host/api/v1/structure/process-image-blocks/b1/materializations',
+    );
+    expect(() => v4({ name: 'processImageBlocks' })).toThrow(EndpointNotAvailableError);
+  });
+});
+
 describe('structure endpoints', () => {
   it('resolves the version endpoint from the per-service path', () => {
     expect(v4({ name: 'version' }).url).toBe('https://host/api/structure/about/version');
@@ -295,7 +308,19 @@ describe('endpoint table', () => {
       expect(ENDPOINTS[name].v5, name).toBeTypeOf('function');
     }
     const v4Missing = Object.keys(ENDPOINTS).filter((name) => ENDPOINTS[name as keyof typeof ENDPOINTS].v4 === null);
-    expect(v4Missing.sort()).toEqual(['entityCount', 'entityInfo']);
+    expect(v4Missing.sort()).toEqual([
+      'entityCount',
+      'entityInfo',
+      'processImageBlockById',
+      'processImageBlockCreate',
+      'processImageBlockImage',
+      'processImageBlockImageUpload',
+      'processImageBlockMaterialization',
+      'processImageBlockPreview',
+      'processImageBlockPreviews',
+      'processImageBlockUsages',
+      'processImageBlocks',
+    ]);
   });
 
   it('only leaves the verb to the caller where the same URL serves several verbs', () => {

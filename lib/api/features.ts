@@ -15,6 +15,7 @@ import { isAtLeast, SemVer } from './api-version.js';
  * - `dashboardTabOrder` `DashboardTab.Order` exists; v4 orders tabs on the dashboard (>= 5.0).
  * - `entryPointStartDashboard` `Group.StartDashboardId` exists; v4 flags dashboards (>= 5.0).
  * - `managedBy`        `ConfigurationEntity.ManagedBy` names the maintenance manager (>= 5.0).
+ * - `processImageBlocks` the `process-image-blocks` routes exist (>= 5.0).
  */
 export type Feature =
   | 'translations'
@@ -28,7 +29,8 @@ export type Feature =
   | 'acknowledgmentField'
   | 'dashboardTabOrder'
   | 'entryPointStartDashboard'
-  | 'managedBy';
+  | 'managedBy'
+  | 'processImageBlocks';
 
 /**
  * Minimum platform version per feature. Add an entry here to add a feature; only use
@@ -47,6 +49,7 @@ export const FEATURE_MIN_VERSIONS: Record<Feature, string> = {
   dashboardTabOrder: '5.0',
   entryPointStartDashboard: '5.0',
   managedBy: '5.0',
+  processImageBlocks: '5.0',
 };
 
 /** Predicate on a parsed platform version. `null` means the version could not be parsed. */

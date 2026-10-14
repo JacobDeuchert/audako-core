@@ -113,6 +113,11 @@ function operationsRoot(urls: ServiceUrls, apiVersion: 'v4' | 'v5'): string {
     : `${urls.historian}/historical-value-operations`;
 }
 
+/** Process image block root, v5 only. */
+function blockRoot(urls: ServiceUrls): string {
+  return `${urls.structure}/process-image-blocks`;
+}
+
 /**
  * Builds a row whose URL only differs in the roots above. `build` receives the version so it can
  * pick the right root; everything after the root is spelled once.
@@ -185,6 +190,25 @@ export const ENDPOINTS: EndpointTable = {
     v4: (urls, p) => `${urls.structure}/processimagerender/download/${p.id}`,
     v5: (urls, p) => `${urls.structure}/process-image-rendering/download/${p.id}`,
   },
+
+  // Process image blocks are new in v5.
+  processImageBlocks: { method: 'GET', v4: null, v5: (urls) => blockRoot(urls) },
+  processImageBlockCreate: { method: 'POST', v4: null, v5: (urls) => blockRoot(urls) },
+  processImageBlockById: { method: 'GET', v4: null, v5: (urls, p) => `${blockRoot(urls)}/${p.blockId}` },
+  processImageBlockImage: { method: 'GET', v4: null, v5: (urls, p) => `${blockRoot(urls)}/${p.blockId}/image` },
+  processImageBlockImageUpload: {
+    method: 'PUT',
+    v4: null,
+    v5: (urls, p) => `${blockRoot(urls)}/${p.blockId}/image`,
+  },
+  processImageBlockPreview: { method: 'GET', v4: null, v5: (urls, p) => `${blockRoot(urls)}/${p.blockId}/preview` },
+  processImageBlockPreviews: { method: 'POST', v4: null, v5: (urls) => `${blockRoot(urls)}/previews` },
+  processImageBlockMaterialization: {
+    method: 'POST',
+    v4: null,
+    v5: (urls, p) => `${blockRoot(urls)}/${p.blockId}/materializations`,
+  },
+  processImageBlockUsages: { method: 'GET', v4: null, v5: (urls, p) => `${blockRoot(urls)}/${p.blockId}/usages` },
 
   // v4 tenant routes are singular (`/tenant/...`), v5 plural, and `tenant/entity` became
   // `tenants/entities`.

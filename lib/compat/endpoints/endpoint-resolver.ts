@@ -59,6 +59,24 @@ export interface EndpointParams {
   processImageFile: { id: string };
   /** Rendered process image, body `{Basetag}`. */
   processImageRendered: { id: string };
+  /** v5 only: the blocks of a tenant, `?tenantId=`. */
+  processImageBlocks: {};
+  /** v5 only: multipart block upload, form fields `file` and `name`, `?tenantId=`. */
+  processImageBlockCreate: {};
+  /** v5 only. */
+  processImageBlockById: { blockId: string };
+  /** v5 only: the block SVG as uploaded. */
+  processImageBlockImage: { blockId: string };
+  /** v5 only: multipart upload of a new revision, form field `file`. */
+  processImageBlockImageUpload: { blockId: string };
+  /** v5 only: the block as a standalone SVG with its parameter defaults. */
+  processImageBlockPreview: { blockId: string };
+  /** v5 only: previews of several blocks, body `{BlockIds}`. */
+  processImageBlockPreviews: {};
+  /** v5 only: one instance's content, body `{InstanceId, Params}`. */
+  processImageBlockMaterialization: { blockId: string };
+  /** v5 only: the process images that place the block. */
+  processImageBlockUsages: { blockId: string };
   tenantViewById: { tenantId: string };
   tenantViewForEntity: { entityId: string };
   tenantsTop: {};
