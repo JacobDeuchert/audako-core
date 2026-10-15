@@ -67,6 +67,9 @@ export class SignalSettings {
 }
 
 export class SignalDigitalSettings extends SignalSettings {
+  public static readonly DEFAULT_TRUE_COLOR = '#5b9bff';
+  public static readonly DEFAULT_FALSE_COLOR = '#bdbdbd';
+
   public DigitalTrueColor: Field<string>;
   public DigitalTrueCaption: Field<string>;
 
@@ -81,10 +84,10 @@ export class SignalDigitalSettings extends SignalSettings {
   constructor() {
     super('SignalDigitalSettings');
 
-    this.DigitalTrueColor = new Field<string>();
-    this.DigitalTrueCaption = new Field<string>();
-    this.DigitalFalseColor = new Field<string>();
-    this.DigitalFalseCaption = new Field<string>();
+    this.DigitalTrueColor = new Field<string>(SignalDigitalSettings.DEFAULT_TRUE_COLOR);
+    this.DigitalTrueCaption = new Field<string>('');
+    this.DigitalFalseColor = new Field<string>(SignalDigitalSettings.DEFAULT_FALSE_COLOR);
+    this.DigitalFalseCaption = new Field<string>('');
     this.Invert = new Field<boolean>(false);
     this.BitSelect = new Field<number>();
     this.BitSelectConversion = new Field<BitSelectConversionTypes>(BitSelectConversionTypes.None);
