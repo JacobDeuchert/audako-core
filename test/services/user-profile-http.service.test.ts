@@ -49,3 +49,41 @@ describe('UserProfileHttpService errors', () => {
     });
   });
 });
+
+describe('UserProfileHttpService.getCustomColors', () => {
+  function withSettings(platformVersion: string, settings: Record<string, string>) {
+    const stub = stubContext(platformVersion);
+    stub.request.mockResolvedValue({ data: { UserSettings: settings }, headers: {} });
+    return new UserProfileHttpService(stub.ctx);
+  }
+
+  it('returns the ten v4 slots including the white padding', async () => {
+    const stored = ['#ff0000', ...Array(9).fill('#ffffff')];
+    const svc = withSettings('4.23.0', { CustomColors: JSON.stringify(stored) });
+
+    await expect(svc.getCustomColors()).resolves.toEqual(stored);
+  });
+
+  it('returns the colors the user added on v5', async () => {
+    const svc = withSettings('5.0.0', { CustomColors: JSON.stringify(['#4c6a42', '#00AAFF']) });
+
+    await expect(svc.getCustomColors()).resolves.toEqual(['#4c6a42', '#00AAFF']);
+  });
+
+  it('drops entries that are not #rrggbb colors', async () => {
+    const svc = withSettings('5.0.0', { CustomColors: JSON.stringify(['#123456', 'red', 42, null, '#fff']) });
+
+    await expect(svc.getCustomColors()).resolves.toEqual(['#123456']);
+  });
+
+  it.each([
+    ['missing', {}],
+    ['empty', { CustomColors: '' }],
+    ['not JSON', { CustomColors: '#ff0000' }],
+    ['not an array', { CustomColors: '{"a":"#ff0000"}' }],
+  ])('returns [] when the setting is %s', async (_case: string, settings: Record<string, string>) => {
+    const svc = withSettings('5.0.0', settings);
+
+    await expect(svc.getCustomColors()).resolves.toEqual([]);
+  });
+});
