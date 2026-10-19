@@ -43,15 +43,33 @@ describe('ProcessImageBlockHttpService', () => {
     expect(config.responseType).toBe('text');
   });
 
-  it('requests the previews of several blocks at once', async () => {
+  it('reads the preview of a given revision', async () => {
     const { service, request } = createService();
 
-    await service.getPreviews(['b1', 'b2']);
+    await service.getPreview('b1', 2);
+
+    expect(request.mock.calls[0][0].params).toEqual({ revision: 2 });
+  });
+
+  it('requests the previews of several blocks and revisions at once', async () => {
+    const { service, request } = createService();
+
+    await service.getPreviews([{ BlockId: 'b1' }, { BlockId: 'b2', Revision: 3 }]);
 
     const config = request.mock.calls[0][0];
     expect(config.method).toBe('POST');
     expect(config.url).toBe('https://host/api/v1/structure/process-image-blocks/previews');
-    expect(config.data).toEqual({ BlockIds: ['b1', 'b2'] });
+    expect(config.data).toEqual({ Blocks: [{ BlockId: 'b1' }, { BlockId: 'b2', Revision: 3 }] });
+  });
+
+  it('reads one revision', async () => {
+    const { service, request } = createService();
+
+    await service.getRevision('b1', 2);
+
+    const config = request.mock.calls[0][0];
+    expect(config.method).toBe('GET');
+    expect(config.url).toBe('https://host/api/v1/structure/process-image-blocks/b1/revisions/2');
   });
 
   it('materializes an instance with its parameter values', async () => {
@@ -63,6 +81,14 @@ describe('ProcessImageBlockHttpService', () => {
     expect(config.method).toBe('POST');
     expect(config.url).toBe('https://host/api/v1/structure/process-image-blocks/b1/materializations');
     expect(config.data).toEqual({ InstanceId: 'pump1', Params: { Color: '#c62828' } });
+  });
+
+  it('materializes an instance from its revision', async () => {
+    const { service, request } = createService();
+
+    await service.materialize('b1', 'pump1', {}, 2);
+
+    expect(request.mock.calls[0][0].data).toEqual({ InstanceId: 'pump1', Params: {}, Revision: 2 });
   });
 
   it('creates a block from an SVG file and a name', async () => {

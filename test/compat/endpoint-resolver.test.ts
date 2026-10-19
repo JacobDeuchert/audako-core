@@ -318,6 +318,7 @@ describe('endpoint table', () => {
       'processImageBlockMaterialization',
       'processImageBlockPreview',
       'processImageBlockPreviews',
+      'processImageBlockRevision',
       'processImageBlockUsages',
       'processImageBlocks',
     ]);

@@ -18,6 +18,8 @@ export interface ProcessImageBlock {
   Name: TranslatableField<string>;
   Description: TranslatableField<string>;
   Revision: number;
+  /** The current revision is used by an image; the next upload creates a new revision instead of overwriting it. */
+  Sealed: boolean;
   Parameters: ProcessImageBlockParameter[];
   Width: number;
   Height: number;
@@ -28,11 +30,23 @@ export interface ProcessImageBlock {
   ChangedOn: string | null;
 }
 
-/** A process image that places instances of a block. */
+/** One revision of a block with the parameters and size it was uploaded with. */
+export interface ProcessImageBlockRevision {
+  Revision: number;
+  Parameters: ProcessImageBlockParameter[];
+  Width: number;
+  Height: number;
+}
+
+/** A process image that places instances of a block, with the revisions its instances are on. */
 export interface ProcessImageBlockUsage {
   ProcessImageId: string;
   Name: TranslatableField<string>;
   GroupId: string | null;
+  Revisions: ProcessImageBlockRevisionUsage[];
+}
+
+export interface ProcessImageBlockRevisionUsage {
   Revision: number;
   InstanceCount: number;
 }
@@ -40,6 +54,7 @@ export interface ProcessImageBlockUsage {
 export type BlockInstanceWarningCode =
   | 'BlockUnavailable'
   | 'BlockRebound'
+  | 'RevisionUnavailable'
   | 'TransformNormalized'
   | 'ParameterValueIgnored';
 
@@ -56,6 +71,12 @@ export interface ProcessImageBlockMaterialization {
   Content: string;
   Revision: number;
   Warnings: BlockInstanceWarning[];
+}
+
+/** Without `Revision` the current one is previewed. */
+export interface ProcessImageBlockPreviewRequest {
+  BlockId: string;
+  Revision?: number;
 }
 
 export interface ProcessImageBlockPreview {

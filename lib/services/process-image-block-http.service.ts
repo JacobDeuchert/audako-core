@@ -3,6 +3,8 @@ import {
   ProcessImageBlock,
   ProcessImageBlockMaterialization,
   ProcessImageBlockPreview,
+  ProcessImageBlockPreviewRequest,
+  ProcessImageBlockRevision,
   ProcessImageBlockUsage,
 } from '../models/process-image-block.model.js';
 
@@ -32,33 +34,44 @@ export class ProcessImageBlockHttpService {
     return response.data;
   }
 
-  /** The block as a standalone SVG with its parameter defaults applied. */
-  public async getPreview(blockId: string): Promise<string> {
+  /** Parameters and size of one revision, the current one included. */
+  public async getRevision(blockId: string, revision: number): Promise<ProcessImageBlockRevision> {
+    const response = await this.ctx.request<ProcessImageBlockRevision>({
+      name: 'processImageBlockRevision',
+      blockId: blockId,
+      revision: revision,
+    });
+    return response.data;
+  }
+
+  /** The block as a standalone SVG with its parameter defaults applied; without `revision` the current one. */
+  public async getPreview(blockId: string, revision?: number): Promise<string> {
     const response = await this.ctx.request<string>(
       { name: 'processImageBlockPreview', blockId: blockId },
-      { responseType: 'text' },
+      { responseType: 'text', params: revision === undefined ? undefined : { revision: revision } },
     );
     return response.data;
   }
 
-  /** At most 200 blocks per call; ids without a block are left out. */
-  public async getPreviews(blockIds: string[]): Promise<ProcessImageBlockPreview[]> {
+  /** At most 200 entries per call; unknown blocks and revisions are left out. */
+  public async getPreviews(blocks: ProcessImageBlockPreviewRequest[]): Promise<ProcessImageBlockPreview[]> {
     const response = await this.ctx.request<ProcessImageBlockPreview[]>(
       { name: 'processImageBlockPreviews' },
-      { data: { BlockIds: blockIds } },
+      { data: { Blocks: blocks } },
     );
     return response.data;
   }
 
-  /** The content of one block instance with the given parameter values. */
+  /** The content of one block instance with the given parameter values; without `revision` from the current one. */
   public async materialize(
     blockId: string,
     instanceId: string,
     params: Record<string, string>,
+    revision?: number,
   ): Promise<ProcessImageBlockMaterialization> {
     const response = await this.ctx.request<ProcessImageBlockMaterialization>(
       { name: 'processImageBlockMaterialization', blockId: blockId },
-      { data: { InstanceId: instanceId, Params: params } },
+      { data: { InstanceId: instanceId, Params: params, Revision: revision } },
     );
     return response.data;
   }
@@ -73,7 +86,7 @@ export class ProcessImageBlockHttpService {
     return response.data;
   }
 
-  /** Uploads a new revision; the platform answers 400 with every validation problem at once. */
+  /** Overwrites the current revision while it is unsealed, otherwise uploads a new one; the platform answers 400 with every validation problem at once. */
   public async uploadRevision(blockId: string, svg: string, name: string): Promise<ProcessImageBlock> {
     const response = await this.ctx.request<ProcessImageBlock>(
       { name: 'processImageBlockImageUpload', blockId: blockId },

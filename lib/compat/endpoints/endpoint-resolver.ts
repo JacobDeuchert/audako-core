@@ -67,13 +67,15 @@ export interface EndpointParams {
   processImageBlockById: { blockId: string };
   /** v5 only: the block SVG as uploaded. */
   processImageBlockImage: { blockId: string };
-  /** v5 only: multipart upload of a new revision, form field `file`. */
+  /** v5 only: multipart upload over the current revision, or a new one once it is sealed, form field `file`. */
   processImageBlockImageUpload: { blockId: string };
-  /** v5 only: the block as a standalone SVG with its parameter defaults. */
+  /** v5 only: parameters and size of one revision. */
+  processImageBlockRevision: { blockId: string; revision: number };
+  /** v5 only: the block as a standalone SVG with its parameter defaults, `?revision=`. */
   processImageBlockPreview: { blockId: string };
-  /** v5 only: previews of several blocks, body `{BlockIds}`. */
+  /** v5 only: previews of several blocks, body `{Blocks: [{BlockId, Revision?}]}`. */
   processImageBlockPreviews: {};
-  /** v5 only: one instance's content, body `{InstanceId, Params}`. */
+  /** v5 only: one instance's content, body `{InstanceId, Params, Revision?}`. */
   processImageBlockMaterialization: { blockId: string };
   /** v5 only: the process images that place the block. */
   processImageBlockUsages: { blockId: string };

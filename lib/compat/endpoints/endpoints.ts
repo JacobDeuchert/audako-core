@@ -201,6 +201,11 @@ export const ENDPOINTS: EndpointTable = {
     v4: null,
     v5: (urls, p) => `${blockRoot(urls)}/${p.blockId}/image`,
   },
+  processImageBlockRevision: {
+    method: 'GET',
+    v4: null,
+    v5: (urls, p) => `${blockRoot(urls)}/${p.blockId}/revisions/${p.revision}`,
+  },
   processImageBlockPreview: { method: 'GET', v4: null, v5: (urls, p) => `${blockRoot(urls)}/${p.blockId}/preview` },
   processImageBlockPreviews: { method: 'POST', v4: null, v5: (urls) => `${blockRoot(urls)}/previews` },
   processImageBlockMaterialization: {
