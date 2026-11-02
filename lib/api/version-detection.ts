@@ -67,6 +67,17 @@ export function normalizeVersionBody(body: unknown): string | null {
   return value;
 }
 
+/**
+ * Version assumed for a system whose `Services.BaseUri` carries an API version (`/api/v1`): only
+ * v5 configs do, and no feature needs more than 5.0.
+ */
+export const VERSIONED_BASE_URI_VERSION = '5.0';
+
+/** True when `Services.BaseUri` ends in a versioned API path such as `/api/v1`. */
+export function hasVersionedBaseUri(httpConfig?: HttpConfig): boolean {
+  return /\/api\/v\d+\/*$/i.test(httpConfig?.Services?.BaseUri || '');
+}
+
 /** One version probe: the HTTP status and, on a 200 with a usable body, the version string. */
 async function probe(
   url: string,
@@ -98,7 +109,8 @@ async function probe(
  * is not taken as v4: in a browser, a v4 system's CORS-less fallback page and an unreachable v5
  * system fail the same way. HTML bodies are rejected, because the legacy path can return the UI's fallback
  * page with status 200. An explicit `platformVersion` option, or an `ApiVersion` key in a
- * supplied `HttpConfig`, short-circuits the probing.
+ * supplied `HttpConfig`, short-circuits the probing; so does a `BaseUri` ending in `/api/v1`,
+ * which is v5 ({@link VERSIONED_BASE_URI_VERSION}).
  *
  * @param apiUrl Base URL of the system without the `/api` suffix (e.g. `https://host`).
  */
@@ -106,6 +118,9 @@ export async function detectApiVersion(apiUrl: string, options: DetectApiVersion
   const override = options.platformVersion || options.httpConfig?.ApiVersion;
   if (override) {
     return createApiVersionInfo(override);
+  }
+  if (hasVersionedBaseUri(options.httpConfig)) {
+    return createApiVersionInfo(VERSIONED_BASE_URI_VERSION);
   }
 
   const base = (apiUrl || '').replace(/\/+$/, '');

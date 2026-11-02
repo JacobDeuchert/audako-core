@@ -40,3 +40,35 @@ describe('ApiContext adapter', () => {
     expect(requests[0].url).toBe(`https://host${V5_VERSION_PATH}`);
   });
 });
+
+describe('ApiContext.getApiRootUrl', () => {
+  const withBaseUri = (BaseUri: string) => ({ Services: { BaseUri }, Authentication: null }) as unknown as HttpConfig;
+
+  it('strips a v4 /api', () => {
+    expect(ApiContext.getApiRootUrl(withBaseUri('https://host/api/'))).toBe('https://host');
+  });
+
+  it('strips a v5 /api/v1', () => {
+    expect(ApiContext.getApiRootUrl(withBaseUri('https://platform.example/api/v1'))).toBe('https://platform.example');
+  });
+
+  it('falls back to the system URL without a BaseUri', () => {
+    expect(ApiContext.getApiRootUrl({ Services: null } as unknown as HttpConfig, 'https://host/')).toBe('https://host');
+  });
+});
+
+describe('ApiContext with a v5 BaseUri', () => {
+  it('knows v5 without a request', async () => {
+    const { adapter, requests } = recordingAdapter('');
+    const ctx = ApiContext.from({
+      httpConfig: { Services: { BaseUri: 'https://platform.example/api/v1', Structure: '/structure' } } as never,
+      accessToken: 'token',
+      adapter,
+    });
+
+    const info = await ctx.getVersionInfo();
+
+    expect(info.apiVersion).toBe('V5');
+    expect(requests).toHaveLength(0);
+  });
+});

@@ -99,15 +99,15 @@ export class ApiContext {
   }
 
   /**
-   * Root URL to probe for the version endpoint: `Services.BaseUri` without its trailing `/api`,
-   * falling back to the given system URL when the config has no `BaseUri`.
+   * Root URL to probe for the version endpoint: `Services.BaseUri` without its trailing `/api`
+   * (v4) or `/api/v1` (v5), falling back to the given system URL when the config has no `BaseUri`.
    */
   public static getApiRootUrl(httpConfig: HttpConfig, fallbackUrl = ''): string {
     const baseUri = httpConfig?.Services?.BaseUri;
     if (!baseUri) {
       return fallbackUrl.replace(/\/+$/, '');
     }
-    return baseUri.replace(/\/+$/, '').replace(/\/api$/i, '');
+    return baseUri.replace(/\/+$/, '').replace(/\/api(\/v\d+)?$/i, '');
   }
 
   /** Resolved `HttpConfig` of the target system. */

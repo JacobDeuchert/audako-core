@@ -10,6 +10,7 @@ import {
   normalizeVersionBody,
   V4_VERSION_PATH,
   V5_VERSION_PATH,
+  VERSIONED_BASE_URI_VERSION,
 } from '../../lib/api/version-detection.js';
 import { ApiVersionDetectionError } from '../../lib/api/errors.js';
 
@@ -168,6 +169,24 @@ describe('detectApiVersion', () => {
     expect(info.apiVersion).toBe('V5');
     expect(info.platformVersion).toBe('5.2.0');
     expect(get).not.toHaveBeenCalled();
+  });
+
+  it('takes a BaseUri ending in /api/v1 as v5 without probing', async () => {
+    const info = await detectApiVersion('https://host', {
+      httpConfig: { Services: { BaseUri: 'https://host/api/v1/' }, Authentication: null } as never,
+    });
+
+    expect(info.apiVersion).toBe('V5');
+    expect(info.platformVersion).toBe(VERSIONED_BASE_URI_VERSION);
+    expect(get).not.toHaveBeenCalled();
+  });
+
+  it('prefers ApiVersion over the versioned BaseUri', async () => {
+    const info = await detectApiVersion('https://host', {
+      httpConfig: { Services: { BaseUri: 'https://host/api/v1' }, Authentication: null, ApiVersion: '5.2.0' } as never,
+    });
+
+    expect(info.platformVersion).toBe('5.2.0');
   });
 
   it('runs both probes through the given adapter', async () => {
