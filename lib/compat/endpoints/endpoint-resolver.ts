@@ -16,6 +16,7 @@ export interface ServiceUrls {
   historian: string;
   driver: string;
   live: string;
+  reporting: string;
 }
 
 /** Builds the per-service base URLs from an `HttpConfig`. */
@@ -28,6 +29,7 @@ export function getServiceUrls(httpConfig: HttpConfig): ServiceUrls {
     historian: `${base}${services?.Historian || ''}`,
     driver: `${base}${services?.Driver || ''}`,
     live: `${base}${services?.Live || ''}`,
+    reporting: `${base}${services?.Reporting || ''}`,
   };
 }
 
@@ -112,6 +114,8 @@ export interface EndpointParams {
   driverConfigureDataSource: { dataSourceId: string };
   /** `POST {driver}/command/conn/{id}/browse`. */
   driverBrowseConnection: { dataConnectionId: string };
+  /** Settings a report template's script declares. */
+  reportTemplateSettings: { templateId: string };
   /** SignalR hub URL. v4: `{live}/hub`. v5: `{live}/values`. Not an HTTP endpoint. */
   liveHub: {};
 }

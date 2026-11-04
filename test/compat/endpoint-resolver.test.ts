@@ -12,6 +12,7 @@ const v4Config = {
     Historian: '/historian',
     Driver: '/driver',
     Live: '/live',
+    Reporting: '/reporting',
   },
   Authentication: null,
 } as unknown as HttpConfig;
@@ -23,6 +24,7 @@ const v5Config = {
     Historian: '/v1/historian',
     Driver: '/v1/driver',
     Live: '/live',
+    Reporting: '/v1/reporting',
   },
   Authentication: null,
 } as unknown as HttpConfig;
@@ -38,6 +40,7 @@ describe('getServiceUrls', () => {
       historian: 'https://host/api/v1/historian',
       driver: 'https://host/api/v1/driver',
       live: 'https://host/api/live',
+      reporting: 'https://host/api/v1/reporting',
     });
   });
 
@@ -292,6 +295,17 @@ describe('driver and live endpoints', () => {
     expect(v5({ name: 'driverBrowseConnection', dataConnectionId: 'c1' })).toEqual({
       url: 'https://host/api/v1/driver/command/conn/c1/browse',
       method: 'POST',
+    });
+  });
+
+  it('pluralizes the report settings route, keyed by template on both versions', () => {
+    expect(v4({ name: 'reportTemplateSettings', templateId: 't1' })).toEqual({
+      url: 'https://host/api/reporting/report/t1/settings',
+      method: 'GET',
+    });
+    expect(v5({ name: 'reportTemplateSettings', templateId: 't1' })).toEqual({
+      url: 'https://host/api/v1/reporting/reports/t1/settings',
+      method: 'GET',
     });
   });
 

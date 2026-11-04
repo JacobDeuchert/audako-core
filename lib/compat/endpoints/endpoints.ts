@@ -317,6 +317,14 @@ export const ENDPOINTS: EndpointTable = {
   driverConfigureDataSource: sameShape('GET', (urls, p) => `${urls.driver}/command/source/${p.dataSourceId}/configure`),
   driverBrowseConnection: sameShape('POST', (urls, p) => `${urls.driver}/command/conn/${p.dataConnectionId}/browse`),
 
+  // Keyed by template id on both versions; v4 names the route parameter `reportId` but looks up
+  // the template.
+  reportTemplateSettings: {
+    method: 'GET',
+    v4: (urls, p) => `${urls.reporting}/report/${p.templateId}/settings`,
+    v5: (urls, p) => `${urls.reporting}/reports/${p.templateId}/settings`,
+  },
+
   // SignalR hub, not an HTTP endpoint: `hub` -> `values`. `Services.Live` has no `/v1` yet, so
   // the URL still resolves through the live service's catch-all rewrite; keep reading the path
   // from config.

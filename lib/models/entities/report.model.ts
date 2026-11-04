@@ -21,6 +21,12 @@ export enum ReportColumnType {
   MAX = 'MAX',
 }
 
+/**
+ * `ReportParameterDefinition.Type` values the report scripts emit. The backend passes the string
+ * through unchecked, so treat anything else as unknown. `Signal` and `Event` are references: their
+ * `PossibleValues` keys are the selectable {@link ReportReferenceType}s and their value is stored as
+ * {@link ReportReferenceValue}; all other types store a {@link ReportPlainValue}.
+ */
 export enum ReportParameterType {
   TextBox = 'TextBox',
   NumberBox = 'NumberBox',
@@ -28,6 +34,62 @@ export enum ReportParameterType {
   SelectList = 'SelectList',
   Signal = 'Signal',
   CheckBox = 'CheckBox',
+  Event = 'Event',
+}
+
+/**
+ * Entity type of a reference value. A `Signal` parameter offers `Signal` and usually `Formula`,
+ * an `Event` parameter `Event` and `Condition`; the template lists the offered ones in
+ * `PossibleValues`.
+ */
+export enum ReportReferenceType {
+  Signal = 'Signal',
+  Formula = 'Formula',
+  Event = 'Event',
+  Condition = 'Condition',
+}
+
+/** `_t` of the values in `ReportSettings.ElementSettings`. */
+export enum ReportElementSettingsType {
+  Field = 'ReportFieldSettings',
+  Group = 'ReportGroupSettings',
+  List = 'ReportListSettings',
+  Table = 'ReportTableSettings',
+}
+
+/** `_t` of the values in `Report.Elements`. */
+export enum ReportElementType {
+  Field = 'ReportField',
+  Group = 'ReportGroup',
+  List = 'ReportList',
+  Table = 'ReportTable',
+}
+
+/** `_t` of the rows in `ReportTable.TableEntries`. */
+export enum ReportTableElementType {
+  Entry = 'ReportTableEntry',
+  Header = 'ReportTableHeader',
+}
+
+/**
+ * Stored value of a non-reference parameter. The UI writes strings (CheckBox `'true'`/`'false'`,
+ * NumberBox the typed text); an untouched parameter keeps the template's `DefaultValue` as is.
+ */
+export interface ReportPlainValue {
+  value: any;
+}
+
+/** Stored value of a `Signal` or `Event` parameter. `id` is null until an entity is picked. */
+export interface ReportReferenceValue {
+  id: string | null;
+  type: ReportReferenceType | (string & {}) | null;
+}
+
+/** Value of one parameter in `Report.Parameters`, `ReportField.Settings` or `ReportTableElement.AdditionalSettings`. */
+export type ReportSettingValue = ReportPlainValue | ReportReferenceValue;
+
+export function isReportReferenceValue(value: ReportSettingValue | null | undefined): value is ReportReferenceValue {
+  return !!value && 'type' in value;
 }
 
 export class Report extends ConfigurationEntity {
@@ -159,7 +221,8 @@ export abstract class ReportElementSettings {
 export class ReportParameterDefinition {
   public Key: string;
   public Label: string;
-  public Type: string;
+  public Type: ReportParameterType | (string & {});
+  /** Initial value; for `Signal` / `Event` the preselected {@link ReportReferenceType}. */
   public DefaultValue: any;
   public PossibleValues: { [key: string]: string };
 }
@@ -262,3 +325,22 @@ export class ReportSettings {
   public GeneralSettings: ReportParameterDefinition[];
   public ElementSettings: { [key: string]: ReportElementSettings };
 }
+
+/** `ReportSettings.ElementSettings` entry, narrowable on `_t`. */
+export type AnyReportElementSettings =
+  | (ReportFieldSettings & { _t: ReportElementSettingsType.Field })
+  | (ReportGroupSettings & { _t: ReportElementSettingsType.Group })
+  | (ReportListSettings & { _t: ReportElementSettingsType.List })
+  | (ReportTableSettings & { _t: ReportElementSettingsType.Table });
+
+/** `Report.Elements` entry, narrowable on `_t`. */
+export type AnyReportElement =
+  | (ReportField & { _t: ReportElementType.Field })
+  | (ReportGroup & { _t: ReportElementType.Group })
+  | (ReportList & { _t: ReportElementType.List })
+  | (ReportTable & { _t: ReportElementType.Table });
+
+/** `ReportTable.TableEntries` row, narrowable on `_t`. */
+export type AnyReportTableElement =
+  | (ReportTableEntry & { _t: ReportTableElementType.Entry })
+  | (ReportTableHeader & { _t: ReportTableElementType.Header });

@@ -11,6 +11,7 @@ export const V4_CONFIG = {
     Historian: '/historian',
     Driver: '/driver',
     Live: '/live',
+    Reporting: '/reporting',
   },
   Authentication: null,
 } as unknown as HttpConfig;
@@ -23,6 +24,7 @@ export const V5_CONFIG = {
     Historian: '/v1/historian',
     Driver: '/v1/driver',
     Live: '/live',
+    Reporting: '/v1/reporting',
   },
   Authentication: null,
 } as unknown as HttpConfig;

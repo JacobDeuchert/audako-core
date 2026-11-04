@@ -108,6 +108,7 @@ export { EntityNameService } from './services/entity-name.service.js';
 export { UserProfileHttpService } from './services/user-profile-http.service.js';
 export { ProcessImageHttpService } from './services/process-image-http.service.js';
 export { ProcessImageBlockHttpService } from './services/process-image-block-http.service.js';
+export { ReportHttpService } from './services/report-http.service.js';
 export { DataSourceHttpService, DriverJobInfo } from './services/data-source-http.service.js';
 export { ConnectionBrowseItem, DataConnectionBrowserService } from './services/data-connection-browser.service.js';
 export * from './services/live-value.service.js';
