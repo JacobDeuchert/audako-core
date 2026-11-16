@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { TranslatableText } from '../../lib/models/translatable-text.model.js';
+import { toPlatformLanguage, TranslatableText } from '../../lib/models/translatable-text.model.js';
 
 describe('TranslatableText', () => {
   const text = new TranslatableText('Anlage', { 'en-GB': 'Plant', 'fr-FR': '' });
@@ -25,5 +25,21 @@ describe('TranslatableText', () => {
       Value: '',
       Translations: { 'en-GB': 'y' },
     });
+  });
+
+  it('maps a bare language onto its platform tag', () => {
+    expect(TranslatableText.resolve(text, 'en')).toBe('Plant');
+    expect(TranslatableText.resolve(text, 'EN')).toBe('Plant');
+    expect(TranslatableText.resolve(text, 'de')).toBe('Anlage');
+  });
+});
+
+describe('toPlatformLanguage', () => {
+  it('keeps full tags and maps bare languages', () => {
+    expect(toPlatformLanguage('de-AT')).toBe('de-AT');
+    expect(toPlatformLanguage('en_GB')).toBe('en-GB');
+    expect(toPlatformLanguage('fr')).toBe('fr-FR');
+    expect(toPlatformLanguage('it')).toBe('it');
+    expect(toPlatformLanguage(null)).toBe('');
   });
 });

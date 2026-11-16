@@ -36,7 +36,7 @@ export * from './models/entities/maintenance-service.model.js';
 export * from './models/entities/task-definition.model.js';
 export * from './models/entities/runtime-script.model.js';
 export { TenantView } from './models/tenant-view.model.js';
-export { TranslatableText } from './models/translatable-text.model.js';
+export { TranslatableText, toPlatformLanguage } from './models/translatable-text.model.js';
 export { UserProfile } from './models/user-profile.model.js';
 export { HttpConfig } from './models/http-config.model.js';
 export * from './models/historical-value.model.js';

@@ -1,4 +1,28 @@
 /**
+ * Platform language tag per bare language: the four languages entity and tenant texts are
+ * translated into (the audako UI's AvailableEntityFieldLanguages).
+ */
+const PLATFORM_LANGUAGES: { [language: string]: string } = {
+  de: 'de-DE',
+  en: 'en-GB',
+  fr: 'fr-FR',
+  es: 'es-ES',
+};
+
+/**
+ * Translation key for a locale. Translations are keyed by full tags (`de-DE`), while apps often
+ * only know a bare language (`de`, from `<html lang>` or their own i18n): a full tag is returned as
+ * is, a bare language is mapped onto its platform tag.
+ */
+export function toPlatformLanguage(locale: string | null | undefined): string {
+  if (!locale) {
+    return '';
+  }
+  const tag = locale.replace(/_/g, '-');
+  return tag.includes('-') ? tag : (PLATFORM_LANGUAGES[tag.toLowerCase()] ?? tag);
+}
+
+/**
  * Translatable text of a model that is not a `ConfigurationEntity` (currently the tenant's
  * `Name`/`Description`): a plain `{ Value, Translations }` pair, without the `OOAttributes` of
  * {@link TranslatableField}. `Value` is the author's own text, `Translations` maps a BCP-47
@@ -31,7 +55,8 @@ export class TranslatableText {
 
   /**
    * Display text for `language`: its non-empty translation, else `Value`. Same rule the audako UI
-   * uses for tenant texts (no fallback to another language). Tolerates plain strings.
+   * uses for tenant texts (no fallback to another language). `language` may be a full tag
+   * (`de-DE`) or a bare language (`de`, see {@link toPlatformLanguage}). Tolerates plain strings.
    */
   public static resolve(text: TranslatableText | string | null | undefined, language?: string | null): string {
     if (text === null || text === undefined) {
@@ -40,7 +65,8 @@ export class TranslatableText {
     if (typeof text === 'string') {
       return text;
     }
-    const translation = language ? text.Translations?.[language] : undefined;
+    const key = toPlatformLanguage(language);
+    const translation = key ? text.Translations?.[key] : undefined;
     return translation || text.Value || '';
   }
 }
