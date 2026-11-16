@@ -36,6 +36,7 @@ export * from './models/entities/maintenance-service.model.js';
 export * from './models/entities/task-definition.model.js';
 export * from './models/entities/runtime-script.model.js';
 export { TenantView } from './models/tenant-view.model.js';
+export { TranslatableText } from './models/translatable-text.model.js';
 export { UserProfile } from './models/user-profile.model.js';
 export { HttpConfig } from './models/http-config.model.js';
 export * from './models/historical-value.model.js';
@@ -103,7 +104,7 @@ export * from './models/widgets/widget-entered-alarming-config.js';
 // Service exports
 export * from './services/entity-http.service.js';
 
-export { TenantHttpService } from './services/tenant-http.service.js';
+export { TenantHttpService, tenantViewFromWire } from './services/tenant-http.service.js';
 export { EntityNameService } from './services/entity-name.service.js';
 export { UserProfileHttpService } from './services/user-profile-http.service.js';
 export { ProcessImageHttpService } from './services/process-image-http.service.js';

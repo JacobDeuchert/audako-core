@@ -46,3 +46,45 @@ describe('TenantHttpService URL resolution', () => {
     expect(request.mock.calls.every((call) => call[0].method === 'GET')).toBe(true);
   });
 });
+
+describe('TenantHttpService tenant texts', () => {
+  function serviceReturning(platformVersion: string, data: any) {
+    const stub = stubContext(platformVersion);
+    stub.request.mockResolvedValue({ data: data, headers: {} });
+    return new TenantHttpService(stub.ctx);
+  }
+
+  it('wraps the plain v4 strings', async () => {
+    const svc = serviceReturning('4.23.0', { Id: 't1', Name: 'Plant', Description: null, Root: 'g1' });
+
+    const tenant = await svc.getTenantViewById('t1');
+
+    expect(tenant.Name).toEqual({ Value: 'Plant', Translations: {} });
+    expect(tenant.Description).toEqual({ Value: '', Translations: {} });
+    expect(tenant.Root).toBe('g1');
+  });
+
+  it('keeps the v5 translatable texts', async () => {
+    const svc = serviceReturning('5.0.0', [
+      {
+        Id: 't1',
+        Name: { Value: 'Anlage', Translations: { 'en-GB': 'Plant' } },
+        Description: { Value: 'Beschreibung', Translations: {} },
+      },
+    ]);
+
+    const [tenant] = await svc.getTopTenants();
+
+    expect(tenant.Name).toEqual({ Value: 'Anlage', Translations: { 'en-GB': 'Plant' } });
+    expect(tenant.Description).toEqual({ Value: 'Beschreibung', Translations: {} });
+  });
+
+  it('reads plain strings from a v5 server too', async () => {
+    const svc = serviceReturning('5.0.0', [{ Id: 't1', Name: 'Plant', Description: 'Desc' }]);
+
+    const [tenant] = await svc.filterTenantsByName('Pl');
+
+    expect(tenant.Name).toEqual({ Value: 'Plant', Translations: {} });
+    expect(tenant.Description).toEqual({ Value: 'Desc', Translations: {} });
+  });
+});
