@@ -36,16 +36,21 @@ export enum OperationStatus {
   Failed = 'Failed',
 }
 
+/** Live state of a backend operation, pushed over the live hub under `OP:{id}`. */
 export type OperationMessage = {
   id: string;
   name: string;
   status: OperationStatus;
 
-  statusMessage?: string;
+  statusMessage?: string | null;
+  /** Progress in percent (0-100). */
+  progress?: number;
+  /** Operation-specific result payload. */
+  content?: Record<string, unknown> | null;
   createdOn: Date;
 
-  updatedOn?: Date;
-  error: string;
+  updatedOn?: Date | null;
+  error?: string | null;
 } & LivePackage;
 
 export type TimestampPackage = LivePackage;
@@ -54,6 +59,7 @@ export enum LiveHubMethod {
   ChangeModeAsync = 'ChangeModeAsync',
   ChangeIntervalAsync = 'ChangeIntervalAsync',
   SubscribeMany = 'SubscribeMany',
+  UnSubscribeMany = 'UnSubscribeMany',
 }
 
 /** Interval the service asks the hub for after connecting. */
@@ -217,8 +223,13 @@ export class LiveValueService implements Disposable {
   }
 
   private _unsubscribeIds(ids: string[]): void {
+    const subscribedIds = ids.filter((id) => this._subscribedIds.includes(id));
     this._subscribedIds = this._subscribedIds.filter((id) => !ids.includes(id));
+    this._queuedIds = this._queuedIds.filter((id) => !ids.includes(id));
     ids.forEach((id) => delete this._valueCache[id]);
+    if (subscribedIds.length > 0) {
+      this._sendMessage(LiveHubMethod.UnSubscribeMany, subscribedIds);
+    }
   }
 
   private _enqueueIdsToSubscribe(ids: string[]): void {

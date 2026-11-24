@@ -6,8 +6,11 @@ import { V4_CONFIG, V5_CONFIG } from './api-context-stub.js';
 import {
   clampLiveInterval,
   DEFAULT_LIVE_INTERVAL_MS,
+  LiveHubMethod,
   LiveValueService,
   MIN_LIVE_INTERVAL_MS_V5,
+  type OperationMessage,
+  OperationStatus,
 } from '../../lib/services/live-value.service.js';
 
 function createService(version: '4.23.0' | '5.0.0') {
@@ -65,5 +68,64 @@ describe('LiveValueService constructors', () => {
   it('accepts an ApiContext', () => {
     const { ctx, service } = createService('5.0.0');
     expect((service as any).ctx).toBe(ctx);
+  });
+});
+
+describe('LiveValueService operation status', () => {
+  function connectFakeHub(service: LiveValueService) {
+    const send = vi.fn();
+    (service as any).hubConnection = { send: send };
+    const push = (messages: unknown[]) => (service as any)._handleHubMessage(messages);
+    return { send: send, push: push };
+  }
+
+  function operationMessage(status: OperationStatus, progress: number) {
+    return {
+      identifier: 'OP:op-1',
+      id: 'op-1',
+      name: 'Reset statistics',
+      status: status,
+      progress: progress,
+      createdOn: new Date('2026-01-01T00:00:00Z'),
+      timestamp: new Date('2026-01-01T00:00:00Z'),
+    };
+  }
+
+  it('streams updates until the operation finishes, then unsubscribes on the hub', async () => {
+    vi.useFakeTimers();
+    try {
+      const { service } = createService('5.0.0');
+      const { send, push } = connectFakeHub(service);
+      const received: OperationMessage[] = [];
+      let completed = false;
+
+      service.getOperationStatus('op-1').subscribe({
+        next: (message) => received.push(message),
+        complete: () => (completed = true),
+      });
+      await vi.advanceTimersByTimeAsync(50);
+      expect(send).toHaveBeenCalledWith(LiveHubMethod.SubscribeMany, ['OP:op-1']);
+
+      push([operationMessage(OperationStatus.Running, 40)]);
+      push([operationMessage(OperationStatus.Success, 100)]);
+
+      expect(received.map((m) => [m.status, m.progress])).toEqual([
+        [OperationStatus.Running, 40],
+        [OperationStatus.Success, 100],
+      ]);
+      expect(completed).toBe(true);
+      expect(send).toHaveBeenCalledWith(LiveHubMethod.UnSubscribeMany, ['OP:op-1']);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('does not unsubscribe on the hub when the subscription was never sent', () => {
+    const { service } = createService('5.0.0');
+    const { send } = connectFakeHub(service);
+
+    service.getOperationStatus('op-1').subscribe().unsubscribe();
+
+    expect(send).not.toHaveBeenCalledWith(LiveHubMethod.UnSubscribeMany, expect.anything());
   });
 });
